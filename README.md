@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🔬 BioSphere — Interactive Biology Learning Platform
+
+An immersive, interactive biology education website built with **Next.js 14**, **React Three Fiber**, and **TypeScript**. Explore cells, DNA, microorganisms, and the tree of life through stunning 3D visualizations.
+
+![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
+![Three.js](https://img.shields.io/badge/Three.js-R3F-green?style=flat-square&logo=three.js)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss)
+
+---
+
+## Features
+
+| Page | Description |
+|------|-------------|
+| **Hero Landing** | 3D particle field with 3000 swimming microorganisms |
+| **Cell Explorer** | Interactive 3D animal cell with clickable organelles |
+| **Mitochondria Zoom** | Deep-dive into mitochondria structure (cristae, matrix, mtDNA) |
+| **Microorganism Zoo** | 4 animated 3D organisms — Volvox, Chlorella, E. coli, Amoeba |
+| **DNA & Genetics** | Rotating double helix with scroll-driven unzip animation |
+| **Tree of Life** | SVG phylogenetic tree from Bacteria to Mammals |
+| **Biology Quiz** | 3 modes — Label the Cell, Quick Fire MCQ, Fill the Blank |
+
+---
+
+## Tech Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **3D Engine:** Three.js + React Three Fiber + Drei
+- **Animation:** GSAP, CSS Keyframes
+- **Smooth Scroll:** Lenis
+- **Styling:** Tailwind CSS 4
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/biosphere.git
+cd biosphere
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+biosphere/
+├── public/
+│   └── models/           # 3D model assets (future)
+├── src/
+│   ├── app/
+│   │   ├── page.tsx                    # Hero landing page
+│   │   ├── layout.tsx                  # Root layout (Navbar, cursor, Lenis)
+│   │   ├── globals.css                 # Global dark theme styles
+│   │   ├── cell-explorer/
+│   │   │   ├── page.tsx                # 3D Cell Explorer
+│   │   │   └── mitochondria/page.tsx   # Mitochondria deep-dive
+│   │   ├── microorganisms/page.tsx     # Microorganism Zoo
+│   │   ├── dna-genetics/page.tsx       # DNA & Genetics
+│   │   ├── tree-of-life/page.tsx       # Tree of Life
+│   │   ├── quiz/page.tsx               # Biology Quiz (3 modes)
+│   │   ├── ecosystems/page.tsx         # Coming soon
+│   │   └── human-body/page.tsx         # Coming soon
+│   ├── components/
+│   │   ├── ui/
+│   │   │   ├── Navbar.tsx              # Glassmorphic navigation
+│   │   │   └── CustomCursor.tsx        # Green glowing cursor
+│   │   └── 3d/                         # Shared 3D components
+│   └── data/
+│       └── biology.json                # Biology data (extensible)
+├── next.config.ts
+├── tailwind.config.ts (auto via v4)
+├── tsconfig.json
+└── package.json
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Vercel (Recommended)
 
-## Deploy on Vercel
+1. Push your code to GitHub
+2. Go to [vercel.com](https://vercel.com) → Import your repository
+3. Framework preset: **Next.js** (auto-detected)
+4. Click **Deploy**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Manual Build
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build   # Creates optimized production build in .next/
+npm run start   # Starts production server on port 3000
+```
+
+---
+
+## Design System
+
+| Token | Value |
+|-------|-------|
+| Background | `#050A05` |
+| Primary (Neon Green) | `#39FF14` |
+| Accent Green | `#1D9E75` |
+| Accent Blue | `#378ADD` |
+| Text | `#C8F5C8` |
+| Font | `system-ui` |
+
+---
+
+## License
+
+MIT
