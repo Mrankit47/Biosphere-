@@ -63,3 +63,8 @@ Desktop.ini
 # ── Misc ────────────────────────────────────────────
 *.pem
 *.log
+
+# ── AI tool config files ────────────────────────────
+AGENTS.md
+CLAUDE.md
+.gemini/
