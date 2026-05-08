@@ -15,10 +15,22 @@ interface TreeNode {
 const NODE_ABBR: Record<string, string> = {
   root: "L", bacteria: "B", archaea: "A", eukarya: "E",
   protista: "Pr", fungi: "Fu", plantae: "Pl", animalia: "An",
+  ecoli: "Ec", salmonella: "Sa", cyano: "Cy",
+  methanogens: "Me", halophiles: "Ha", thermophiles: "Th",
+  amoeba2: "Am", paramecium: "Pa", algae: "Al",
+  mushroom: "Mu", yeast: "Ye", mold: "Mo",
+  moss: "Ms", fern: "Fe", flower: "Fl", tree: "Tr",
+  fish: "Fi", amphibian: "Ap", reptile: "Re", bird: "Bi", mammal: "Ma",
 };
 const NODE_EMOJI: Record<string, string> = {
   root: "\u{1F30D}", bacteria: "\u{1F9A0}", archaea: "\u{1F30B}", eukarya: "\u{1F9EC}",
   protista: "\u{1FAE7}", fungi: "\u{1F344}", plantae: "\u{1F33F}", animalia: "\u{1F43E}",
+  ecoli: "\u{1F9A0}", salmonella: "\u{1F9A0}", cyano: "\u{1F9A0}",
+  methanogens: "\u{1F30B}", halophiles: "\u{1F30B}", thermophiles: "\u{1F525}",
+  amoeba2: "\u{1FAE7}", paramecium: "\u{1FAE7}", algae: "\u{1F33F}",
+  mushroom: "\u{1F344}", yeast: "\u{1F344}", mold: "\u{1F344}",
+  moss: "\u{1F331}", fern: "\u{1F33F}", flower: "\u{1F338}", tree: "\u{1F333}",
+  fish: "\u{1F41F}", amphibian: "\u{1F438}", reptile: "\u{1F98E}", bird: "\u{1F426}", mammal: "\u{1F43E}",
 };
 
 const TREE: TreeNode = {
@@ -29,18 +41,18 @@ const TREE: TreeNode = {
       id: "bacteria", label: "Bacteria", color: "#378ADD",
       info: "Prokaryotes. No nucleus. Oldest life form on Earth. 3.5 billion years old.",
       children: [
-        { id: "ecoli", label: "E. coli", color: "#5AAFFF" },
-        { id: "salmonella", label: "Salmonella", color: "#5AAFFF" },
-        { id: "cyano", label: "Cyanobacteria", color: "#5AAFFF" },
+        { id: "ecoli", label: "E. coli", color: "#5AAFFF", info: "Lives in human intestines. Most strains are harmless and aid digestion. Used extensively in genetic research." },
+        { id: "salmonella", label: "Salmonella", color: "#5AAFFF", info: "Causes food poisoning. Spread through contaminated food and water. Named after Dr. Daniel Salmon." },
+        { id: "cyano", label: "Cyanobacteria", color: "#5AAFFF", info: "Blue-green algae that perform photosynthesis. They produced Earth's first oxygen 2.4 billion years ago." },
       ],
     },
     {
       id: "archaea", label: "Archaea", color: "#EF9F27",
       info: "Extremophiles. Live in volcanic vents, salt lakes, and deep ocean.",
       children: [
-        { id: "methanogens", label: "Methanogens", color: "#FFB84D" },
-        { id: "halophiles", label: "Halophiles", color: "#FFB84D" },
-        { id: "thermophiles", label: "Thermophiles", color: "#FFB84D" },
+        { id: "methanogens", label: "Methanogens", color: "#FFB84D", info: "Produce methane gas as a byproduct. Found in swamps, cow stomachs, and sewage treatment plants." },
+        { id: "halophiles", label: "Halophiles", color: "#FFB84D", info: "Thrive in extremely salty environments like the Dead Sea. Some turn salt lakes pink or red." },
+        { id: "thermophiles", label: "Thermophiles", color: "#FFB84D", info: "Live in extreme heat (60-120 degrees C). Found near deep-sea hydrothermal vents and hot springs." },
       ],
     },
     {
@@ -51,43 +63,44 @@ const TREE: TreeNode = {
           id: "protista", label: "Protista", color: "#9B59B6",
           info: "Mostly single-celled eukaryotes. Neither plant, animal, nor fungi.",
           children: [
-            { id: "amoeba2", label: "Amoeba", color: "#C97FE8" },
-            { id: "paramecium", label: "Paramecium", color: "#C97FE8" },
-            { id: "algae", label: "Algae", color: "#C97FE8" },
+            { id: "amoeba2", label: "Amoeba", color: "#C97FE8", info: "Shape-shifting single-celled organism. Moves using pseudopods (false feet). Engulfs food by surrounding it." },
+            { id: "paramecium", label: "Paramecium", color: "#C97FE8", info: "Slipper-shaped microorganism covered in tiny hair-like cilia. Uses cilia to swim and sweep food into its mouth." },
+            { id: "algae", label: "Algae", color: "#C97FE8", info: "Photosynthetic organisms that produce over 50% of Earth's oxygen. Range from single-celled to giant kelp." },
           ],
         },
         {
           id: "fungi", label: "Fungi", color: "#E24B4A",
           info: "Decomposers of nature. Cell walls made of chitin.",
           children: [
-            { id: "mushroom", label: "Mushroom", color: "#F07070" },
-            { id: "yeast", label: "Yeast", color: "#F07070" },
-            { id: "mold", label: "Mold", color: "#F07070" },
+            { id: "mushroom", label: "Mushroom", color: "#F07070", info: "The visible fruiting body of a fungus. The largest organism on Earth is a honey fungus spanning 2.4 miles." },
+            { id: "yeast", label: "Yeast", color: "#F07070", info: "Single-celled fungi used in baking and brewing. Converts sugar to CO2 (bread rises) and alcohol (beer ferments)." },
+            { id: "mold", label: "Mold", color: "#F07070", info: "Multicellular fungi that grow as fuzzy patches. Penicillin, the first antibiotic, was discovered from mold." },
           ],
         },
         {
           id: "plantae", label: "Plantae", color: "#39FF14",
           info: "Make food via photosynthesis. Produce 70% of Earth's oxygen.",
           children: [
-            { id: "moss", label: "Moss", color: "#5FFF4F" },
-            { id: "fern", label: "Fern", color: "#5FFF4F" },
-            { id: "flower", label: "Flower", color: "#5FFF4F" },
-            { id: "tree", label: "Tree", color: "#5FFF4F" },
+            { id: "moss", label: "Moss", color: "#5FFF4F", info: "One of the oldest land plants. Has no roots or flowers. Absorbs water directly through its leaves." },
+            { id: "fern", label: "Fern", color: "#5FFF4F", info: "Ancient plants that reproduce via spores, not seeds. Existed before dinosaurs — over 360 million years old." },
+            { id: "flower", label: "Flower", color: "#5FFF4F", info: "Flowering plants (angiosperms) are the most diverse plant group. Over 300,000 known species exist today." },
+            { id: "tree", label: "Tree", color: "#5FFF4F", info: "Woody perennial plants with a trunk. The oldest living tree is a bristlecone pine over 5,000 years old." },
           ],
         },
         {
           id: "animalia", label: "Animalia", color: "#378ADD",
           info: "Multicellular, no cell walls. Over 8 million known species.",
           children: [
-            { id: "fish", label: "Fish", color: "#5AAFFF" },
-            { id: "amphibian", label: "Amphibian", color: "#5AAFFF" },
-            { id: "reptile", label: "Reptile", color: "#5AAFFF" },
-            { id: "bird", label: "Bird", color: "#5AAFFF" },
-            { id: "mammal", label: "Mammal", color: "#5AAFFF" },
+            { id: "fish", label: "Fish", color: "#5AAFFF", info: "Cold-blooded vertebrates that breathe through gills. First vertebrates to evolve, over 500 million years ago." },
+            { id: "amphibian", label: "Amphibian", color: "#5AAFFF", info: "Live in water and on land. Breathe through their skin. Frogs, toads, and salamanders. First land vertebrates." },
+            { id: "reptile", label: "Reptile", color: "#5AAFFF", info: "Cold-blooded with scales. Includes snakes, lizards, turtles, and crocodiles. Lay eggs on land." },
+            { id: "bird", label: "Bird", color: "#5AAFFF", info: "Warm-blooded with feathers. Evolved from dinosaurs. Over 10,000 species. Only animals with feathers." },
+            { id: "mammal", label: "Mammal", color: "#5AAFFF", info: "Warm-blooded, have hair/fur, feed young with milk. Includes humans. About 6,400 known species." },
           ],
         },
       ],
     },
+
   ],
 };
 
@@ -105,27 +118,56 @@ interface LayoutNode {
   animDelay: number;
 }
 
-function layoutTree(node: TreeNode, x: number, y: number, hSpan: number, depth: number, delay: number, parentX?: number, parentY?: number): LayoutNode[] {
+/* Count total leaves under a node so spacing is proportional */
+function countLeaves(node: TreeNode): number {
+  if (!node.children || node.children.length === 0) return 1;
+  return node.children.reduce((sum, c) => sum + countLeaves(c), 0);
+}
+
+const PADDING = 60;        // left/right margin inside SVG
+const SVG_W = 1600;
+const SVG_H = 680;
+const USABLE_W = SVG_W - PADDING * 2;
+const Y_TOP = 50;
+const Y_STEP = 130;       // vertical gap between levels
+const TOTAL_LEAVES = countLeaves(TREE);
+
+function layoutTree(
+  node: TreeNode,
+  leafStart: number,      // which leaf index this subtree starts at
+  depth: number,
+  delay: number,
+  parentX?: number,
+  parentY?: number,
+): LayoutNode[] {
   const result: LayoutNode[] = [];
-  result.push({ id: node.id, label: node.label, color: node.color, x, y, info: node.info, parentX, parentY, depth, animDelay: delay });
+  const myLeaves = countLeaves(node);
+
+  // Center this node over its leaf range
+  const leafMid = leafStart + myLeaves / 2;
+  const x = PADDING + (leafMid / TOTAL_LEAVES) * USABLE_W;
+  const y = Y_TOP + depth * Y_STEP;
+
+  result.push({
+    id: node.id, label: node.label, color: node.color,
+    x, y, info: node.info, parentX, parentY,
+    depth, animDelay: delay,
+  });
 
   if (node.children) {
-    const count = node.children.length;
-    const childSpan = hSpan / Math.max(count, 1);
-    const startX = x - hSpan / 2 + childSpan / 2;
-    const childY = y + 100;
-
+    let childLeafStart = leafStart;
     node.children.forEach((child, i) => {
-      const cx = startX + i * childSpan;
-      result.push(...layoutTree(child, cx, childY, childSpan * 0.9, depth + 1, delay + 0.15 + i * 0.08, x, y));
+      result.push(
+        ...layoutTree(child, childLeafStart, depth + 1, delay + 0.12 + i * 0.06, x, y)
+      );
+      childLeafStart += countLeaves(child);
     });
   }
+
   return result;
 }
 
-const SVG_W = 1400;
-const SVG_H = 550;
-const nodes = layoutTree(TREE, SVG_W / 2, 40, SVG_W * 0.92, 0, 0);
+const nodes = layoutTree(TREE, 0, 0, 0);
 
 /* ── Page ───────────────────────────────────────────────────── */
 export default function TreeOfLifePage() {
@@ -154,13 +196,17 @@ export default function TreeOfLifePage() {
             </filter>
           </defs>
 
-          {/* Lines */}
+          {/* Lines — straight vertical drop then curve */}
           {nodes.filter(n => n.parentX !== undefined).map((n, i) => {
-            const midY = (n.y + (n.parentY || 0)) / 2;
+            const px = n.parentX!;
+            const py = n.parentY!;
+            // Use a smooth S-curve from parent to child
+            const cp1y = py + (n.y - py) * 0.4;
+            const cp2y = py + (n.y - py) * 0.6;
             return (
               <path
                 key={`line-${i}`}
-                d={`M${n.parentX},${n.parentY} C${n.parentX},${midY} ${n.x},${midY} ${n.x},${n.y}`}
+                d={`M${px},${py} C${px},${cp1y} ${n.x},${cp2y} ${n.x},${n.y}`}
                 fill="none"
                 stroke={selected?.id === n.id || hovered === n.id ? n.color : "rgba(57,255,20,0.15)"}
                 strokeWidth={selected?.id === n.id || hovered === n.id ? 2.5 : 1.2}
@@ -173,18 +219,18 @@ export default function TreeOfLifePage() {
           {/* Nodes */}
           {nodes.map(n => {
             const isActive = selected?.id === n.id || hovered === n.id;
-            const r = n.depth === 0 ? 22 : n.depth <= 2 ? 16 : 11;
+            const r = n.depth === 0 ? 22 : n.depth <= 2 ? 16 : 13;
             return (
               <g
                 key={n.id}
                 className="tree-node"
-                style={{ animationDelay: `${n.animDelay + 0.1}s`, cursor: "none" }}
+                style={{ animationDelay: `${n.animDelay + 0.1}s`, cursor: "none", pointerEvents: "all" }}
                 onClick={() => handleClick(n)}
                 onMouseEnter={() => setHovered(n.id)}
                 onMouseLeave={() => setHovered(null)}
               >
                 {/* Invisible hit area */}
-                <circle cx={n.x} cy={n.y} r={r + 12} fill="transparent" />
+                <circle cx={n.x} cy={n.y} r={r + 14} fill="transparent" />
                 {/* Glow ring */}
                 {isActive && (
                   <circle cx={n.x} cy={n.y} r={r + 6} fill="none" stroke={n.color} strokeWidth={1.5} opacity={0.3} filter="url(#glow)" />
@@ -197,25 +243,23 @@ export default function TreeOfLifePage() {
                   strokeWidth={isActive ? 2 : 1.2}
                   style={{ transition: "all 0.3s ease" }}
                 />
-                {/* Label */}
+                {/* Label — always straight, always centered */}
                 <text
                   x={n.x}
-                  y={n.y + r + 14}
+                  y={n.y + r + 16}
                   textAnchor="middle"
                   fill={isActive ? n.color : "rgba(200,245,200,0.65)"}
-                  fontSize={n.depth <= 1 ? 11 : 9}
+                  fontSize={n.depth === 0 ? 12 : n.depth <= 2 ? 11 : 9}
                   fontWeight={n.depth <= 1 ? 600 : 400}
                   fontFamily="system-ui"
                   style={{ transition: "fill 0.3s ease" }}
                 >
                   {n.label}
                 </text>
-                {/* Abbreviation in circle for major nodes */}
-                {NODE_ABBR[n.id] && n.depth <= 2 && (
-                  <text x={n.x} y={n.y + 4} textAnchor="middle" fontSize={n.depth === 0 ? 12 : 9} fontWeight={700} fontFamily="system-ui" dominantBaseline="middle" fill={n.color}>
-                    {NODE_ABBR[n.id]}
-                  </text>
-                )}
+                {/* Abbreviation in circle */}
+                <text x={n.x} y={n.y + 1} textAnchor="middle" fontSize={n.depth === 0 ? 12 : n.depth <= 2 ? 9 : 7} fontWeight={700} fontFamily="system-ui" dominantBaseline="middle" fill={n.color}>
+                  {NODE_ABBR[n.id] || n.label.charAt(0)}
+                </text>
               </g>
             );
           })}
@@ -259,7 +303,7 @@ export default function TreeOfLifePage() {
 
       <style>{`
         @keyframes lineGrow {
-          from { stroke-dashoffset: 300; }
+          from { stroke-dashoffset: 600; }
           to { stroke-dashoffset: 0; }
         }
         @keyframes nodeIn {
@@ -267,9 +311,9 @@ export default function TreeOfLifePage() {
           to { opacity: 1; transform: scale(1); }
         }
         .tree-line {
-          stroke-dasharray: 300;
-          stroke-dashoffset: 300;
-          animation: lineGrow 0.8s ease-out forwards;
+          stroke-dasharray: 600;
+          stroke-dashoffset: 600;
+          animation: lineGrow 1s ease-out forwards;
         }
         .tree-node {
           opacity: 0;
@@ -288,8 +332,8 @@ const S: Record<string, React.CSSProperties> = {
   title: { fontSize: "1.4rem", fontWeight: 700, color: "#39FF14", letterSpacing: "0.06em", margin: 0, textShadow: "0 0 20px rgba(57,255,20,0.3)" },
   subtitle: { fontSize: "0.75rem", color: "rgba(200,245,200,0.45)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
 
-  treeWrap: { flex: 1, padding: "10px 20px 20px", overflowX: "auto", display: "flex", justifyContent: "center", alignItems: "flex-start" },
-  svg: { width: "100%", maxWidth: 1400, height: "auto", minHeight: 450 },
+  treeWrap: { flex: 1, padding: "10px 20px 40px", overflowX: "auto", display: "flex", justifyContent: "center", alignItems: "flex-start" },
+  svg: { width: "100%", maxWidth: 1600, height: "auto", minHeight: 500 },
 
   panel: {
     position: "fixed", top: 64, right: 0, width: "min(320px, 80vw)", height: "calc(100vh - 64px)", zIndex: 30,

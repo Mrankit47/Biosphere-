@@ -613,27 +613,33 @@ export default function CellExplorerPage() {
               </div>
             </div>
 
-            {/* Zoom Inside — only for mitochondria */}
-            {activeOrganelle === "mitochondria" && (
-              <Link href="/cell-explorer/mitochondria" style={styles.zoomBtn}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.3-4.3" />
-                  <path d="M11 8v6" />
-                  <path d="M8 11h6" />
-                </svg>
-                Zoom Inside
-              </Link>
-            )}
+            {/* Zoom Inside — available for all organelles */}
+            {activeOrganelle && (() => {
+              const routes: Record<string, string> = {
+                nucleus: "/cell-explorer/nucleus",
+                mitochondria: "/cell-explorer/mitochondria",
+                ribosome: "/cell-explorer/ribosome",
+                golgi: "/cell-explorer/golgi",
+                er: "/cell-explorer/er",
+                membrane: "/cell-explorer/membrane",
+              };
+              const route = routes[activeOrganelle];
+              if (!route) return null;
+              return (
+                <Link href={route} style={{
+                  ...styles.zoomBtn,
+                  borderColor: info?.color || "#1D9E75",
+                  background: `${info?.color || "#1D9E75"}15`,
+                  color: info?.color || "#2FFFB0",
+                  boxShadow: `0 0 20px ${info?.color || "#1D9E75"}25, inset 0 0 20px ${info?.color || "#1D9E75"}08`,
+                }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /><path d="M11 8v6" /><path d="M8 11h6" />
+                  </svg>
+                  Zoom Inside
+                </Link>
+              );
+            })()}
           </>
         )}
       </div>
