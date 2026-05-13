@@ -1,0 +1,189 @@
+/* ══════════════════════════════════════════════════════════════
+   VIRUS ENCYCLOPEDIA — Gallery Styles
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Hero Section ─────────────────────────────────────────── */
+.virus-hero {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  min-height: 500px;
+  overflow: hidden;
+}
+.virus-hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.virus-hero-overlay {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 0 24px;
+  gap: 16px;
+}
+.virus-hero-title {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.2em;
+  margin: 0;
+  text-shadow: 0 0 60px rgba(226,75,74,0.3), 0 0 120px rgba(226,75,74,0.15);
+}
+.virus-hero-sub {
+  font-size: clamp(0.75rem, 2vw, 1rem);
+  color: rgba(200,245,200,0.5);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 0;
+  max-width: 500px;
+}
+.virus-hero-cta {
+  display: inline-block;
+  padding: 12px 36px;
+  border-radius: 999px;
+  border: 1.5px solid #E24B4A;
+  color: #E24B4A;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  background: rgba(226,75,74,0.06);
+  box-shadow: 0 0 20px rgba(226,75,74,0.15), inset 0 0 20px rgba(226,75,74,0.05);
+  cursor: none;
+  transition: all 0.35s ease;
+}
+.virus-hero-cta:hover {
+  background: rgba(226,75,74,0.12);
+  box-shadow: 0 0 30px rgba(226,75,74,0.25);
+}
+
+/* ── Gallery Section ──────────────────────────────────────── */
+.virus-gallery {
+  padding: 60px clamp(20px, 5vw, 60px) 40px;
+}
+.virus-gallery-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.virus-gallery-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(226,75,74,0.5);
+  margin: 0 0 6px;
+}
+.virus-gallery-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #E24B4A;
+  margin: 0;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 20px rgba(226,75,74,0.2);
+}
+
+/* ── Card Grid ─────────────────────────────────────────────── */
+.virus-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Virus Card ────────────────────────────────────────────── */
+.virus-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: none;
+}
+.virus-card:hover {
+  border-color: rgba(226,75,74,0.2);
+  background: rgba(226,75,74,0.04);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(226,75,74,0.1);
+}
+
+.virus-card-canvas {
+  width: 100%;
+  height: 180px;
+  position: relative;
+  background: rgba(5,10,5,0.5);
+}
+
+.virus-card-info {
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+.virus-card-type {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(200,245,200,0.35);
+  margin: 0;
+}
+.virus-card-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+.virus-card-sci {
+  font-size: 0.7rem;
+  color: rgba(200,245,200,0.4);
+  font-style: italic;
+  margin: 0;
+}
+.virus-card-desc {
+  font-size: 0.78rem;
+  color: rgba(200,245,200,0.6);
+  line-height: 1.5;
+  margin: 4px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.virus-card-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.virus-card-badge {
+  font-size: 0.6rem;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(226,75,74,0.08);
+  border: 1px solid rgba(226,75,74,0.15);
+  color: rgba(200,245,200,0.65);
+  letter-spacing: 0.05em;
+}
+.virus-card-arrow {
+  position: absolute;
+  right: 16px;
+  bottom: 18px;
+  color: rgba(200,245,200,0.25);
+  transition: all 0.3s ease;
+}
+.virus-card:hover .virus-card-arrow {
+  color: rgba(226,75,74,0.7);
+  transform: translateX(4px);
+}

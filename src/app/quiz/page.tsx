@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 /* ═══════════════════════════════════════════════════════════════
    DATA
@@ -18,28 +18,61 @@ const LABELS: LabelSpot[] = [
 ];
 
 // Mode 2 — MCQ
-interface MCQ { q: string; options: string[]; answer: number }
+interface MCQ { q: string; options: string[]; answer: number; category: string }
 const MCQS: MCQ[] = [
-  { q: "What is the powerhouse of the cell?", options: ["Nucleus", "Mitochondria", "Ribosome", "Golgi"], answer: 1 },
-  { q: "DNA stands for?", options: ["Deoxyribonucleic Acid", "Deoxyribonitric Acid", "Double Nucleic Acid", "None"], answer: 0 },
-  { q: "Which organelle makes proteins?", options: ["Nucleus", "Mitochondria", "Ribosome", "Golgi"], answer: 2 },
-  { q: "Photosynthesis happens in?", options: ["Mitochondria", "Nucleus", "Chloroplast", "Ribosome"], answer: 2 },
-  { q: "Volvox belongs to which group?", options: ["Bacteria", "Fungi", "Green Algae", "Protozoa"], answer: 2 },
-  { q: "How many base pairs in human DNA?", options: ["3 billion", "1 million", "500,000", "10 billion"], answer: 0 },
-  { q: "Cell membrane is made of?", options: ["Proteins only", "Phospholipid bilayer", "Carbohydrates", "DNA"], answer: 1 },
-  { q: "Archaea live in?", options: ["Normal soil", "Extreme environments", "Fresh water", "Air"], answer: 1 },
-  { q: "Fungi cell walls are made of?", options: ["Cellulose", "Chitin", "Peptidoglycan", "Lignin"], answer: 1 },
-  { q: "E.coli is a?", options: ["Virus", "Fungi", "Bacterium", "Protozoa"], answer: 2 },
+  // Cell Explorer & Genetics
+  { q: "What is the powerhouse of the cell?", options: ["Nucleus", "Mitochondria", "Ribosome", "Golgi"], answer: 1, category: "cells" },
+  { q: "DNA stands for?", options: ["Deoxyribonucleic Acid", "Deoxyribonitric Acid", "Double Nucleic Acid", "None"], answer: 0, category: "cells" },
+  { q: "Which organelle makes proteins?", options: ["Nucleus", "Mitochondria", "Ribosome", "Golgi"], answer: 2, category: "cells" },
+  { q: "How many base pairs in human DNA?", options: ["3 billion", "1 million", "500,000", "10 billion"], answer: 0, category: "cells" },
+  { q: "Cell membrane is made of?", options: ["Proteins only", "Phospholipid bilayer", "Carbohydrates", "DNA"], answer: 1, category: "cells" },
+  { q: "What structure organizes cell division?", options: ["Centrosome", "Lysosome", "Vacuole", "Smooth ER"], answer: 0, category: "cells" },
+
+  // Microorganisms
+  { q: "Volvox belongs to which group?", options: ["Bacteria", "Fungi", "Green Algae", "Protozoa"], answer: 2, category: "microbes" },
+  { q: "Archaea usually live in?", options: ["Normal soil", "Extreme environments", "Fresh water", "Air"], answer: 1, category: "microbes" },
+  { q: "Fungi cell walls are made of?", options: ["Cellulose", "Chitin", "Peptidoglycan", "Lignin"], answer: 1, category: "microbes" },
+  { q: "E.coli is an example of a?", options: ["Virus", "Fungi", "Bacterium", "Protozoa"], answer: 2, category: "microbes" },
+  { q: "Which microorganism is known as a 'water bear'?", options: ["Amoeba", "Tardigrade", "Paramecium", "Rotifer"], answer: 1, category: "microbes" },
+  { q: "How does an Amoeba move?", options: ["Flagella", "Cilia", "Pseudopods", "Gliding"], answer: 2, category: "microbes" },
+  { q: "Stentor is shaped like a?", options: ["Sphere", "Trumpet", "Rod", "Spiral"], answer: 1, category: "microbes" },
+  { q: "Penicillium is famous for producing?", options: ["Antibiotics", "Insulin", "Alcohol", "Vitamins"], answer: 0, category: "microbes" },
+
+  // Viruses
+  { q: "Which virus causes COVID-19?", options: ["SARS-CoV-2", "H1N1", "Ebola", "HIV"], answer: 0, category: "viruses" },
+  { q: "What type of virus is HIV?", options: ["Adenovirus", "Retrovirus", "Filovirus", "Coronavirus"], answer: 1, category: "viruses" },
+  { q: "Ebola is known for its high ___?", options: ["Contagiousness", "Mutation rate", "Mortality rate", "Incubation period"], answer: 2, category: "viruses" },
+  { q: "What helps SARS-CoV-2 attach to cells?", options: ["Cilia", "Capsid", "Protein Spikes", "Tail fibers"], answer: 2, category: "viruses" },
+  { q: "Bacteriophages infect which organisms?", options: ["Animals", "Plants", "Bacteria", "Fungi"], answer: 2, category: "viruses" },
+  { q: "Adenoviruses typically cause?", options: ["Flu", "Common Cold", "Malaria", "Polio"], answer: 1, category: "viruses" },
+
+  // Human Body
+  { q: "The brain contains roughly how many neurons?", options: ["1 billion", "10 billion", "86 billion", "1 trillion"], answer: 2, category: "anatomy" },
+  { q: "How many times does the human heart beat per day?", options: ["10,000", "50,000", "100,000", "250,000"], answer: 2, category: "anatomy" },
+  { q: "Which organ can completely regenerate from just 25%?", options: ["Lungs", "Liver", "Kidneys", "Brain"], answer: 1, category: "anatomy" },
+  { q: "Your stomach lining completely renews every ___?", options: ["3-4 days", "1 week", "1 month", "1 year"], answer: 0, category: "anatomy" },
+  { q: "How many lobes does the right lung have?", options: ["1", "2", "3", "4"], answer: 2, category: "anatomy" },
+  { q: "The small intestine has a surface area equivalent to a?", options: ["Ping pong table", "Tennis court", "Football field", "Basketball court"], answer: 1, category: "anatomy" },
+  { q: "Your kidneys filter about ___ liters of blood every day?", options: ["50", "100", "180", "500"], answer: 2, category: "anatomy" },
 ];
 
 // Mode 3 — Fill the Blank
-interface FTB { sentence: string; blank: string; answer: string }
+interface FTB { sentence: string; blank: string; answer: string; category: string }
 const FTBS: FTB[] = [
-  { sentence: "The ___ is the control center of the cell.", blank: "___", answer: "nucleus" },
-  { sentence: "Plants make food through a process called ___.", blank: "___", answer: "photosynthesis" },
-  { sentence: "DNA is shaped like a double ___.", blank: "___", answer: "helix" },
-  { sentence: "Mitochondria produce ___ for the cell.", blank: "___", answer: "energy" },
-  { sentence: "Fungi cell walls are made of ___.", blank: "___", answer: "chitin" },
+  { sentence: "The ___ is the control center of the cell.", blank: "___", answer: "nucleus", category: "cells" },
+  { sentence: "Plants make food through a process called ___.", blank: "___", answer: "photosynthesis", category: "cells" },
+  { sentence: "DNA is shaped like a double ___.", blank: "___", answer: "helix", category: "cells" },
+  { sentence: "Mitochondria produce ___ for the cell.", blank: "___", answer: "energy", category: "cells" },
+  { sentence: "Fungi cell walls are made of ___.", blank: "___", answer: "chitin", category: "microbes" },
+  { sentence: "The human heart pumps ___ liters of blood per day.", blank: "___", answer: "7500", category: "anatomy" },
+  { sentence: "The ___ can completely regenerate itself.", blank: "___", answer: "liver", category: "anatomy" },
+  { sentence: "Tardigrades can survive extreme conditions in a state called ___.", blank: "___", answer: "cryptobiosis", category: "microbes" },
+  { sentence: "HIV is a type of ___virus.", blank: "___", answer: "retro", category: "viruses" },
+  { sentence: "SARS-CoV-2 uses ___ proteins to enter human cells.", blank: "___", answer: "spike", category: "viruses" },
+  { sentence: "The right lung has ___ lobes.", blank: "___", answer: "three", category: "anatomy" },
+  { sentence: "Amoebas move using false feet called ___.", blank: "___", answer: "pseudopods", category: "microbes" },
+  { sentence: "The ___ intestine absorbs most of the nutrients from food.", blank: "___", answer: "small", category: "anatomy" },
+  { sentence: "___phages are viruses that infect bacteria.", blank: "___", answer: "bacterio", category: "viruses" },
 ];
 
 type Mode = "label" | "mcq" | "ftb";
@@ -101,19 +134,19 @@ function LabelMode() {
               <line x1={spot.x > 250 ? spot.x - 10 : spot.x + 70} y1={spot.y + 10} x2={spot.lineX} y2={spot.lineY} stroke="rgba(57,255,20,0.2)" strokeWidth={1} strokeDasharray="3 3" />
               <circle cx={spot.lineX} cy={spot.lineY} r={5} fill="rgba(57,255,20,0.2)" stroke="#39FF14" strokeWidth={1} />
               <rect
-                x={spot.x - 5} y={spot.y - 5} width={90} height={28} rx={6}
+                x={spot.x - 5} y={spot.y - 8} width={100} height={32} rx={6}
                 fill={isPlaced ? (isCorrect ? "rgba(57,255,20,0.12)" : "rgba(226,75,74,0.12)") : dragging ? "rgba(57,255,20,0.06)" : "rgba(255,255,255,0.03)"}
                 stroke={isPlaced ? (isCorrect ? "#39FF14" : "#E24B4A") : "rgba(255,255,255,0.1)"}
                 strokeWidth={1.2}
-                style={{ cursor: dragging ? "pointer" : "default" }}
+                style={{ cursor: dragging ? "pointer" : "pointer" }}
                 onClick={() => handleDrop(spot.id)}
               />
               {isPlaced ? (
-                <text x={spot.x + 40} y={spot.y + 14} textAnchor="middle" fill={isCorrect ? "#39FF14" : "#E24B4A"} fontSize={11} fontFamily="system-ui" fontWeight={500}>
+                <text x={spot.x + 45} y={spot.y + 13} textAnchor="middle" fill={isCorrect ? "#39FF14" : "#E24B4A"} fontSize={12} fontFamily="system-ui" fontWeight={600} pointerEvents="none">
                   {isCorrect ? "+" : "x"} {placed[spot.id]}
                 </text>
               ) : (
-                <text x={spot.x + 40} y={spot.y + 14} textAnchor="middle" fill="rgba(200,245,200,0.25)" fontSize={10} fontFamily="system-ui">?</text>
+                <text x={spot.x + 45} y={spot.y + 13} textAnchor="middle" fill="rgba(200,245,200,0.4)" fontSize={12} fontFamily="system-ui" fontWeight={600} pointerEvents="none">Click to label</text>
               )}
             </g>
           );
@@ -153,14 +186,29 @@ function LabelMode() {
    MODE 2 — QUICK FIRE MCQ
    ═══════════════════════════════════════════════════════════════ */
 
-function McqMode() {
+function McqMode({ topic }: { topic: string }) {
+  const [questions, setQuestions] = useState<MCQ[]>([]);
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(Array(10).fill(null));
   const [showResult, setShowResult] = useState(false);
 
-  const q = MCQS[current];
+  // Initialize random pool of 10 questions on mount or topic change
+  useEffect(() => {
+    const filtered = topic === "all" ? MCQS : MCQS.filter(q => q.category === topic);
+    const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+    setQuestions(shuffled.slice(0, 10));
+    setCurrent(0); setSelected(null); setScore(0); setAnswers(Array(10).fill(null)); setShowResult(false);
+  }, [topic]);
+
+  if (questions.length === 0) return (
+    <div style={{ textAlign: "center", padding: 40, color: "rgba(200,245,200,0.5)" }}>
+      No questions available for this topic.
+    </div>
+  );
+
+  const q = questions[current];
 
   const handleSelect = (i: number) => {
     if (selected !== null) return;
@@ -175,7 +223,12 @@ function McqMode() {
     }, 800);
   };
 
-  const reset = () => { setCurrent(0); setSelected(null); setScore(0); setAnswers(Array(10).fill(null)); setShowResult(false); };
+  const reset = () => { 
+    const filtered = topic === "all" ? MCQS : MCQS.filter(q => q.category === topic);
+    const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+    setQuestions(shuffled.slice(0, 10));
+    setCurrent(0); setSelected(null); setScore(0); setAnswers(Array(10).fill(null)); setShowResult(false); 
+  };
 
   if (showResult) {
     const emoji = score >= 9 ? "🏆" : score >= 7 ? "🎉" : score >= 5 ? "👍" : "📚";
@@ -200,8 +253,8 @@ function McqMode() {
     <div style={{ maxWidth: 550, margin: "0 auto" }}>
       {/* Progress */}
       <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
-        {MCQS.map((_, i) => (
-          <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < current ? (answers[i] === MCQS[i].answer ? "#39FF14" : "#E24B4A") : i === current ? "rgba(57,255,20,0.3)" : "rgba(255,255,255,0.06)", transition: "background 0.3s" }} />
+        {questions.map((_, i) => (
+          <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < current ? (answers[i] === questions[i].answer ? "#39FF14" : "#E24B4A") : i === current ? "rgba(57,255,20,0.3)" : "rgba(255,255,255,0.06)", transition: "background 0.3s" }} />
         ))}
       </div>
       <p style={{ color: "rgba(200,245,200,0.4)", fontSize: "0.72rem", margin: "0 0 8px", letterSpacing: "0.1em" }}>QUESTION {current + 1} OF 10</p>
@@ -234,49 +287,68 @@ function McqMode() {
    MODE 3 — FILL THE BLANK
    ═══════════════════════════════════════════════════════════════ */
 
-function FtbMode() {
+function FtbMode({ topic }: { topic: string }) {
+  const [questions, setQuestions] = useState<FTB[]>([]);
   const [current, setCurrent] = useState(0);
   const [input, setInput] = useState("");
   const [results, setResults] = useState<boolean[]>([]);
   const [showAnswer, setShowAnswer] = useState(false);
 
-  const done = results.length === FTBS.length;
+  useEffect(() => {
+    const filtered = topic === "all" ? FTBS : FTBS.filter(q => q.category === topic);
+    const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+    setQuestions(shuffled.slice(0, 5));
+    setCurrent(0); setInput(""); setResults([]); setShowAnswer(false);
+  }, [topic]);
+
+  if (questions.length === 0) return (
+    <div style={{ textAlign: "center", padding: 40, color: "rgba(200,245,200,0.5)" }}>
+      No fill-in-the-blank questions available for this topic.
+    </div>
+  );
+
+  const done = results.length === questions.length;
   const score = results.filter(Boolean).length;
 
   const handleSubmit = () => {
     if (!input.trim()) return;
-    const correct = input.trim().toLowerCase() === FTBS[current].answer.toLowerCase();
+    const correct = input.trim().toLowerCase() === questions[current].answer.toLowerCase();
     setResults(r => [...r, correct]);
     setShowAnswer(true);
     setTimeout(() => {
-      if (current < FTBS.length - 1) { setCurrent(c => c + 1); setInput(""); setShowAnswer(false); }
+      if (current < questions.length - 1) { setCurrent(c => c + 1); setInput(""); setShowAnswer(false); }
     }, 1200);
   };
 
-  const reset = () => { setCurrent(0); setInput(""); setResults([]); setShowAnswer(false); };
+  const reset = () => { 
+    const filtered = topic === "all" ? FTBS : FTBS.filter(q => q.category === topic);
+    const shuffled = [...filtered].sort(() => 0.5 - Math.random());
+    setQuestions(shuffled.slice(0, 5));
+    setCurrent(0); setInput(""); setResults([]); setShowAnswer(false); 
+  };
 
   if (done) {
     return (
       <div style={S.scoreBox}>
         <span style={{ fontSize: "2.5rem" }}>{score === 5 ? "🏆" : score >= 3 ? "🎉" : "📚"}</span>
-        <span style={{ fontSize: "1.5rem", fontWeight: 700, color: "#39FF14" }}>{score}/{FTBS.length}</span>
+        <span style={{ fontSize: "1.5rem", fontWeight: 700, color: "#39FF14" }}>{score}/{questions.length}</span>
         <p style={{ color: "rgba(200,245,200,0.6)", fontSize: "0.85rem", margin: 0 }}>{score === 5 ? "Flawless!" : score >= 3 ? "Well done!" : "Review and retry!"}</p>
         <button onClick={reset} style={S.retryBtn}>Try Again</button>
       </div>
     );
   }
 
-  const fb = FTBS[current];
+  const fb = questions[current];
   const parts = fb.sentence.split(fb.blank);
 
   return (
     <div style={{ maxWidth: 550, margin: "0 auto" }}>
       <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
-        {FTBS.map((_, i) => (
+        {questions.map((_, i) => (
           <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i < results.length ? (results[i] ? "#39FF14" : "#E24B4A") : i === current ? "rgba(57,255,20,0.3)" : "rgba(255,255,255,0.06)" }} />
         ))}
       </div>
-      <p style={{ color: "rgba(200,245,200,0.4)", fontSize: "0.72rem", margin: "0 0 8px", letterSpacing: "0.1em" }}>SENTENCE {current + 1} OF {FTBS.length}</p>
+      <p style={{ color: "rgba(200,245,200,0.4)", fontSize: "0.72rem", margin: "0 0 8px", letterSpacing: "0.1em" }}>SENTENCE {current + 1} OF {questions.length}</p>
       <div style={{ fontSize: "1.1rem", color: "#C8F5C8", lineHeight: 1.8, margin: "0 0 20px" }}>
         {parts[0]}
         <span style={{ display: "inline-block", minWidth: 100, borderBottom: "2px solid #39FF14", color: showAnswer ? (results[current] ? "#39FF14" : "#E24B4A") : "#39FF14", fontWeight: 700, padding: "0 4px", textAlign: "center" }}>
@@ -322,8 +394,17 @@ const TABS: { id: Mode; label: string; emoji: string }[] = [
   { id: "ftb", label: "Fill the Blank", emoji: "✏️" },
 ];
 
+const TOPICS = [
+  { id: "all", label: "All Topics" },
+  { id: "cells", label: "Cell Biology" },
+  { id: "microbes", label: "Microbes" },
+  { id: "viruses", label: "Viruses" },
+  { id: "anatomy", label: "Human Body" }
+];
+
 export default function QuizPage() {
   const [mode, setMode] = useState<Mode>("mcq");
+  const [topic, setTopic] = useState<string>("all");
 
   return (
     <div style={S.root}>
@@ -342,11 +423,33 @@ export default function QuizPage() {
         ))}
       </div>
 
+      {/* Topic selector (only for MCQ and FTB) */}
+      {mode !== "label" && (
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 32, flexWrap: "wrap" }}>
+          {TOPICS.map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTopic(t.id)}
+              style={{
+                ...S.chip,
+                borderColor: topic === t.id ? "#378ADD" : "rgba(255,255,255,0.06)",
+                background: topic === t.id ? "rgba(55,138,221,0.15)" : "rgba(5,10,5,0.5)",
+                color: topic === t.id ? "#5AAFFF" : "rgba(200,245,200,0.5)",
+                fontSize: "0.75rem",
+                padding: "6px 12px"
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Content */}
       <div style={S.content}>
         {mode === "label" && <LabelMode />}
-        {mode === "mcq" && <McqMode />}
-        {mode === "ftb" && <FtbMode />}
+        {mode === "mcq" && <McqMode topic={topic} />}
+        {mode === "ftb" && <FtbMode topic={topic} />}
       </div>
     </div>
   );
@@ -359,22 +462,22 @@ export default function QuizPage() {
 const S: Record<string, React.CSSProperties> = {
   root: { width: "100%", minHeight: "calc(100vh - 64px)", background: "#050A05", padding: "24px clamp(16px,4vw,40px) 60px", boxSizing: "border-box" },
   header: { textAlign: "center", marginBottom: 20 },
-  title: { fontSize: "1.4rem", fontWeight: 700, color: "#39FF14", letterSpacing: "0.06em", margin: 0, textShadow: "0 0 20px rgba(57,255,20,0.3)" },
-  subtitle: { fontSize: "0.75rem", color: "rgba(200,245,200,0.45)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
+  title: { fontSize: "clamp(1.5rem, 5vw, 2rem)", fontWeight: 800, color: "#39FF14", letterSpacing: "0.06em", margin: 0, textShadow: "0 0 20px rgba(57,255,20,0.3)" },
+  subtitle: { fontSize: "clamp(0.7rem, 2vw, 0.85rem)", color: "rgba(200,245,200,0.45)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
 
-  tabs: { display: "flex", justifyContent: "center", gap: 10, marginBottom: 28, flexWrap: "wrap" as const },
-  tab: { display: "flex", alignItems: "center", gap: 6, padding: "8px 18px", borderRadius: 10, border: "1px solid", cursor: "none", fontFamily: "inherit", transition: "all 0.25s ease", backdropFilter: "blur(6px)" },
+  tabs: { display: "flex", justifyContent: "center", gap: 10, marginBottom: 32, flexWrap: "wrap" as const },
+  tab: { display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 12, border: "1px solid", cursor: "pointer", fontFamily: "inherit", transition: "all 0.25s ease", backdropFilter: "blur(6px)" },
 
-  content: { maxWidth: 700, margin: "0 auto" },
+  content: { maxWidth: 700, margin: "0 auto", width: "100%" },
 
-  chip: { padding: "7px 14px", borderRadius: 8, border: "1px solid", color: "#C8F5C8", fontSize: "0.8rem", fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease" },
+  chip: { padding: "8px 16px", borderRadius: 10, border: "1px solid", color: "#C8F5C8", fontSize: "0.85rem", fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease" },
 
-  scoreBox: { display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 8, padding: "28px 24px", borderRadius: 16, background: "rgba(57,255,20,0.04)", border: "1px solid rgba(57,255,20,0.1)", width: "100%" },
-  retryBtn: { padding: "10px 24px", borderRadius: 10, border: "1.5px solid #39FF14", background: "rgba(57,255,20,0.08)", color: "#39FF14", fontSize: "0.85rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginTop: 4 },
+  scoreBox: { display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 8, padding: "32px 24px", borderRadius: 16, background: "rgba(57,255,20,0.04)", border: "1px solid rgba(57,255,20,0.1)", width: "100%", boxSizing: "border-box" },
+  retryBtn: { padding: "12px 28px", borderRadius: 10, border: "1.5px solid #39FF14", background: "rgba(57,255,20,0.08)", color: "#39FF14", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginTop: 8 },
 
-  optBtn: { display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 12, border: "1px solid", cursor: "pointer", fontFamily: "inherit", fontSize: "0.9rem", fontWeight: 500, transition: "all 0.25s ease", textAlign: "left" as const },
-  optLetter: { width: 28, height: 28, borderRadius: 8, border: "1px solid", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.75rem", fontWeight: 700, flexShrink: 0 },
+  optBtn: { display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 12, border: "1px solid", cursor: "pointer", fontFamily: "inherit", fontSize: "0.95rem", fontWeight: 500, transition: "all 0.25s ease", textAlign: "left" as const, minHeight: 56 },
+  optLetter: { width: 32, height: 32, borderRadius: 8, border: "1px solid", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem", fontWeight: 700, flexShrink: 0 },
 
-  textInput: { flex: 1, padding: "10px 14px", borderRadius: 10, border: "1px solid rgba(57,255,20,0.15)", background: "rgba(5,10,5,0.6)", color: "#C8F5C8", fontSize: "0.9rem", fontFamily: "inherit", outline: "none" },
-  submitBtn: { padding: "10px 20px", borderRadius: 10, border: "1.5px solid #39FF14", background: "rgba(57,255,20,0.1)", color: "#39FF14", fontSize: "0.85rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" },
+  textInput: { flex: 1, padding: "14px 16px", borderRadius: 10, border: "1px solid rgba(57,255,20,0.15)", background: "rgba(5,10,5,0.6)", color: "#C8F5C8", fontSize: "0.95rem", fontFamily: "inherit", outline: "none", minWidth: 0 },
+  submitBtn: { padding: "14px 24px", borderRadius: 10, border: "1.5px solid #39FF14", background: "rgba(57,255,20,0.1)", color: "#39FF14", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" },
 };

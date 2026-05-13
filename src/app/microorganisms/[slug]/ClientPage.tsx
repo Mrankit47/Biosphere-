@@ -18,6 +18,31 @@ const DNAHelixMdl = dynamic(() => import("../_models/DNAHelixMdl"), { ssr: false
 const AnimalCellMdl = dynamic(() => import("../_models/AnimalCellMdl"), { ssr: false });
 const PlantCellMdl = dynamic(() => import("../_models/PlantCellMdl"), { ssr: false });
 const BacteriaMdl = dynamic(() => import("../_models/BacteriaMdl"), { ssr: false });
+const TardigradeMdl = dynamic(() => import("../_models/TardigradeMdl"), { ssr: false });
+const DiatomMdl = dynamic(() => import("../_models/DiatomMdl"), { ssr: false });
+const SpirogyraMdl = dynamic(() => import("../_models/SpirogyraMdl"), { ssr: false });
+const StentorMdl = dynamic(() => import("../_models/StentorMdl"), { ssr: false });
+const HalobacteriumMdl = dynamic(() => import("../_models/HalobacteriumMdl"), { ssr: false });
+const CyanobacteriaMdl = dynamic(() => import("../_models/CyanobacteriaMdl"), { ssr: false });
+const YeastMdl = dynamic(() => import("../_models/YeastMdl"), { ssr: false });
+const PenicilliumMdl = dynamic(() => import("../_models/PenicilliumMdl"), { ssr: false });
+const RadiolariaMdl = dynamic(() => import("../_models/RadiolariaMdl"), { ssr: false });
+const DinoflagellateMdl = dynamic(() => import("../_models/DinoflagellateMdl"), { ssr: false });
+const SpirocheteMdl = dynamic(() => import("../_models/SpirocheteMdl"), { ssr: false });
+const SlimeMoldMdl = dynamic(() => import("../_models/SlimeMoldMdl"), { ssr: false });
+const VorticellaMdl = dynamic(() => import("../_models/VorticellaMdl"), { ssr: false });
+const RotiferMdl = dynamic(() => import("../_models/RotiferMdl"), { ssr: false });
+const NematodeMdl = dynamic(() => import("../_models/NematodeMdl"), { ssr: false });
+const HydraMdl = dynamic(() => import("../_models/HydraMdl"), { ssr: false });
+const DaphniaMdl = dynamic(() => import("../_models/DaphniaMdl"), { ssr: false });
+const PlanariaMdl = dynamic(() => import("../_models/PlanariaMdl"), { ssr: false });
+const OstracodMdl = dynamic(() => import("../_models/OstracodMdl"), { ssr: false });
+const ThermophileMdl = dynamic(() => import("../_models/ThermophileMdl"), { ssr: false });
+const TrypanosomaMdl = dynamic(() => import("../_models/TrypanosomaMdl"), { ssr: false });
+const GiardiaMdl = dynamic(() => import("../_models/GiardiaMdl"), { ssr: false });
+const StreptococcusMdl = dynamic(() => import("../_models/StreptococcusMdl"), { ssr: false });
+const BacillusMdl = dynamic(() => import("../_models/BacillusMdl"), { ssr: false });
+const MethanogenMdl = dynamic(() => import("../_models/MethanogenMdl"), { ssr: false });
 
 /* Model map — will grow as we add more */
 const MODEL_MAP: Record<string, React.ComponentType<{ detail?: boolean }>> = {
@@ -31,6 +56,31 @@ const MODEL_MAP: Record<string, React.ComponentType<{ detail?: boolean }>> = {
   "animal-cell": AnimalCellMdl,
   "plant-cell": PlantCellMdl,
   bacteria: BacteriaMdl,
+  tardigrade: TardigradeMdl,
+  diatom: DiatomMdl,
+  spirogyra: SpirogyraMdl,
+  stentor: StentorMdl,
+  halobacterium: HalobacteriumMdl,
+  cyanobacteria: CyanobacteriaMdl,
+  yeast: YeastMdl,
+  penicillium: PenicilliumMdl,
+  radiolaria: RadiolariaMdl,
+  dinoflagellate: DinoflagellateMdl,
+  spirochete: SpirocheteMdl,
+  "slime-mold": SlimeMoldMdl,
+  vorticella: VorticellaMdl,
+  rotifer: RotiferMdl,
+  nematode: NematodeMdl,
+  hydra: HydraMdl,
+  daphnia: DaphniaMdl,
+  planaria: PlanariaMdl,
+  ostracod: OstracodMdl,
+  thermophile: ThermophileMdl,
+  trypanosoma: TrypanosomaMdl,
+  giardia: GiardiaMdl,
+  streptococcus: StreptococcusMdl,
+  bacillus: BacillusMdl,
+  methanogen: MethanogenMdl,
 };
 
 /* Label positions per organism */
@@ -117,14 +167,129 @@ const LABEL_MAP: Record<string, { position: [number, number, number]; dotOffset:
     { position: [0, 2.4, 0], dotOffset: [0, -1.6, 0] },
     { position: [0, -2.4, 0], dotOffset: [0, 1.4, 0] },
   ],
-  bacteria: [
-    { position: [2.2, 1.2, 0], dotOffset: [-1.6, -0.2, 0] },
-    { position: [-2.2, 0.8, 0.5], dotOffset: [1.6, -0.1, -0.2] },
-    { position: [2.2, 0.4, 0.5], dotOffset: [-1.7, -0.1, -0.3] },
-    { position: [-2.2, -0.4, -0.5], dotOffset: [1.8, 0.2, 0.3] },
-    { position: [2.2, -0.8, 0], dotOffset: [-1.8, 0.2, 0] },
-    { position: [-2.2, -1.2, 0], dotOffset: [1.6, 0.4, 0] },
-    { position: [0, -2.4, 0], dotOffset: [0, 1.8, 0] },
+  "bacteria": [
+    { position: [2.0, 1.2, 0], dotOffset: [-1.2, -0.4, 0] },
+    { position: [-2.0, 0.8, 0.5], dotOffset: [1.3, -0.2, -0.2] },
+    { position: [2.2, 0.4, 0.5], dotOffset: [-1.4, -0.1, -0.3] },
+    { position: [-2.2, -0.4, -0.5], dotOffset: [1.5, 0.2, 0.3] },
+    { position: [2.0, -0.8, 0], dotOffset: [-1.3, 0.2, 0] },
+    { position: [-2.0, -1.2, 0], dotOffset: [1.4, 0.4, 0] },
+    { position: [0, 2.0, 0], dotOffset: [0, -1.2, 0] },
+  ],
+  tardigrade: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.2, -0.4, 0] },
+    { position: [-2.2, 0.5, 0.5], dotOffset: [1.5, -0.2, -0.2] },
+    { position: [1.8, -0.8, 0.5], dotOffset: [-1.0, 0.6, -0.3] },
+    { position: [-2.0, -0.8, -0.5], dotOffset: [1.2, 0.5, 0.3] },
+    { position: [2.0, -1.5, 0], dotOffset: [-1.5, 1.0, 0] },
+  ],
+  diatom: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.2, -0.3, 0] },
+    { position: [-2.2, 0.4, 0.5], dotOffset: [1.3, -0.1, -0.2] },
+    { position: [1.8, -0.6, 0.5], dotOffset: [-1.2, 0.4, -0.3] },
+    { position: [-2.0, -0.8, -0.5], dotOffset: [1.2, 0.5, 0.3] },
+  ],
+  spirogyra: [
+    { position: [2.2, 1.5, 0], dotOffset: [-1.8, -0.4, 0] },
+    { position: [-2.2, 0.8, 0.5], dotOffset: [1.8, -0.2, -0.2] },
+    { position: [1.8, -0.5, 0.5], dotOffset: [-1.4, 0.3, -0.3] },
+    { position: [-2.0, -1.5, -0.5], dotOffset: [1.5, 0.8, 0.3] },
+  ],
+  stentor: [
+    { position: [2.2, 1.2, 0], dotOffset: [-1.2, -0.3, 0] },
+    { position: [-2.2, 0.5, 0.5], dotOffset: [1.5, -0.1, -0.2] },
+    { position: [1.8, -0.8, 0.5], dotOffset: [-1.2, 0.4, -0.3] },
+    { position: [-2.0, -1.5, -0.5], dotOffset: [1.2, 1.2, 0.3] },
+  ],
+  halobacterium: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.5, -0.3, 0] },
+    { position: [-2.2, 0.2, 0.5], dotOffset: [1.8, -0.1, -0.2] },
+    { position: [1.8, -0.6, 0.5], dotOffset: [-1.2, 0.3, -0.3] },
+  ],
+  cyanobacteria: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.8, -0.4, 0] },
+    { position: [-2.2, -0.5, 0.5], dotOffset: [1.8, 0.3, -0.2] },
+    { position: [0, 1.5, 0], dotOffset: [0, -0.8, 0] },
+  ],
+  yeast: [
+    { position: [2.0, 1.2, 0], dotOffset: [-1.2, -0.4, 0] },
+    { position: [-2.0, 0.5, 0.5], dotOffset: [1.3, -0.1, -0.2] },
+    { position: [1.5, -1.2, 0], dotOffset: [-1.0, 0.8, 0] },
+  ],
+  penicillium: [
+    { position: [2.2, 2.0, 0], dotOffset: [-1.8, -0.8, 0] },
+    { position: [-2.2, 1.5, 0.5], dotOffset: [1.8, -0.4, -0.2] },
+    { position: [1.5, -1.0, 0], dotOffset: [-1.2, 0.2, 0] },
+  ],
+  radiolaria: [
+    { position: [2.2, 1.2, 0], dotOffset: [-1.2, -0.4, 0] },
+    { position: [-2.2, -0.8, 0.5], dotOffset: [1.5, 0.3, -0.2] },
+    { position: [0, 2.2, 0], dotOffset: [0, -1.2, 0] },
+  ],
+  dinoflagellate: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.2, -0.4, 0] },
+    { position: [-2.2, -0.2, 0.5], dotOffset: [1.3, 0.1, -0.2] },
+    { position: [0, -1.8, 0], dotOffset: [0, 0.6, 0] },
+  ],
+  spirochete: [
+    { position: [2.2, 1.2, 0], dotOffset: [-1.8, -0.4, 0] },
+    { position: [-2.2, 0.5, 0.5], dotOffset: [1.8, -0.2, -0.2] },
+  ],
+  "slime-mold": [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.8, -0.4, 0] },
+    { position: [-2.2, -0.5, 0.5], dotOffset: [1.8, 0.3, -0.2] },
+  ],
+  vorticella: [
+    { position: [2.2, 1.2, 0], dotOffset: [-1.5, -0.3, 0] },
+    { position: [-2.2, 0.2, 0.5], dotOffset: [1.8, -0.1, -0.2] },
+  ],
+  rotifer: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.5, -0.3, 0] },
+    { position: [-2.2, 0.2, 0.5], dotOffset: [1.8, -0.1, -0.2] },
+  ],
+  nematode: [
+    { position: [2.2, 1.5, 0], dotOffset: [-1.8, -0.4, 0] },
+    { position: [-2.2, 0.8, 0.5], dotOffset: [1.8, -0.2, -0.2] },
+  ],
+  hydra: [
+    { position: [2.2, 1.2, 0], dotOffset: [-1.5, -0.3, 0] },
+    { position: [-2.2, 0.2, 0.5], dotOffset: [1.8, -0.1, -0.2] },
+  ],
+  daphnia: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.5, -0.3, 0] },
+    { position: [-2.2, 0.2, 0.5], dotOffset: [1.8, -0.1, -0.2] },
+  ],
+  planaria: [
+    { position: [2.2, 1.2, 0], dotOffset: [-1.8, -0.4, 0] },
+    { position: [-2.2, 0.5, 0.5], dotOffset: [1.8, -0.2, -0.2] },
+  ],
+  ostracod: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.5, -0.3, 0] },
+    { position: [-2.2, 0.2, 0.5], dotOffset: [1.8, -0.1, -0.2] },
+  ],
+  thermophile: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.5, -0.3, 0] },
+    { position: [-2.2, 0.2, 0.5], dotOffset: [1.8, -0.1, -0.2] },
+  ],
+  trypanosoma: [
+    { position: [2.2, 0.8, 0], dotOffset: [-1.5, -0.3, 0] },
+    { position: [-2.2, -0.5, 0.5], dotOffset: [1.8, 0.3, -0.2] },
+  ],
+  giardia: [
+    { position: [2.0, 1.0, 0], dotOffset: [-1.2, -0.4, 0] },
+    { position: [-2.0, 0.2, 0.5], dotOffset: [1.5, -0.1, -0.2] },
+  ],
+  streptococcus: [
+    { position: [1.5, 1.5, 0], dotOffset: [-1.2, -0.4, 0] },
+    { position: [-1.5, -1.5, 0], dotOffset: [1.2, 1.2, 0] },
+  ],
+  bacillus: [
+    { position: [2.0, 0.5, 0], dotOffset: [-1.2, -0.1, 0] },
+    { position: [-2.0, -0.5, 0], dotOffset: [1.2, 0.1, 0] },
+  ],
+  methanogen: [
+    { position: [2.0, 0.8, 0], dotOffset: [-1.2, -0.3, 0] },
+    { position: [-2.0, -0.8, 0], dotOffset: [1.2, 0.5, 0] },
   ],
 };
 
@@ -189,7 +354,7 @@ export default function ClientPage({ slug }: { slug: string }) {
       {/* 3D Canvas */}
       <div style={S.canvasWrap}>
         {hasModel ? (
-          <Canvas camera={{ position: [0, 1, 4], fov: 45 }} dpr={[1, 2]} gl={{ antialias: true }} style={{ background: "#050A05" }}>
+          <Canvas camera={{ position: [0, 1, 4], fov: 45 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }} style={{ background: "#050A05" }}>
             <DetailScene orgId={slug} />
           </Canvas>
         ) : (
@@ -227,7 +392,11 @@ export default function ClientPage({ slug }: { slug: string }) {
       </div>
 
       {/* Scientific info panel (right side) */}
-      <div style={S.panel}>
+      <div 
+        style={S.panel}
+        onWheel={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
         <div style={S.panelSection}>
           <span style={S.panelLabel}>Description</span>
           <p style={S.panelText}>{org.description}</p>

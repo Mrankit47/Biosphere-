@@ -9,6 +9,9 @@ const navLinks = [
   { href: "/cell-explorer", label: "Cell Explorer" },
   { href: "/microorganisms", label: "Microbes" },
   { href: "/dna-genetics", label: "DNA" },
+  { href: "/human-body", label: "Human Body" },
+  { href: "/viruses", label: "Viruses" },
+  { href: "/ecosystems", label: "Ecosystems" },
   { href: "/tree-of-life", label: "Tree of Life" },
   { href: "/quiz", label: "Quiz" },
 ];

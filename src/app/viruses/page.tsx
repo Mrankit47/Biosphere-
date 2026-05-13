@@ -3,8 +3,8 @@ import { useRef, useMemo, Suspense, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Link from "next/link";
-import { ORGANISMS } from "./_data/organisms";
-import "./_styles/microorganisms.css";
+import { VIRUSES } from "./_data/viruses";
+import "./_styles/viruses.css";
 
 /* ══════════════════════════════════════════════════════════════
    HERO PARTICLES
@@ -40,13 +40,13 @@ function HeroParticles() {
   });
   return (
     <points ref={ref} geometry={geo}>
-      <pointsMaterial color="#39FF14" size={0.035} sizeAttenuation transparent opacity={0.7} depthWrite={false} blending={THREE.AdditiveBlending} />
+      <pointsMaterial color="#E24B4A" size={0.035} sizeAttenuation transparent opacity={0.6} depthWrite={false} blending={THREE.AdditiveBlending} />
     </points>
   );
 }
 
 /* ══════════════════════════════════════════════════════════════
-   HERO ORGANISM (rotating Amoeba-like blob)
+   HERO VIRUS BLOB (pulsing spiky sphere)
    ══════════════════════════════════════════════════════════════ */
 function HeroBlob() {
   const ref = useRef<THREE.Mesh>(null!);
@@ -73,7 +73,7 @@ function HeroBlob() {
   return (
     <mesh ref={ref}>
       <icosahedronGeometry args={[2.2, 5]} />
-      <meshStandardMaterial color="#39FF14" transparent opacity={0.12} roughness={0.4} metalness={0.1} side={THREE.DoubleSide} />
+      <meshStandardMaterial color="#E24B4A" transparent opacity={0.1} roughness={0.4} metalness={0.1} side={THREE.DoubleSide} />
     </mesh>
   );
 }
@@ -83,8 +83,8 @@ function HeroScene() {
     <>
       <color attach="background" args={["#050A05"]} />
       <ambientLight intensity={0.25} />
-      <pointLight position={[5, 5, 5]} intensity={0.8} color="#39FF14" />
-      <pointLight position={[-4, -3, 3]} intensity={0.4} color="#1D9E75" />
+      <pointLight position={[5, 5, 5]} intensity={0.8} color="#E24B4A" />
+      <pointLight position={[-4, -3, 3]} intensity={0.4} color="#9B59B6" />
       <HeroParticles />
       <HeroBlob />
     </>
@@ -92,9 +92,9 @@ function HeroScene() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   MINI 3D CARD ORGANISM (simple sphere preview)
+   MINI 3D CARD (sphere preview)
    ══════════════════════════════════════════════════════════════ */
-function MiniOrg({ color, accentColor }: { color: string; accentColor: string }) {
+function MiniVirus({ color, accentColor }: { color: string; accentColor: string }) {
   const ref = useRef<THREE.Mesh>(null!);
   useFrame(({ clock }) => {
     ref.current.rotation.y = clock.getElapsedTime() * 0.3;
@@ -106,11 +106,11 @@ function MiniOrg({ color, accentColor }: { color: string; accentColor: string })
       <ambientLight intensity={0.3} />
       <pointLight position={[2, 2, 2]} intensity={0.8} color={color} />
       <mesh ref={ref}>
-        <icosahedronGeometry args={[0.9, 3]} />
+        <icosahedronGeometry args={[0.9, 2]} />
         <meshStandardMaterial color={color} emissive={accentColor} emissiveIntensity={0.3} transparent opacity={0.6} roughness={0.4} />
       </mesh>
       <mesh>
-        <icosahedronGeometry args={[0.92, 2]} />
+        <icosahedronGeometry args={[0.92, 1]} />
         <meshBasicMaterial color={color} wireframe transparent opacity={0.08} />
       </mesh>
     </>
@@ -134,18 +134,18 @@ function useInView(rootMargin = "100px") {
   return [ref, isIntersecting] as const;
 }
 
-function LazyMicroCanvas({ org }: { org: any }) {
+function LazyVirusCanvas({ v }: { v: any }) {
   const [ref, inView] = useInView("150px");
   return (
-    <div ref={ref} className="micro-card-canvas">
+    <div ref={ref} className="virus-card-canvas">
       {inView ? (
-        <Suspense fallback={<div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: org.color, fontSize: "2rem" }}>{org.emoji}</div>}>
+        <Suspense fallback={<div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: v.color, fontSize: "2rem" }}>{v.emoji}</div>}>
           <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: false, alpha: true }} style={{ background: "transparent" }}>
-            <MiniOrg color={org.color} accentColor={org.accentColor} />
+            <MiniVirus color={v.color} accentColor={v.accentColor} />
           </Canvas>
         </Suspense>
       ) : (
-        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: org.color, fontSize: "2rem" }}>{org.emoji}</div>
+        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: v.color, fontSize: "2rem" }}>{v.emoji}</div>
       )}
     </div>
   );
@@ -154,41 +154,44 @@ function LazyMicroCanvas({ org }: { org: any }) {
 /* ══════════════════════════════════════════════════════════════
    PAGE
    ══════════════════════════════════════════════════════════════ */
-export default function MicroorganismsPage() {
+export default function VirusesPage() {
   return (
     <div style={{ background: "#050A05", minHeight: "100vh" }}>
       {/* ── HERO ────────────────────────────────────────────── */}
-      <section className="micro-hero">
-        <div className="micro-hero-canvas">
+      <section className="virus-hero">
+        <div className="virus-hero-canvas">
           <Canvas camera={{ position: [0, 0, 8], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: false }}>
             <HeroScene />
           </Canvas>
         </div>
-        {/* Gradient overlay */}
         <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(5,10,5,0) 0%, rgba(5,10,5,0.3) 60%, rgba(5,10,5,1) 100%)", pointerEvents: "none" }} />
-        <div className="micro-hero-overlay">
-          <h1 className="micro-hero-title">MICRO ZOO</h1>
-          <p className="micro-hero-sub">A Cinematic Journey Through the Microscopic Universe</p>
-          <a href="#gallery" className="micro-hero-cta">Explore Organisms ↓</a>
+        <div className="virus-hero-overlay">
+          <h1 className="virus-hero-title">VIRUSES</h1>
+          <p className="virus-hero-sub">A Comprehensive 3D Encyclopedia of the Worlds Most Impactful Viruses</p>
+          <a href="#gallery" className="virus-hero-cta">Explore Viruses ↓</a>
         </div>
       </section>
 
       {/* ── GALLERY ─────────────────────────────────────────── */}
-      <section id="gallery" className="micro-gallery">
-        <div className="micro-gallery-header">
-          <p className="micro-gallery-label">Interactive 3D Collection</p>
-          <h2 className="micro-gallery-title">Choose an Organism</h2>
+      <section id="gallery" className="virus-gallery">
+        <div className="virus-gallery-header">
+          <p className="virus-gallery-label">Interactive 3D Collection</p>
+          <h2 className="virus-gallery-title">Choose a Virus</h2>
         </div>
-        <div className="micro-gallery-grid">
-          {ORGANISMS.map((org) => (
-            <Link key={org.id} href={`/microorganisms/${org.id}`} className="micro-card">
-              <LazyMicroCanvas org={org} />
-              <div className="micro-card-info">
-                <p className="micro-card-type">{org.type}</p>
-                <h3 className="micro-card-name" style={{ color: org.color }}>{org.emoji} {org.name}</h3>
-                <p className="micro-card-sci">{org.scientificName}</p>
-                <p className="micro-card-desc">{org.description}</p>
-                <div className="micro-card-arrow">
+        <div className="virus-gallery-grid">
+          {VIRUSES.map((v) => (
+            <Link key={v.id} href={`/viruses/${v.id}`} className="virus-card">
+              <LazyVirusCanvas v={v} />
+              <div className="virus-card-info">
+                <p className="virus-card-type">{v.type}</p>
+                <h3 className="virus-card-name" style={{ color: v.color }}>{v.emoji} {v.name}</h3>
+                <p className="virus-card-sci">{v.scientificName}</p>
+                <p className="virus-card-desc">{v.description}</p>
+                <div className="virus-card-meta">
+                  <span className="virus-card-badge">📅 {v.discoveredYear}</span>
+                  <span className="virus-card-badge">☠️ {v.mortality}</span>
+                </div>
+                <div className="virus-card-arrow">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </div>
               </div>
@@ -197,17 +200,17 @@ export default function MicroorganismsPage() {
         </div>
       </section>
 
-      {/* ── BOTTOM STATS ────────────────────────────────────── */}
-      <section style={{ padding: "60px 24px 80px", textAlign: "center", borderTop: "1px solid rgba(57,255,20,0.06)" }}>
+      {/* ── STATS ────────────────────────────────────────────── */}
+      <section style={{ padding: "60px 24px 80px", textAlign: "center", borderTop: "1px solid rgba(226,75,74,0.06)" }}>
         <div style={{ display: "flex", justifyContent: "center", gap: "48px", flexWrap: "wrap" }}>
           {[
-            { val: "35", label: "3D Organisms" },
-            { val: "70+", label: "Interactive Parts" },
+            { val: "40", label: "3D Viruses" },
+            { val: "60+", label: "Structural Parts" },
             { val: "360°", label: "Full Rotation" },
             { val: "∞", label: "Zoom Levels" },
           ].map((s, i) => (
             <div key={i} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "2rem", fontWeight: 800, color: "#39FF14", letterSpacing: "0.05em" }}>{s.val}</div>
+              <div style={{ fontSize: "2rem", fontWeight: 800, color: "#E24B4A", letterSpacing: "0.05em" }}>{s.val}</div>
               <div style={{ fontSize: "0.7rem", color: "rgba(200,245,200,0.4)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "4px" }}>{s.label}</div>
             </div>
           ))}
