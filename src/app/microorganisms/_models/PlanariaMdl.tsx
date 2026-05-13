@@ -19,8 +19,8 @@ export default function PlanariaMdl({ detail = false }: { detail?: boolean }) {
     <group ref={meshRef} scale={detail ? 2 : 1.2}>
       {/* Arrow-shaped Head */}
       <group position={[0, 1, 0]}>
-        <mesh>
-          <coneGeometry args={[0.5, 0.6, 3]} rotation={[0, Math.PI, 0]} />
+        <mesh rotation={[0, Math.PI, 0]}>
+          <coneGeometry args={[0.5, 0.6, 3]} />
           <meshStandardMaterial color="#8D6E63" />
         </mesh>
         {/* Cross-eyed Eyespots */}

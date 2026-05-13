@@ -54,10 +54,12 @@ export default function PenicilliumMdl({ detail = false }: { detail?: boolean })
 
       {/* Base Mycelium (Thread-like) */}
       {[...Array(12)].map((_, i) => (
-        <mesh key={i} rotation={[0, (i * Math.PI * 2) / 12, 0]} position={[0, 0, 0]}>
-          <cylinderGeometry args={[0.01, 0.01, 2, 8]} rotation={[0, 0, Math.PI/2]} />
-          <meshBasicMaterial color="#D1F2EB" transparent opacity={0.3} />
-        </mesh>
+        <group key={i} rotation={[0, (i * Math.PI * 2) / 12, 0]} position={[0, 0, 0]}>
+          <mesh rotation={[0, 0, Math.PI/2]}>
+            <cylinderGeometry args={[0.01, 0.01, 2, 8]} />
+            <meshBasicMaterial color="#D1F2EB" transparent opacity={0.3} />
+          </mesh>
+        </group>
       ))}
     </group>
   );

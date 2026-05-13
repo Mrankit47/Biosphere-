@@ -35,16 +35,16 @@ export default function LambdaPhageMdl({ detail = false }: { detail?: boolean })
               <meshStandardMaterial color="#27AE60" />
             </mesh>
             {/* Connector rings */}
-            <mesh position={[0, -0.1, 0]}>
-              <torusGeometry args={[0.05, 0.01, 8, 16]} rotation={[Math.PI/2, 0, 0]} />
+            <mesh position={[0, -0.1, 0]} rotation={[Math.PI/2, 0, 0]}>
+              <torusGeometry args={[0.05, 0.01, 8, 16]} />
               <meshBasicMaterial color="#1D8348" />
             </mesh>
           </group>
         ))}
         
         {/* Tail tip (J protein) */}
-        <mesh position={[0, -2.1, 0]}>
-          <coneGeometry args={[0.08, 0.2, 8]} rotation={[Math.PI, 0, 0]} />
+        <mesh position={[0, -2.1, 0]} rotation={[Math.PI, 0, 0]}>
+          <coneGeometry args={[0.08, 0.2, 8]} />
           <meshStandardMaterial color="#1D8348" />
         </mesh>
       </group>

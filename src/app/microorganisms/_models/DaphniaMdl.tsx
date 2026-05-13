@@ -18,14 +18,14 @@ export default function DaphniaMdl({ detail = false }: { detail?: boolean }) {
   return (
     <group scale={detail ? 1.5 : 1}>
       {/* Transparent Carapace (Shell) */}
-      <mesh>
-        <sphereGeometry args={[1, 32, 32, 0, Math.PI * 1.5]} rotation={[0, 0, -Math.PI/4]} />
+      <mesh rotation={[0, 0, -Math.PI/4]}>
+        <sphereGeometry args={[1, 32, 32, 0, Math.PI * 1.5]} />
         <meshStandardMaterial color="#FDFEFE" transparent opacity={0.3} roughness={0} />
       </mesh>
 
       {/* Internal Organs (Gut) */}
-      <mesh position={[-0.2, -0.2, 0]}>
-        <cylinderGeometry args={[0.1, 0.1, 1.2, 8]} rotation={[0, 0, 0.5]} />
+      <mesh position={[-0.2, -0.2, 0]} rotation={[0, 0, 0.5]}>
+        <cylinderGeometry args={[0.1, 0.1, 1.2, 8]} />
         <meshStandardMaterial color="#D4AC0D" />
       </mesh>
 
@@ -45,8 +45,8 @@ export default function DaphniaMdl({ detail = false }: { detail?: boolean }) {
       <group ref={antennaeRef} position={[0.4, 0.4, 0]}>
         {[[-0.2, 0, 0.3], [-0.2, 0, -0.3]].map((pos, i) => (
           <group key={i} position={pos as [number, number, number]} rotation={[0, 0, -0.5]}>
-            <mesh>
-              <cylinderGeometry args={[0.02, 0.05, 1.2, 8]} rotation={[0, 0, Math.PI/2]} />
+            <mesh rotation={[0, 0, Math.PI/2]}>
+              <cylinderGeometry args={[0.02, 0.05, 1.2, 8]} />
               <meshStandardMaterial color="#EBEDEF" />
             </mesh>
             {/* Setae (Hairs on antennae) */}

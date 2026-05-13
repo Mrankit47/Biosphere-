@@ -41,8 +41,8 @@ export default function SmallpoxMdl({ detail = false }: { detail?: boolean }) {
           <sphereGeometry args={[0.5, 16, 16]} />
           <meshBasicMaterial color="#D35400" transparent opacity={0.4} />
         </mesh>
-        <mesh position={[0, 0, 0]}>
-          <cylinderGeometry args={[0.3, 0.3, 1.2, 16]} rotation={[Math.PI/2, 0, 0]} />
+        <mesh position={[0, 0, 0]} rotation={[Math.PI/2, 0, 0]}>
+          <cylinderGeometry args={[0.3, 0.3, 1.2, 16]} />
           <meshBasicMaterial color="#D35400" transparent opacity={0.4} />
         </mesh>
         <mesh position={[0, 0, 0.6]}>

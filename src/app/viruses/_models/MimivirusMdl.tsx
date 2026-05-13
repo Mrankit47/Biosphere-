@@ -12,7 +12,8 @@ export default function MimivirusMdl({ detail = false }: { detail?: boolean }) {
     groupRef.current.rotation.y = t * 0.15;
     
     // Stargate glowing pulse
-    stargateRef.current.material.emissiveIntensity = 0.5 + Math.sin(t * 2) * 0.5;
+    const material = stargateRef.current.material as THREE.MeshStandardMaterial;
+    material.emissiveIntensity = 0.5 + Math.sin(t * 2) * 0.5;
   });
 
   return (

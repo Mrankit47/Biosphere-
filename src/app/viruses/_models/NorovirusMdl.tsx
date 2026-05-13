@@ -23,8 +23,8 @@ export default function NorovirusMdl({ detail = false }: { detail?: boolean }) {
       {/* Cup-shaped depressions (represented by inverted spheres or rings) */}
       {[...Array(20)].map((_, i) => (
         <group key={i} rotation={[i * Math.PI/5, i * Math.PI/10, 0]}>
-          <mesh position={[0, 0.95, 0]}>
-            <torusGeometry args={[0.2, 0.05, 8, 32]} rotation={[Math.PI/2, 0, 0]} />
+          <mesh position={[0, 0.95, 0]} rotation={[Math.PI/2, 0, 0]}>
+            <torusGeometry args={[0.2, 0.05, 8, 32]} />
             <meshStandardMaterial color="#1D8348" />
           </mesh>
         </group>

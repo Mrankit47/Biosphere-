@@ -32,8 +32,8 @@ export default function ThermophileMdl({ detail = false }: { detail?: boolean })
       <group ref={flagellaRef} position={[0, -0.8, 0]}>
         {[...Array(8)].map((_, i) => (
           <mesh key={i} rotation={[0, (i * Math.PI * 2) / 8, 0]}>
-            <mesh position={[0.2, -0.5, 0]}>
-              <cylinderGeometry args={[0.01, 0.01, 1, 8]} rotation={[0.2, 0, 0]} />
+            <mesh position={[0.2, -0.5, 0]} rotation={[0.2, 0, 0]}>
+              <cylinderGeometry args={[0.01, 0.01, 1, 8]} />
               <meshBasicMaterial color="#D35400" transparent opacity={0.6} />
             </mesh>
           </mesh>

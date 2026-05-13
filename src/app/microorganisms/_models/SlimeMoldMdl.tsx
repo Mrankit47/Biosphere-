@@ -30,13 +30,13 @@ export default function SlimeMoldMdl({ detail = false }: { detail?: boolean }) {
         const length = 1.5 + Math.random() * 0.5;
         return (
           <group key={i} rotation={[0, 0, angle]}>
-            <mesh position={[length / 2, 0, 0]}>
-              <cylinderGeometry args={[0.05, 0.1, length, 8]} rotation={[0, 0, Math.PI/2]} />
+            <mesh position={[length / 2, 0, 0]} rotation={[0, 0, Math.PI/2]}>
+              <cylinderGeometry args={[0.05, 0.1, length, 8]} />
               <meshStandardMaterial color="#D4AC0D" />
             </mesh>
             {/* Smaller sub-branches */}
-            <mesh position={[length, 0, 0]} rotation={[0, 0, 0.5]}>
-              <cylinderGeometry args={[0.02, 0.05, 0.8, 8]} rotation={[0, 0, Math.PI/2]} />
+            <mesh position={[length, 0, 0]} rotation={[0, 0, 0.5 + Math.PI/2]}>
+              <cylinderGeometry args={[0.02, 0.05, 0.8, 8]} />
               <meshStandardMaterial color="#B7950B" />
             </mesh>
           </group>

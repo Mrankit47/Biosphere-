@@ -25,13 +25,13 @@ export default function OstracodMdl({ detail = false }: { detail?: boolean }) {
       {/* Bivalve Shell (Carapace) */}
       <group ref={shellRef}>
         {/* Left Valve */}
-        <mesh position={[-0.05, 0, 0]}>
-          <sphereGeometry args={[0.8, 32, 32, 0, Math.PI, 0, Math.PI]} scale={[0.5, 1, 1]} />
+        <mesh position={[-0.05, 0, 0]} scale={[0.5, 1, 1]}>
+          <sphereGeometry args={[0.8, 32, 32, 0, Math.PI, 0, Math.PI]} />
           <meshStandardMaterial color="#D4AC0D" roughness={0.8} />
         </mesh>
         {/* Right Valve */}
-        <mesh position={[0.05, 0, 0]}>
-          <sphereGeometry args={[0.8, 32, 32, Math.PI, Math.PI, 0, Math.PI]} scale={[0.5, 1, 1]} />
+        <mesh position={[0.05, 0, 0]} scale={[0.5, 1, 1]}>
+          <sphereGeometry args={[0.8, 32, 32, Math.PI, Math.PI, 0, Math.PI]} />
           <meshStandardMaterial color="#D4AC0D" roughness={0.8} />
         </mesh>
       </group>
@@ -47,8 +47,8 @@ export default function OstracodMdl({ detail = false }: { detail?: boolean }) {
       </group>
 
       {/* Sensory Hairs (Fuzz) */}
-      <points>
-        <sphereGeometry args={[0.85, 16, 16]} scale={[0.6, 1, 1]} />
+      <points scale={[0.6, 1, 1]}>
+        <sphereGeometry args={[0.85, 16, 16]} />
         <pointsMaterial color="#B7950B" size={0.02} transparent opacity={0.4} />
       </points>
 

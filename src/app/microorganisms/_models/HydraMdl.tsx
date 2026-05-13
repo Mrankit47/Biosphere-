@@ -31,8 +31,8 @@ export default function HydraMdl({ detail = false }: { detail?: boolean }) {
       <group ref={tentaclesRef} position={[0, 1.6, 0]}>
         {[...Array(6)].map((_, i) => (
           <group key={i} rotation={[0, (i * Math.PI * 2) / 6, 0]}>
-            <mesh position={[0, 0.4, 0]}>
-              <cylinderGeometry args={[0.02, 0.05, 1, 8]} rotation={[0.3, 0, 0]} />
+            <mesh position={[0, 0.4, 0]} rotation={[0.3, 0, 0]}>
+              <cylinderGeometry args={[0.02, 0.05, 1, 8]} />
               <meshStandardMaterial color="#52BE80" />
             </mesh>
             {/* Stingers (Nematocysts) - represented as particles */}

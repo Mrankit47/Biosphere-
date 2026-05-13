@@ -29,8 +29,8 @@ export default function StentorMdl({ detail = false }: { detail?: boolean }) {
       </mesh>
 
       {/* Top Cap (The "Mouth") */}
-      <mesh position={[0, 1, 0]}>
-        <ringGeometry args={[0, 0.8, 32]} rotation={[-Math.PI/2, 0, 0]} />
+      <mesh position={[0, 1, 0]} rotation={[-Math.PI/2, 0, 0]}>
+        <ringGeometry args={[0, 0.8, 32]} />
         <meshStandardMaterial color="#2980B9" transparent opacity={0.9} side={THREE.DoubleSide} />
       </mesh>
 

@@ -13,7 +13,8 @@ export default function DinoflagellateMdl({ detail = false }: { detail?: boolean
     meshRef.current.position.y = Math.sin(t * 0.5) * 0.1;
     
     // Bioluminescent pulsing
-    glowRef.current.material.opacity = 0.2 + Math.sin(t * 4) * 0.1;
+    const material = glowRef.current.material as THREE.Material;
+    material.opacity = 0.2 + Math.sin(t * 4) * 0.1;
   });
 
   return (
@@ -25,8 +26,8 @@ export default function DinoflagellateMdl({ detail = false }: { detail?: boolean
       </mesh>
       
       {/* Cingulum (Transverse Groove) */}
-      <mesh>
-        <torusGeometry args={[1.05, 0.05, 16, 100]} rotation={[Math.PI/2, 0, 0]} />
+      <mesh rotation={[Math.PI/2, 0, 0]}>
+        <torusGeometry args={[1.05, 0.05, 16, 100]} />
         <meshStandardMaterial color="#1ABC9C" />
       </mesh>
 
