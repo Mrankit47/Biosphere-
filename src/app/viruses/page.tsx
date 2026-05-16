@@ -155,14 +155,19 @@ function LazyVirusCanvas({ v }: { v: any }) {
    PAGE
    ══════════════════════════════════════════════════════════════ */
 export default function VirusesPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   return (
     <div style={{ background: "#050A05", minHeight: "100vh" }}>
       {/* ── HERO ────────────────────────────────────────────── */}
       <section className="virus-hero">
         <div className="virus-hero-canvas">
-          <Canvas camera={{ position: [0, 0, 8], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: false }}>
-            <HeroScene />
-          </Canvas>
+          {mounted && (
+            <Canvas camera={{ position: [0, 0, 8], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: false }}>
+              <HeroScene />
+            </Canvas>
+          )}
         </div>
         <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(5,10,5,0) 0%, rgba(5,10,5,0.3) 60%, rgba(5,10,5,1) 100%)", pointerEvents: "none" }} />
         <div className="virus-hero-overlay">

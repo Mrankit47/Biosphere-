@@ -50,10 +50,22 @@ const FEATURES = [
     desc: "Test your knowledge with dynamic, randomized biology challenges.",
     href: "/quiz",
   },
+  {
+    emoji: "☣️",
+    title: "Viruses",
+    desc: "Explore SARS-CoV-2, HIV, Ebola and more — 3D structure to pandemic history.",
+    href: "/viruses",
+  },
+  {
+    emoji: "🌿",
+    title: "Ecosystems",
+    desc: "Dive into biomes — forests, oceans, deserts — with interactive food webs.",
+    href: "/ecosystems",
+  },
 ];
 
 const MARQUEE_TEXT =
-  "CELLS · DNA · MICROORGANISMS · ECOSYSTEMS · EVOLUTION · GENETICS · ORGANISMS · PHOTOSYNTHESIS · MITOSIS · RIBOSOMES · ";
+  "CELLS · DNA · MICROORGANISMS · VIRUSES · ECOSYSTEMS · EVOLUTION · GENETICS · ORGANISMS · PHOTOSYNTHESIS · MITOSIS · RIBOSOMES · ";
 
 /* ═══════════════════════════════════════════════════════════════
    ▸ 3-D  SCENE  COMPONENTS

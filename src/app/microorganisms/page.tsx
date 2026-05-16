@@ -205,9 +205,11 @@ function LazyMicroCanvas({ org }: { org: any }) {
     <div ref={ref} className="micro-card-canvas">
       {inView ? (
         <Suspense fallback={<div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: org.color, fontSize: "2rem" }}>{org.emoji}</div>}>
-          <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: false, alpha: true }} style={{ background: "transparent" }}>
-            <MiniOrg color={org.color} accentColor={org.accentColor} />
-          </Canvas>
+          {typeof window !== 'undefined' && (
+            <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: false, alpha: true }} style={{ background: "transparent" }}>
+              <MiniOrg color={org.color} accentColor={org.accentColor} />
+            </Canvas>
+          )}
         </Suspense>
       ) : (
         <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: org.color, fontSize: "2rem" }}>{org.emoji}</div>
@@ -225,6 +227,9 @@ const FILTER_TYPES = ["All", "Protozoa", "Bacteria", "Green Algae", "Fungi", "Mi
    PAGE
    ══════════════════════════════════════════════════════════════ */
 export default function MicroorganismsPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   const [filter, setFilter] = useState("All");
   const [compareMode, setCompareMode] = useState(false);
 
@@ -235,9 +240,11 @@ export default function MicroorganismsPage() {
       {/* ── HERO ────────────────────────────────────────────── */}
       <section className="micro-hero">
         <div className="micro-hero-canvas">
-          <Canvas camera={{ position: [0, 0, 8], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: false }}>
-            <HeroScene />
-          </Canvas>
+          {mounted && (
+            <Canvas camera={{ position: [0, 0, 8], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: false }}>
+              <HeroScene />
+            </Canvas>
+          )}
         </div>
         <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(5,10,5,0) 0%, rgba(5,10,5,0.3) 60%, rgba(5,10,5,1) 100%)", pointerEvents: "none" }} />
         <div className="micro-hero-overlay">

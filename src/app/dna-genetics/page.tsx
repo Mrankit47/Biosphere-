@@ -139,6 +139,9 @@ const DNA_FACTS = [
 
 /* ── Page ───────────────────────────────────────────────────── */
 export default function DnaGeneticsPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   const [separation, setSeparation] = useState(0);
   const [selectedPair, setSelectedPair] = useState<number | null>(null);
   const [codonMode, setCodonMode] = useState(false);
@@ -146,14 +149,13 @@ export default function DnaGeneticsPage() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
     const onScroll = () => {
-      const t = Math.min(el.scrollTop / 400, 1);
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const t = Math.min(scrollTop / 400, 1);
       setSeparation(t * 3);
     };
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const handleRungClick = useCallback((i: number) => {
@@ -176,9 +178,11 @@ export default function DnaGeneticsPage() {
       {/* 3D Canvas — sticky hero */}
       <div style={S.canvasSection}>
         <div style={S.canvasWrap}>
-          <Canvas camera={{ position: [0, 0, 12], fov: 45 }} dpr={[1, 2]} gl={{ antialias: true }} style={{ background: "#050A05" }}>
-            <Scene separation={separation} onRungClick={handleRungClick} />
-          </Canvas>
+          {mounted && (
+            <Canvas camera={{ position: [0, 0, 12], fov: 45 }} dpr={[1, 2]} gl={{ antialias: true }} style={{ background: "#050A05" }}>
+              <Scene separation={separation} onRungClick={handleRungClick} />
+            </Canvas>
+          )}
         </div>
 
         {/* Header overlay */}
@@ -324,7 +328,7 @@ export default function DnaGeneticsPage() {
 
 /* ── Styles ─────────────────────────────────────────────────── */
 const S: Record<string, React.CSSProperties> = {
-  root: { width: "100%", height: "calc(100vh - 64px)", background: "#050A05", overflowY: "auto", overflowX: "hidden" },
+  root: { width: "100%", minHeight: "calc(100vh - 64px)", background: "#050A05", overflowX: "hidden" },
 
   canvasSection: { position: "sticky", top: 0, width: "100%", height: "calc(100vh - 64px)", minHeight: "500px" },
   canvasWrap: { position: "absolute", inset: 0, zIndex: 0 },

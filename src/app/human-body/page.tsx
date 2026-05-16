@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, Suspense } from 'react'
+import { useState, useRef, Suspense, useEffect } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Environment, ContactShadows, Html } from '@react-three/drei'
 import Link from 'next/link'
@@ -47,6 +47,9 @@ function BodyScene({ selectedOrgan, setSelectedOrgan, activeSystem, setActiveSys
    PAGE
    ══════════════════════════════════════════════════════════════ */
 export default function HumanBodyPage() {
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setMounted(true) }, [])
+
   const [selectedOrgan, setSelectedOrgan] = useState<string | null>(null)
   const [activeSystem, setActiveSystem] = useState<string | null>(null)
   const [detailModal, setDetailModal] = useState(false)
@@ -77,11 +80,13 @@ export default function HumanBodyPage() {
       </div>
 
       {/* 3D Canvas */}
-      <Canvas shadows gl={{ antialias: true, alpha: true }} onPointerMissed={() => { setSelectedOrgan(null); setActiveSystem(null) }}>
-        <Suspense fallback={null}>
-          <BodyScene selectedOrgan={selectedOrgan} setSelectedOrgan={setSelectedOrgan} activeSystem={activeSystem} setActiveSystem={setActiveSystem} />
-        </Suspense>
-      </Canvas>
+      {mounted && (
+        <Canvas shadows gl={{ antialias: true, alpha: true }} onPointerMissed={() => { setSelectedOrgan(null); setActiveSystem(null) }}>
+          <Suspense fallback={null}>
+            <BodyScene selectedOrgan={selectedOrgan} setSelectedOrgan={setSelectedOrgan} activeSystem={activeSystem} setActiveSystem={setActiveSystem} />
+          </Suspense>
+        </Canvas>
+      )}
 
       {/* Organ Info Panel */}
       {info && (
@@ -140,16 +145,18 @@ export default function HumanBodyPage() {
             <button onClick={() => setDetailModal(false)} style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', padding: '10px 20px', borderRadius: '100px', cursor: 'pointer', fontSize: '0.8rem' }}>✕ CLOSE</button>
           </div>
           <div style={{ flex: 1 }}>
-            <Canvas camera={{ position: [0, 0, 4] }}>
-              <Suspense fallback={null}>
-                <Environment preset="city" />
-                <ambientLight intensity={0.5} />
-                <spotLight position={[5, 5, 5]} intensity={1.5} />
-                <spotLight position={[-5, -3, -5]} intensity={0.5} color="#E24B4A" />
-                <IsolatedOrgan organId={selectedOrgan!} />
-                <OrbitControls enablePan={false} />
-              </Suspense>
-            </Canvas>
+            {mounted && (
+              <Canvas camera={{ position: [0, 0, 4] }}>
+                <Suspense fallback={null}>
+                  <Environment preset="city" />
+                  <ambientLight intensity={0.5} />
+                  <spotLight position={[5, 5, 5]} intensity={1.5} />
+                  <spotLight position={[-5, -3, -5]} intensity={0.5} color="#E24B4A" />
+                  <IsolatedOrgan organId={selectedOrgan!} />
+                  <OrbitControls enablePan={false} />
+                </Suspense>
+              </Canvas>
+            )}
           </div>
           <div style={{ padding: '2rem 3rem', background: 'rgba(255,255,255,0.02)', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
             <p style={{ fontSize: '1rem', lineHeight: 1.8, color: 'rgba(255,255,255,0.7)', maxWidth: 700 }}>{info.description}</p>

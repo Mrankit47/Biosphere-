@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo, useCallback } from "react";
+import { useRef, useState, useMemo, useCallback, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -502,6 +502,9 @@ function CellScene({
    ══════════════════════════════════════════════════════════════ */
 
 export default function CellExplorerPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+
   const [activeOrganelle, setActiveOrganelle] = useState<string | null>(null);
   const [zoomTarget, setZoomTarget] = useState<THREE.Vector3 | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
@@ -530,15 +533,17 @@ export default function CellExplorerPage() {
     <div style={styles.root}>
       {/* ── 3D Canvas ──────────────────────────────────── */}
       <div style={styles.canvasWrap}>
-        <Canvas
-          camera={{ position: [0, 2, 7], fov: 50 }}
-          dpr={[1, 2]}
-          gl={{ antialias: true }}
-          style={{ background: "#050A05" }}
-        >
-          <CellScene activeOrganelle={activeOrganelle} onSelect={handleSelect} showLabels={showLabels} />
-          <CameraZoom target={zoomTarget} onComplete={() => {}} />
-        </Canvas>
+        {mounted && (
+          <Canvas
+            camera={{ position: [0, 2, 7], fov: 50 }}
+            dpr={[1, 2]}
+            gl={{ antialias: true }}
+            style={{ background: "#050A05" }}
+          >
+            <CellScene activeOrganelle={activeOrganelle} onSelect={handleSelect} showLabels={showLabels} />
+            <CameraZoom target={zoomTarget} onComplete={() => {}} />
+          </Canvas>
+        )}
       </div>
 
       {/* ── Back Link ──────────────────────────────────── */}
