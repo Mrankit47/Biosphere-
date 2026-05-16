@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import LenisProvider from "@/components/ui/LenisProvider";
-import CustomCursor from "@/components/ui/CustomCursor";
-import Navbar from "@/components/ui/Navbar";
+import ClientProviders from "@/components/ClientProviders";
 
 export const metadata: Metadata = {
   title: "BioSphere — Interactive Biology Learning",
@@ -18,6 +16,19 @@ export const metadata: Metadata = {
     "ecosystems",
     "education",
   ],
+  openGraph: {
+    title: "BioSphere — Interactive Biology Learning",
+    description:
+      "Explore the wonders of biology through interactive 3D experiences.",
+    type: "website",
+    siteName: "BioSphere",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "BioSphere — Interactive Biology Learning",
+    description:
+      "Explore the wonders of biology through interactive 3D experiences.",
+  },
 };
 
 export default function RootLayout({
@@ -28,11 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
-        <LenisProvider>
-          <CustomCursor />
-          <Navbar />
-          <main style={{ paddingTop: "64px", flex: 1 }}>{children}</main>
-        </LenisProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );

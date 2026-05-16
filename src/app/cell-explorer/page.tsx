@@ -2,7 +2,7 @@
 
 import { useRef, useState, useMemo, useCallback } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
 import Link from "next/link";
 import gsap from "gsap";
@@ -14,65 +14,74 @@ import gsap from "gsap";
 interface OrganelleInfo {
   name: string;
   description: string;
+  structure: string;
+  size: string;
   funFact: string;
   color: string;
   emoji: string;
+  related: string[];
 }
 
 const ORGANELLE_DATA: Record<string, OrganelleInfo> = {
   nucleus: {
     name: "Nucleus",
-    description:
-      "Control center of the cell. Contains DNA and controls all cell activities.",
-    funFact:
-      "The nucleus contains about 6 feet (2 meters) of DNA packed into a space just 6 micrometers across!",
+    description: "Control center of the cell. Contains DNA and controls all cell activities including growth, metabolism, and reproduction.",
+    structure: "Double membrane (nuclear envelope) with nuclear pores. Contains chromatin, nucleolus, and nucleoplasm.",
+    size: "~6 μm diameter — about 1/10th the cell width",
+    funFact: "The nucleus contains about 6 feet (2 meters) of DNA packed into a space just 6 micrometers across!",
     color: "#378ADD",
     emoji: "🧠",
+    related: ["ribosome", "er"],
   },
   mitochondria: {
     name: "Mitochondria",
-    description:
-      "Powerhouse of the cell. Produces ATP energy through cellular respiration.",
-    funFact:
-      "Mitochondria have their own DNA and are believed to have once been independent bacteria!",
+    description: "Powerhouse of the cell. Produces ATP energy through cellular respiration via the electron transport chain.",
+    structure: "Double membrane with inner folds called cristae. Contains its own circular DNA and ribosomes.",
+    size: "~1-10 μm length — about the size of bacteria",
+    funFact: "Mitochondria have their own DNA and are believed to have once been independent bacteria!",
     color: "#1D9E75",
     emoji: "⚡",
+    related: ["nucleus", "ribosome"],
   },
   ribosome: {
     name: "Ribosome",
-    description:
-      "Protein factory. Reads mRNA and builds proteins the cell needs.",
-    funFact:
-      "A single cell can contain up to 10 million ribosomes, all working simultaneously!",
+    description: "Protein factory. Reads mRNA instructions and assembles amino acids into functional proteins.",
+    structure: "Two subunits (large 60S + small 40S) made of rRNA and proteins. Can be free or ER-bound.",
+    size: "~20-30 nm — smallest organelle, visible only with electron microscope",
+    funFact: "A single cell can contain up to 10 million ribosomes, all working simultaneously!",
     color: "#ffffff",
     emoji: "🔩",
+    related: ["er", "nucleus"],
   },
   golgi: {
     name: "Golgi Body",
-    description:
-      "Post office of the cell. Packages and ships proteins to their destinations.",
-    funFact:
-      "The Golgi body was one of the first organelles discovered, found by Camillo Golgi in 1898!",
+    description: "Post office of the cell. Packages, modifies, and ships proteins to their correct destinations.",
+    structure: "Stack of 4-8 flattened membrane sacs (cisternae) with cis (receiving) and trans (shipping) faces.",
+    size: "~1-3 μm — a stack of flattened discs",
+    funFact: "The Golgi body was one of the first organelles discovered, found by Camillo Golgi in 1898!",
     color: "#D4A017",
     emoji: "📦",
+    related: ["er", "membrane"],
   },
   er: {
     name: "Endoplasmic Reticulum",
-    description:
-      "Transport highway. Moves proteins and lipids throughout the cell.",
-    funFact:
-      "If you stretched out the ER from a single liver cell, it would cover a ping-pong table!",
+    description: "Transport highway. Rough ER synthesizes proteins; smooth ER produces lipids and detoxifies.",
+    structure: "Continuous membrane network. Rough ER studded with ribosomes; smooth ER lacks ribosomes.",
+    size: "~extends throughout cytoplasm — largest organelle by surface area",
+    funFact: "If you stretched out the ER from a single liver cell, it would cover a ping-pong table!",
     color: "#9B59B6",
     emoji: "🛤️",
+    related: ["ribosome", "golgi"],
   },
   membrane: {
     name: "Cell Membrane",
-    description:
-      "Gatekeeper. Controls what enters and exits the cell.",
-    funFact:
-      "The cell membrane is only about 7-8 nanometers thick — 10,000 times thinner than a human hair!",
+    description: "Gatekeeper. Selectively permeable phospholipid bilayer that controls what enters and exits.",
+    structure: "Phospholipid bilayer with embedded proteins, cholesterol, and carbohydrate chains (glycocalyx).",
+    size: "~7-8 nm thick — 10,000× thinner than a human hair",
+    funFact: "The cell membrane is only about 7-8 nanometers thick — 10,000 times thinner than a human hair!",
     color: "#39FF14",
     emoji: "🛡️",
+    related: ["golgi", "er"],
   },
 };
 
@@ -119,16 +128,63 @@ function CameraZoom({
 }
 
 /* ══════════════════════════════════════════════════════════════
+   CYTOPLASM PARTICLES
+   ══════════════════════════════════════════════════════════════ */
+
+const CYTO_COUNT = 80;
+
+function CytoplasmParticles() {
+  const ref = useRef<THREE.Points>(null!);
+  const { geo, base, speeds } = useMemo(() => {
+    const pos = new Float32Array(CYTO_COUNT * 3);
+    const spd = new Float32Array(CYTO_COUNT * 3);
+    for (let i = 0; i < CYTO_COUNT; i++) {
+      const r = 0.5 + Math.random() * 2.3;
+      const th = Math.random() * Math.PI * 2;
+      const ph = Math.acos(2 * Math.random() - 1);
+      pos[i*3] = r * Math.sin(ph) * Math.cos(th);
+      pos[i*3+1] = r * Math.sin(ph) * Math.sin(th);
+      pos[i*3+2] = r * Math.cos(ph);
+      spd[i*3] = (Math.random()-0.5)*0.3;
+      spd[i*3+1] = (Math.random()-0.5)*0.3;
+      spd[i*3+2] = (Math.random()-0.5)*0.3;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    return { geo: g, base: new Float32Array(pos), speeds: spd };
+  }, []);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    const arr = ref.current.geometry.attributes.position.array as Float32Array;
+    for (let i = 0; i < CYTO_COUNT; i++) {
+      arr[i*3] = base[i*3] + Math.sin(t * speeds[i*3] + i) * 0.3;
+      arr[i*3+1] = base[i*3+1] + Math.cos(t * speeds[i*3+1] + i*0.7) * 0.25;
+      arr[i*3+2] = base[i*3+2] + Math.sin(t * speeds[i*3+2] + i*0.3) * 0.2;
+    }
+    ref.current.geometry.attributes.position.needsUpdate = true;
+  });
+
+  return (
+    <points ref={ref} geometry={geo}>
+      <pointsMaterial color="#39FF14" size={0.025} transparent opacity={0.35} depthWrite={false} blending={THREE.AdditiveBlending} sizeAttenuation />
+    </points>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    ORGANELLE COMPONENTS
    ══════════════════════════════════════════════════════════════ */
 
-/* ── Cell Membrane ─────────────────────────────────────────── */
+/* ── Cell Membrane (glass-like) ────────────────────────────── */
 function CellMembrane({
   active,
   onClick,
+  showLabel,
 }: {
   active: boolean;
   onClick: () => void;
+  showLabel: boolean;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
 
@@ -138,43 +194,70 @@ function CellMembrane({
   });
 
   return (
-    <mesh ref={ref} onClick={onClick}>
-      <sphereGeometry args={[3, 32, 32]} />
-      <meshBasicMaterial
-        color={active ? "#5FFF4F" : "#39FF14"}
-        wireframe
-        transparent
-        opacity={active ? 0.35 : 0.12}
-      />
-    </mesh>
+    <group>
+      <mesh ref={ref} onClick={onClick}>
+        <sphereGeometry args={[3, 48, 48]} />
+        <meshPhysicalMaterial
+          color={active ? "#5FFF4F" : "#39FF14"}
+          wireframe
+          transparent
+          opacity={active ? 0.3 : 0.1}
+          roughness={0.1}
+          metalness={0.05}
+          transmission={0.6}
+          thickness={0.5}
+        />
+      </mesh>
+      {showLabel && <Html position={[0, 3.3, 0]} center style={{pointerEvents:"none"}}><span className="cell-label" style={{borderColor:"#39FF14"}}>Cell Membrane</span></Html>}
+    </group>
   );
 }
 
-/* ── Nucleus ───────────────────────────────────────────────── */
+/* ── Nucleus (pulsing emissive) ─────────────────────────────── */
 function Nucleus({
   active,
   onClick,
+  showLabel,
 }: {
   active: boolean;
   onClick: () => void;
+  showLabel: boolean;
 }) {
   const ref = useRef<THREE.Mesh>(null!);
+  const matRef = useRef<THREE.MeshStandardMaterial>(null!);
 
   useFrame(({ clock }) => {
-    ref.current.rotation.y = clock.getElapsedTime() * 0.15;
+    const t = clock.getElapsedTime();
+    ref.current.rotation.y = t * 0.15;
+    // Breathing scale
+    const s = 1 + Math.sin(t * 1.5) * 0.02;
+    ref.current.scale.set(s, s, s);
+    // Pulsing emissive
+    if (matRef.current) {
+      matRef.current.emissiveIntensity = active ? 1.2 + Math.sin(t * 3) * 0.4 : 0.3 + Math.sin(t * 2) * 0.15;
+    }
   });
 
   return (
-    <mesh ref={ref} position={[0, 0, 0]} onClick={onClick}>
-      <sphereGeometry args={[0.8, 32, 32]} />
-      <meshStandardMaterial
-        color={active ? "#5AAFFF" : "#378ADD"}
-        emissive={active ? "#378ADD" : "#0D2B5E"}
-        emissiveIntensity={active ? 1.5 : 0.3}
-        roughness={0.3}
-        metalness={0.1}
-      />
-    </mesh>
+    <group>
+      <mesh ref={ref} position={[0, 0, 0]} onClick={onClick}>
+        <sphereGeometry args={[0.8, 32, 32]} />
+        <meshStandardMaterial
+          ref={matRef}
+          color={active ? "#5AAFFF" : "#378ADD"}
+          emissive={active ? "#378ADD" : "#0D2B5E"}
+          emissiveIntensity={0.3}
+          roughness={0.25}
+          metalness={0.15}
+        />
+      </mesh>
+      {/* Nucleolus */}
+      <mesh position={[0.15, 0.1, 0.2]}>
+        <sphereGeometry args={[0.25, 16, 16]} />
+        <meshStandardMaterial color="#2563EB" emissive="#1E40AF" emissiveIntensity={0.4} roughness={0.5} />
+      </mesh>
+      {showLabel && <Html position={[0, 1.1, 0]} center style={{pointerEvents:"none"}}><span className="cell-label" style={{borderColor:"#378ADD"}}>Nucleus</span></Html>}
+    </group>
   );
 }
 
@@ -189,32 +272,43 @@ const MITO_POSITIONS: [number, number, number][] = [
 function Mitochondria({
   active,
   onClick,
+  showLabel,
 }: {
   active: boolean;
   onClick: () => void;
+  showLabel: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null!);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
-    groupRef.current.children.forEach((child, i) => {
-      child.position.y =
-        MITO_POSITIONS[i][1] + Math.sin(t * 0.5 + i * 1.5) * 0.15;
-    });
+    const mitos = groupRef.current.children;
+    for (let i = 0; i < MITO_POSITIONS.length && i < mitos.length; i++) {
+      mitos[i].position.y = MITO_POSITIONS[i][1] + Math.sin(t * 0.5 + i * 1.5) * 0.15;
+      // Breathing
+      const s = 1 + Math.sin(t * 1.2 + i) * 0.02;
+      mitos[i].scale.set(s, s, s);
+    }
   });
 
   return (
     <group ref={groupRef}>
       {MITO_POSITIONS.map((pos, i) => (
-        <mesh key={i} position={pos} rotation={[0.3 * i, 0.5 * i, 0.2 * i]} onClick={onClick}>
-          <capsuleGeometry args={[0.18, 0.5, 8, 16]} />
-          <meshStandardMaterial
-            color={active ? "#2FFFB0" : "#1D9E75"}
-            emissive={active ? "#1D9E75" : "#0A3D2E"}
-            emissiveIntensity={active ? 1.5 : 0.3}
-            roughness={0.4}
-          />
-        </mesh>
+        <group key={i} position={pos} rotation={[0.3*i, 0.5*i, 0.2*i]}>
+          {/* Outer membrane */}
+          <mesh onClick={onClick}>
+            <capsuleGeometry args={[0.18, 0.5, 8, 16]} />
+            <meshStandardMaterial color={active ? "#2FFFB0" : "#1D9E75"} emissive={active ? "#1D9E75" : "#0A3D2E"} emissiveIntensity={active ? 1.5 : 0.3} roughness={0.35} />
+          </mesh>
+          {/* Inner cristae folds */}
+          {[0, 1, 2].map((ci) => (
+            <mesh key={ci} position={[0, -0.15 + ci * 0.15, 0]} rotation={[0, 0, Math.PI/2]}>
+              <cylinderGeometry args={[0.12, 0.12, 0.01, 8]} />
+              <meshStandardMaterial color="#0D6B4F" transparent opacity={0.5} />
+            </mesh>
+          ))}
+          {showLabel && i === 0 && <Html position={[0, 0.5, 0]} center style={{pointerEvents:"none"}}><span className="cell-label" style={{borderColor:"#1D9E75"}}>Mitochondria</span></Html>}
+        </group>
       ))}
     </group>
   );
@@ -224,9 +318,11 @@ function Mitochondria({
 function Ribosomes({
   active,
   onClick,
+  showLabel,
 }: {
   active: boolean;
   onClick: () => void;
+  showLabel: boolean;
 }) {
   const positions = useMemo(() => {
     const pts: [number, number, number][] = [];
@@ -247,16 +343,17 @@ function Ribosomes({
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
-    groupRef.current.children.forEach((child, i) => {
-      child.position.y = positions[i][1] + Math.sin(t * 0.8 + i) * 0.05;
-    });
+    const kids = groupRef.current.children;
+    for (let i = 0; i < positions.length && i < kids.length; i++) {
+      kids[i].position.y = positions[i][1] + Math.sin(t * 0.8 + i) * 0.05;
+    }
   });
 
   return (
     <group ref={groupRef}>
       {positions.map((pos, i) => (
         <mesh key={i} position={pos} onClick={onClick}>
-          <sphereGeometry args={[0.06, 8, 8]} />
+          <sphereGeometry args={[active ? 0.08 : 0.06, 8, 8]} />
           <meshStandardMaterial
             color={active ? "#ffffff" : "#cccccc"}
             emissive={active ? "#ffffff" : "#333333"}
@@ -264,43 +361,58 @@ function Ribosomes({
           />
         </mesh>
       ))}
+      {showLabel && <Html position={positions[0]} center style={{pointerEvents:"none"}}><span className="cell-label" style={{borderColor:"#ffffff"}}>Ribosomes</span></Html>}
     </group>
   );
 }
 
-/* ── Golgi Body (stacked discs) ────────────────────────────── */
+/* ── Golgi Body (stacked discs + vesicle bubbles) ──────────── */
 function GolgiBody({
   active,
   onClick,
+  showLabel,
 }: {
   active: boolean;
   onClick: () => void;
+  showLabel: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null!);
+  const vesicleRef = useRef<THREE.Group>(null!);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
     groupRef.current.rotation.z = Math.sin(t * 0.3) * 0.05;
+    // Breathing
+    const s = 1 + Math.sin(t * 1.0) * 0.02;
+    groupRef.current.scale.set(s, s, s);
+    // Vesicle bubbles orbit
+    if (vesicleRef.current) {
+      vesicleRef.current.children.forEach((v, i) => {
+        v.position.x = Math.sin(t * 0.5 + i * 1.5) * 0.6;
+        v.position.y = 0.1 + i * 0.15 + Math.cos(t * 0.8 + i) * 0.1;
+        v.position.z = Math.cos(t * 0.5 + i * 1.5) * 0.3;
+      });
+    }
   });
 
   return (
     <group ref={groupRef} position={[1.8, -0.2, 0.3]}>
       {[0, 0.15, 0.3, 0.45].map((yOff, i) => (
-        <mesh
-          key={i}
-          position={[0, yOff, 0]}
-          rotation={[Math.PI / 2, 0, 0]}
-          onClick={onClick}
-        >
+        <mesh key={i} position={[0, yOff, 0]} rotation={[Math.PI / 2, 0, 0]} onClick={onClick}>
           <cylinderGeometry args={[0.45 - i * 0.06, 0.45 - i * 0.06, 0.04, 16]} />
-          <meshStandardMaterial
-            color={active ? "#FFD700" : "#D4A017"}
-            emissive={active ? "#D4A017" : "#4A3506"}
-            emissiveIntensity={active ? 1.5 : 0.3}
-            roughness={0.5}
-          />
+          <meshStandardMaterial color={active ? "#FFD700" : "#D4A017"} emissive={active ? "#D4A017" : "#4A3506"} emissiveIntensity={active ? 1.5 : 0.3} roughness={0.5} />
         </mesh>
       ))}
+      {/* Vesicle bubbles */}
+      <group ref={vesicleRef}>
+        {[0,1,2].map(i => (
+          <mesh key={i}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#FFD700" emissive="#D4A017" emissiveIntensity={1} transparent opacity={0.7} />
+          </mesh>
+        ))}
+      </group>
+      {showLabel && <Html position={[0, 0.7, 0]} center style={{pointerEvents:"none"}}><span className="cell-label" style={{borderColor:"#D4A017"}}>Golgi Body</span></Html>}
     </group>
   );
 }
@@ -309,29 +421,26 @@ function GolgiBody({
 function EndoplasmicReticulum({
   active,
   onClick,
+  showLabel,
 }: {
   active: boolean;
   onClick: () => void;
+  showLabel: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null!);
 
   useFrame(({ clock }) => {
     groupRef.current.rotation.y = clock.getElapsedTime() * 0.08;
+    const s = 1 + Math.sin(clock.getElapsedTime() * 1.3) * 0.015;
+    groupRef.current.scale.set(s, s, s);
   });
 
-  // Create wavy tube path
   const curve = useMemo(() => {
     const points: THREE.Vector3[] = [];
     for (let i = 0; i <= 80; i++) {
       const t = (i / 80) * Math.PI * 4;
       const r = 1.2 + Math.sin(t * 2) * 0.2;
-      points.push(
-        new THREE.Vector3(
-          r * Math.cos(t),
-          Math.sin(t * 3) * 0.35,
-          r * Math.sin(t)
-        )
-      );
+      points.push(new THREE.Vector3(r * Math.cos(t), Math.sin(t * 3) * 0.35, r * Math.sin(t)));
     }
     return new THREE.CatmullRomCurve3(points, false);
   }, []);
@@ -340,13 +449,9 @@ function EndoplasmicReticulum({
     <group ref={groupRef}>
       <mesh onClick={onClick}>
         <tubeGeometry args={[curve, 100, 0.06, 8, false]} />
-        <meshStandardMaterial
-          color={active ? "#C97FE8" : "#9B59B6"}
-          emissive={active ? "#9B59B6" : "#2D1A3D"}
-          emissiveIntensity={active ? 1.5 : 0.3}
-          roughness={0.4}
-        />
+        <meshStandardMaterial color={active ? "#C97FE8" : "#9B59B6"} emissive={active ? "#9B59B6" : "#2D1A3D"} emissiveIntensity={active ? 1.5 : 0.3} roughness={0.4} />
       </mesh>
+      {showLabel && <Html position={[1.2, 0.4, 0]} center style={{pointerEvents:"none"}}><span className="cell-label" style={{borderColor:"#9B59B6"}}>ER</span></Html>}
     </group>
   );
 }
@@ -358,9 +463,11 @@ function EndoplasmicReticulum({
 function CellScene({
   activeOrganelle,
   onSelect,
+  showLabels,
 }: {
   activeOrganelle: string | null;
   onSelect: (id: string, position: THREE.Vector3) => void;
+  showLabels: boolean;
 }) {
   const handleClick = useCallback(
     (id: string, position: THREE.Vector3) => {
@@ -371,49 +478,21 @@ function CellScene({
 
   return (
     <>
-      {/* Lighting */}
       <ambientLight intensity={0.35} />
       <pointLight position={[5, 5, 5]} intensity={1.2} color="#ffffff" />
       <pointLight position={[-4, -3, 3]} intensity={0.6} color="#39FF14" />
       <pointLight position={[0, 0, 0]} intensity={0.4} color="#378ADD" />
 
-      {/* Organelles */}
-      <CellMembrane
-        active={activeOrganelle === "membrane"}
-        onClick={() => handleClick("membrane", new THREE.Vector3(0, 2.5, 2.5))}
-      />
-      <Nucleus
-        active={activeOrganelle === "nucleus"}
-        onClick={() => handleClick("nucleus", new THREE.Vector3(0, 0, 0))}
-      />
-      <Mitochondria
-        active={activeOrganelle === "mitochondria"}
-        onClick={() =>
-          handleClick("mitochondria", new THREE.Vector3(1.5, 0.6, 0.8))
-        }
-      />
-      <Ribosomes
-        active={activeOrganelle === "ribosome"}
-        onClick={() =>
-          handleClick("ribosome", new THREE.Vector3(0.5, 1.0, 1.0))
-        }
-      />
-      <GolgiBody
-        active={activeOrganelle === "golgi"}
-        onClick={() => handleClick("golgi", new THREE.Vector3(1.8, -0.2, 0.3))}
-      />
-      <EndoplasmicReticulum
-        active={activeOrganelle === "er"}
-        onClick={() => handleClick("er", new THREE.Vector3(-1.0, 0, 1.2))}
-      />
+      <CytoplasmParticles />
 
-      <OrbitControls
-        enablePan={false}
-        minDistance={3}
-        maxDistance={12}
-        enableDamping
-        dampingFactor={0.05}
-      />
+      <CellMembrane active={activeOrganelle === "membrane"} onClick={() => handleClick("membrane", new THREE.Vector3(0, 2.5, 2.5))} showLabel={showLabels} />
+      <Nucleus active={activeOrganelle === "nucleus"} onClick={() => handleClick("nucleus", new THREE.Vector3(0, 0, 0))} showLabel={showLabels} />
+      <Mitochondria active={activeOrganelle === "mitochondria"} onClick={() => handleClick("mitochondria", new THREE.Vector3(1.5, 0.6, 0.8))} showLabel={showLabels} />
+      <Ribosomes active={activeOrganelle === "ribosome"} onClick={() => handleClick("ribosome", new THREE.Vector3(0.5, 1.0, 1.0))} showLabel={showLabels} />
+      <GolgiBody active={activeOrganelle === "golgi"} onClick={() => handleClick("golgi", new THREE.Vector3(1.8, -0.2, 0.3))} showLabel={showLabels} />
+      <EndoplasmicReticulum active={activeOrganelle === "er"} onClick={() => handleClick("er", new THREE.Vector3(-1.0, 0, 1.2))} showLabel={showLabels} />
+
+      <OrbitControls enablePan={false} minDistance={3} maxDistance={12} enableDamping dampingFactor={0.05} />
     </>
   );
 }
@@ -426,10 +505,11 @@ export default function CellExplorerPage() {
   const [activeOrganelle, setActiveOrganelle] = useState<string | null>(null);
   const [zoomTarget, setZoomTarget] = useState<THREE.Vector3 | null>(null);
   const [panelVisible, setPanelVisible] = useState(false);
+  const [showLabels, setShowLabels] = useState(false);
+  const [activeTab, setActiveTab] = useState<"function" | "structure">("function");
 
   const handleSelect = useCallback(
     (id: string, position: THREE.Vector3) => {
-      // Toggle off if clicking same organelle
       if (activeOrganelle === id) {
         setActiveOrganelle(null);
         setPanelVisible(false);
@@ -439,6 +519,7 @@ export default function CellExplorerPage() {
       setActiveOrganelle(id);
       setZoomTarget(position);
       setPanelVisible(true);
+      setActiveTab("function");
     },
     [activeOrganelle]
   );
@@ -455,10 +536,7 @@ export default function CellExplorerPage() {
           gl={{ antialias: true }}
           style={{ background: "#050A05" }}
         >
-          <CellScene
-            activeOrganelle={activeOrganelle}
-            onSelect={handleSelect}
-          />
+          <CellScene activeOrganelle={activeOrganelle} onSelect={handleSelect} showLabels={showLabels} />
           <CameraZoom target={zoomTarget} onComplete={() => {}} />
         </Canvas>
       </div>
@@ -486,6 +564,22 @@ export default function CellExplorerPage() {
         <h1 style={styles.titleText}>Cell Explorer</h1>
         <p style={styles.titleSub}>Interactive Animal Cell</p>
       </div>
+
+      {/* ── Labels Toggle ──────────────────────────────── */}
+      <button
+        style={{
+          position: "absolute", top: 20, right: 24, zIndex: 10,
+          padding: "8px 16px", borderRadius: 10,
+          background: showLabels ? "rgba(57,255,20,0.15)" : "rgba(5,10,5,0.5)",
+          border: showLabels ? "1px solid rgba(57,255,20,0.4)" : "1px solid rgba(57,255,20,0.1)",
+          color: showLabels ? "#39FF14" : "rgba(200,245,200,0.6)",
+          fontSize: "0.8rem", fontWeight: 600, cursor: "pointer",
+          backdropFilter: "blur(8px)", transition: "all 0.3s", fontFamily: "inherit",
+        }}
+        onClick={() => setShowLabels(!showLabels)}
+      >
+        {showLabels ? "Hide Labels" : "Show Labels"}
+      </button>
 
       {/* ── Hint ───────────────────────────────────────── */}
       {!panelVisible && (
@@ -556,50 +650,34 @@ export default function CellExplorerPage() {
       >
         {info && (
           <>
-            {/* Close button */}
-            <button
-              style={styles.panelClose}
-              onClick={() => {
-                setPanelVisible(false);
-                setActiveOrganelle(null);
-                setZoomTarget(new THREE.Vector3(0, 0, 0));
-              }}
-            >
-              ✕
-            </button>
+            <button style={styles.panelClose} onClick={() => { setPanelVisible(false); setActiveOrganelle(null); setZoomTarget(new THREE.Vector3(0, 0, 0)); }}>✕</button>
 
-            {/* Emoji badge */}
-            <div
-              style={{
-                ...styles.panelEmoji,
-                background: `${info.color}18`,
-                borderColor: `${info.color}40`,
-              }}
-            >
-              {info.emoji}
+            <div style={{ ...styles.panelEmoji, background: `${info.color}18`, borderColor: `${info.color}40` }}>{info.emoji}</div>
+            <h2 style={{ ...styles.panelName, color: info.color }}>{info.name}</h2>
+
+            {/* Size */}
+            <div style={{ fontFamily: "monospace", fontSize: "0.75rem", color: "rgba(200,245,200,0.5)", textAlign: "center" as const }}>{info.size}</div>
+
+            <div style={{ width: 40, height: 2, background: info.color, borderRadius: 1, margin: "0 auto 12px", boxShadow: `0 0 10px ${info.color}60` }} />
+
+            {/* Tabs */}
+            <div style={{ display: "flex", gap: 6, width: "100%" }}>
+              {(["function", "structure"] as const).map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)} style={{
+                  flex: 1, padding: "8px 0", borderRadius: 8, border: "1px solid",
+                  borderColor: activeTab === tab ? `${info.color}60` : "rgba(255,255,255,0.08)",
+                  background: activeTab === tab ? `${info.color}15` : "rgba(5,10,5,0.5)",
+                  color: activeTab === tab ? info.color : "rgba(200,245,200,0.5)",
+                  fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase" as const,
+                  letterSpacing: "0.1em", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
+                }}>{tab}</button>
+              ))}
             </div>
 
-            {/* Name */}
-            <h2 style={{ ...styles.panelName, color: info.color }}>
-              {info.name}
-            </h2>
-
-            {/* Divider */}
-            <div
-              style={{
-                width: "40px",
-                height: "2px",
-                background: info.color,
-                borderRadius: "1px",
-                margin: "0 auto 16px",
-                boxShadow: `0 0 10px ${info.color}60`,
-              }}
-            />
-
-            {/* Description */}
+            {/* Tab Content */}
             <div style={styles.panelSection}>
-              <span style={styles.panelLabel}>Function</span>
-              <p style={styles.panelText}>{info.description}</p>
+              <span style={styles.panelLabel}>{activeTab === "function" ? "Function" : "Structure"}</span>
+              <p style={styles.panelText}>{activeTab === "function" ? info.description : info.structure}</p>
             </div>
 
             {/* Fun fact */}
@@ -607,35 +685,35 @@ export default function CellExplorerPage() {
               <span style={styles.panelFactIcon}>💡</span>
               <div>
                 <span style={styles.panelLabel}>Fun Fact</span>
-                <p style={{ ...styles.panelText, marginTop: "4px" }}>
-                  {info.funFact}
-                </p>
+                <p style={{ ...styles.panelText, marginTop: 4 }}>{info.funFact}</p>
               </div>
             </div>
 
-            {/* Zoom Inside — available for all organelles */}
+            {/* Related Organelles */}
+            <div style={{ width: "100%" }}>
+              <span style={styles.panelLabel}>Related Organelles</span>
+              <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" as const }}>
+                {info.related.map(rid => {
+                  const r = ORGANELLE_DATA[rid];
+                  return (
+                    <button key={rid} onClick={() => { const posMap: Record<string, THREE.Vector3> = { nucleus: new THREE.Vector3(0,0,0), membrane: new THREE.Vector3(0,2.5,2.5), mitochondria: new THREE.Vector3(1.5,0.6,0.8), ribosome: new THREE.Vector3(0.5,1,1), golgi: new THREE.Vector3(1.8,-0.2,0.3), er: new THREE.Vector3(-1,0,1.2) }; handleSelect(rid, posMap[rid]); }} style={{
+                      padding: "6px 12px", borderRadius: 8, border: `1px solid ${r.color}40`,
+                      background: `${r.color}10`, color: r.color, fontSize: "0.78rem", fontWeight: 600,
+                      cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
+                    }}>{r.emoji} {r.name}</button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Zoom Inside */}
             {activeOrganelle && (() => {
-              const routes: Record<string, string> = {
-                nucleus: "/cell-explorer/nucleus",
-                mitochondria: "/cell-explorer/mitochondria",
-                ribosome: "/cell-explorer/ribosome",
-                golgi: "/cell-explorer/golgi",
-                er: "/cell-explorer/er",
-                membrane: "/cell-explorer/membrane",
-              };
+              const routes: Record<string, string> = { nucleus: "/cell-explorer/nucleus", mitochondria: "/cell-explorer/mitochondria", ribosome: "/cell-explorer/ribosome", golgi: "/cell-explorer/golgi", er: "/cell-explorer/er", membrane: "/cell-explorer/membrane" };
               const route = routes[activeOrganelle];
               if (!route) return null;
               return (
-                <Link href={route} style={{
-                  ...styles.zoomBtn,
-                  borderColor: info?.color || "#1D9E75",
-                  background: `${info?.color || "#1D9E75"}15`,
-                  color: info?.color || "#2FFFB0",
-                  boxShadow: `0 0 20px ${info?.color || "#1D9E75"}25, inset 0 0 20px ${info?.color || "#1D9E75"}08`,
-                }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /><path d="M11 8v6" /><path d="M8 11h6" />
-                  </svg>
+                <Link href={route} style={{ ...styles.zoomBtn, borderColor: info.color, background: `${info.color}15`, color: info.color, boxShadow: `0 0 20px ${info.color}25` }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /><path d="M11 8v6" /><path d="M8 11h6" /></svg>
                   Zoom Inside
                 </Link>
               );
@@ -656,6 +734,18 @@ export default function CellExplorerPage() {
         }
         .cell-hint {
           animation: hintFadeIn 0.8s ease-out both 1s;
+        }
+        .cell-label {
+          background: rgba(0,0,0,0.75);
+          border: 1px solid;
+          color: rgba(200,245,200,0.9);
+          padding: 3px 10px;
+          border-radius: 6px;
+          font-size: 0.7rem;
+          font-weight: 600;
+          white-space: nowrap;
+          backdrop-filter: blur(4px);
+          letter-spacing: 0.05em;
         }
       `}</style>
     </div>

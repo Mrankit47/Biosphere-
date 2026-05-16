@@ -46,9 +46,11 @@ function HeroParticles() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   HERO ORGANISM (rotating Amoeba-like blob)
+   HERO ORGANISMS — Swimming in the background
    ══════════════════════════════════════════════════════════════ */
-function HeroBlob() {
+
+/* Amoeba-like blob with vertex displacement */
+function HeroAmoeba() {
   const ref = useRef<THREE.Mesh>(null!);
   const orig = useRef<Float32Array | null>(null);
   useFrame(({ clock }) => {
@@ -78,6 +80,64 @@ function HeroBlob() {
   );
 }
 
+/* Mini E.coli with rotating flagella */
+function HeroEcoli({ position }: { position: [number, number, number] }) {
+  const gRef = useRef<THREE.Group>(null!);
+  const flagRef = useRef<THREE.Group>(null!);
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    gRef.current.position.x = position[0] + Math.sin(t * 0.3) * 1.5;
+    gRef.current.position.y = position[1] + Math.cos(t * 0.25) * 0.8;
+    gRef.current.rotation.z = Math.sin(t * 0.4) * 0.3;
+    if (flagRef.current) flagRef.current.rotation.x = t * 6;
+  });
+  return (
+    <group ref={gRef}>
+      <mesh>
+        <capsuleGeometry args={[0.12, 0.35, 8, 12]} />
+        <meshStandardMaterial color="#EF9F27" emissive="#EF9F27" emissiveIntensity={0.3} transparent opacity={0.5} />
+      </mesh>
+      <group ref={flagRef} position={[-0.25, 0, 0]}>
+        {[0, 1, 2].map(i => (
+          <mesh key={i} rotation={[0, 0, (i - 1) * 0.4]}>
+            <cylinderGeometry args={[0.005, 0.005, 0.5, 4]} />
+            <meshBasicMaterial color="#F0E68C" transparent opacity={0.4} />
+          </mesh>
+        ))}
+      </group>
+    </group>
+  );
+}
+
+/* Mini Volvox sphere */
+function HeroVolvox({ position }: { position: [number, number, number] }) {
+  const ref = useRef<THREE.Group>(null!);
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime();
+    ref.current.rotation.y = t * 0.4;
+    ref.current.rotation.x = t * 0.15;
+    ref.current.position.x = position[0] + Math.sin(t * 0.2) * 0.5;
+    ref.current.position.y = position[1] + Math.cos(t * 0.15) * 0.3;
+  });
+  return (
+    <group ref={ref} position={position}>
+      <mesh>
+        <icosahedronGeometry args={[0.5, 2]} />
+        <meshStandardMaterial color="#1D9E75" wireframe transparent opacity={0.2} />
+      </mesh>
+      <mesh>
+        <icosahedronGeometry args={[0.48, 1]} />
+        <meshStandardMaterial color="#2ECC71" transparent opacity={0.1} />
+      </mesh>
+      {/* Daughter colony */}
+      <mesh position={[0.1, 0.05, 0]}>
+        <sphereGeometry args={[0.12, 8, 8]} />
+        <meshStandardMaterial color="#27AE60" transparent opacity={0.25} />
+      </mesh>
+    </group>
+  );
+}
+
 function HeroScene() {
   return (
     <>
@@ -85,14 +145,19 @@ function HeroScene() {
       <ambientLight intensity={0.25} />
       <pointLight position={[5, 5, 5]} intensity={0.8} color="#39FF14" />
       <pointLight position={[-4, -3, 3]} intensity={0.4} color="#1D9E75" />
+      <spotLight position={[0, 8, 0]} angle={0.5} penumbra={1} intensity={0.6} color="#ffffff" />
       <HeroParticles />
-      <HeroBlob />
+      <HeroAmoeba />
+      <HeroEcoli position={[3, 1.5, -1]} />
+      <HeroEcoli position={[-4, -1, 0.5]} />
+      <HeroVolvox position={[-2.5, 2, -2]} />
+      <HeroVolvox position={[3, -2, -1.5]} />
     </>
   );
 }
 
 /* ══════════════════════════════════════════════════════════════
-   MINI 3D CARD ORGANISM (simple sphere preview)
+   MINI 3D CARD ORGANISM
    ══════════════════════════════════════════════════════════════ */
 function MiniOrg({ color, accentColor }: { color: string; accentColor: string }) {
   const ref = useRef<THREE.Mesh>(null!);
@@ -152,9 +217,19 @@ function LazyMicroCanvas({ org }: { org: any }) {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   FILTER TABS
+   ══════════════════════════════════════════════════════════════ */
+const FILTER_TYPES = ["All", "Protozoa", "Bacteria", "Green Algae", "Fungi", "Micro-animal", "Ciliate", "Archaea"] as const;
+
+/* ══════════════════════════════════════════════════════════════
    PAGE
    ══════════════════════════════════════════════════════════════ */
 export default function MicroorganismsPage() {
+  const [filter, setFilter] = useState("All");
+  const [compareMode, setCompareMode] = useState(false);
+
+  const filtered = filter === "All" ? ORGANISMS : ORGANISMS.filter(o => o.type === filter || o.type.includes(filter));
+
   return (
     <div style={{ background: "#050A05", minHeight: "100vh" }}>
       {/* ── HERO ────────────────────────────────────────────── */}
@@ -164,7 +239,6 @@ export default function MicroorganismsPage() {
             <HeroScene />
           </Canvas>
         </div>
-        {/* Gradient overlay */}
         <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(5,10,5,0) 0%, rgba(5,10,5,0.3) 60%, rgba(5,10,5,1) 100%)", pointerEvents: "none" }} />
         <div className="micro-hero-overlay">
           <h1 className="micro-hero-title">MICRO ZOO</h1>
@@ -173,14 +247,65 @@ export default function MicroorganismsPage() {
         </div>
       </section>
 
-      {/* ── GALLERY ─────────────────────────────────────────── */}
+      {/* ── FILTER BAR ──────────────────────────────────────── */}
       <section id="gallery" className="micro-gallery">
         <div className="micro-gallery-header">
           <p className="micro-gallery-label">Interactive 3D Collection</p>
           <h2 className="micro-gallery-title">Choose an Organism</h2>
         </div>
+
+        <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap", marginBottom: 32, padding: "0 16px" }}>
+          {FILTER_TYPES.map(t => (
+            <button key={t} onClick={() => setFilter(t)} style={{
+              padding: "6px 16px", borderRadius: 999,
+              border: filter === t ? "1px solid rgba(57,255,20,0.5)" : "1px solid rgba(255,255,255,0.08)",
+              background: filter === t ? "rgba(57,255,20,0.12)" : "rgba(5,10,5,0.6)",
+              color: filter === t ? "#39FF14" : "rgba(200,245,200,0.5)",
+              fontSize: "0.78rem", fontWeight: 600, cursor: "pointer",
+              backdropFilter: "blur(4px)", transition: "all 0.2s", fontFamily: "inherit",
+            }}>{t}</button>
+          ))}
+          <button onClick={() => setCompareMode(!compareMode)} style={{
+            padding: "6px 16px", borderRadius: 999,
+            border: compareMode ? "1px solid #F59E0B50" : "1px solid rgba(255,255,255,0.08)",
+            background: compareMode ? "rgba(245,158,11,0.12)" : "rgba(5,10,5,0.6)",
+            color: compareMode ? "#F59E0B" : "rgba(200,245,200,0.5)",
+            fontSize: "0.78rem", fontWeight: 600, cursor: "pointer",
+            backdropFilter: "blur(4px)", transition: "all 0.2s", fontFamily: "inherit",
+          }}>📏 Compare Sizes</button>
+        </div>
+
+        {/* Compare View */}
+        {compareMode && (
+          <div style={{ maxWidth: 900, margin: "0 auto 40px", padding: "24px", borderRadius: 16, background: "rgba(57,255,20,0.04)", border: "1px solid rgba(57,255,20,0.1)" }}>
+            <h3 style={{ color: "#39FF14", fontSize: "1.1rem", margin: "0 0 16px", fontWeight: 700 }}>Size Comparison</h3>
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 16, overflowX: "auto", paddingBottom: 12 }}>
+              {[
+                { name: "E. coli", size: 2, color: "#EF9F27" },
+                { name: "Chlorella", size: 6, color: "#2ECC71" },
+                { name: "Euglena", size: 45, color: "#27AE60" },
+                { name: "Paramecium", size: 200, color: "#3498DB" },
+                { name: "Amoeba", size: 300, color: "#39FF14" },
+                { name: "Volvox", size: 500, color: "#1D9E75" },
+              ].map(o => {
+                const h = Math.max(8, (o.size / 500) * 120);
+                return (
+                  <div key={o.name} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, minWidth: 60 }}>
+                    <div style={{ width: Math.max(12, h * 0.6), height: h, borderRadius: "50%", background: `${o.color}30`, border: `2px solid ${o.color}`, transition: "all 0.3s" }} />
+                    <span style={{ fontSize: "0.65rem", color: o.color, fontWeight: 700, whiteSpace: "nowrap" }}>{o.name}</span>
+                    <span style={{ fontSize: "0.6rem", color: "rgba(200,245,200,0.4)", fontFamily: "monospace" }}>{o.size} μm</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ marginTop: 12, height: 2, background: "rgba(57,255,20,0.2)", position: "relative" }}>
+              <span style={{ position: "absolute", right: 0, top: -16, fontSize: "0.6rem", color: "rgba(200,245,200,0.4)", fontFamily: "monospace" }}>scale bar: 10 μm = ▬</span>
+            </div>
+          </div>
+        )}
+
         <div className="micro-gallery-grid">
-          {ORGANISMS.map((org) => (
+          {filtered.map((org) => (
             <Link key={org.id} href={`/microorganisms/${org.id}`} className="micro-card">
               <LazyMicroCanvas org={org} />
               <div className="micro-card-info">
@@ -188,6 +313,11 @@ export default function MicroorganismsPage() {
                 <h3 className="micro-card-name" style={{ color: org.color }}>{org.emoji} {org.name}</h3>
                 <p className="micro-card-sci">{org.scientificName}</p>
                 <p className="micro-card-desc">{org.description}</p>
+                {/* Extra info badges */}
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
+                  <span style={{ padding: "2px 8px", borderRadius: 6, background: `${org.color}12`, border: `1px solid ${org.color}25`, fontSize: "0.65rem", color: `${org.color}CC` }}>{org.size}</span>
+                  <span style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", fontSize: "0.65rem", color: "rgba(200,245,200,0.5)" }}>{org.reproduction}</span>
+                </div>
                 <div className="micro-card-arrow">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </div>

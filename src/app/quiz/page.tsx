@@ -75,7 +75,70 @@ const FTBS: FTB[] = [
   { sentence: "___phages are viruses that infect bacteria.", blank: "___", answer: "bacterio", category: "viruses" },
 ];
 
-type Mode = "label" | "mcq" | "ftb";
+// Mode 4 — True/False
+interface TFQ { statement: string; answer: boolean; explanation: string; category: string }
+const TFS: TFQ[] = [
+  { statement: "Mitochondria have their own DNA.", answer: true, explanation: "Mitochondria contain circular DNA, supporting the endosymbiotic theory.", category: "cells" },
+  { statement: "The cell membrane is made of cellulose.", answer: false, explanation: "It's made of a phospholipid bilayer. Cellulose is in plant cell walls.", category: "cells" },
+  { statement: "Humans share 50% of their DNA with bananas.", answer: true, explanation: "Many fundamental genes are shared across all life.", category: "cells" },
+  { statement: "Viruses are considered living organisms.", answer: false, explanation: "Viruses cannot reproduce on their own and lack cellular structure.", category: "viruses" },
+  { statement: "The liver can regenerate from just 25% of its tissue.", answer: true, explanation: "The liver is the only internal organ that can regenerate.", category: "anatomy" },
+  { statement: "Bacteria are always harmful to humans.", answer: false, explanation: "Most bacteria are harmless or beneficial. Gut flora aids digestion.", category: "microbes" },
+  { statement: "DNA replicates at about 1,000 base pairs per second.", answer: true, explanation: "DNA polymerase is remarkably fast and accurate.", category: "cells" },
+  { statement: "Fungi are more closely related to plants than animals.", answer: false, explanation: "Fungi are more closely related to animals than to plants.", category: "microbes" },
+  { statement: "Red blood cells have a nucleus.", answer: false, explanation: "Mature red blood cells lose their nucleus to carry more hemoglobin.", category: "anatomy" },
+  { statement: "Tardigrades can survive in outer space.", answer: true, explanation: "They enter cryptobiosis and can withstand extreme radiation and vacuum.", category: "microbes" },
+  { statement: "The human body has more bacteria than human cells.", answer: true, explanation: "Roughly 38 trillion bacteria vs 30 trillion human cells.", category: "microbes" },
+  { statement: "Photosynthesis occurs in mitochondria.", answer: false, explanation: "Photosynthesis occurs in chloroplasts. Mitochondria do cellular respiration.", category: "cells" },
+  { statement: "The brain uses 20% of the body's oxygen.", answer: true, explanation: "Despite being 2% of body weight, the brain is very metabolically active.", category: "anatomy" },
+  { statement: "HIV is a type of retrovirus.", answer: true, explanation: "HIV uses reverse transcriptase to convert RNA to DNA.", category: "viruses" },
+  { statement: "Archaea and bacteria are the same domain.", answer: false, explanation: "Archaea is a separate domain, discovered in 1977 by Carl Woese.", category: "microbes" },
+];
+
+// Mode 5 — Match Pairs
+interface MatchPair { left: string; right: string }
+const MATCH_PAIRS: MatchPair[] = [
+  { left: "Mitochondria", right: "ATP Production" },
+  { left: "Ribosome", right: "Protein Synthesis" },
+  { left: "Nucleus", right: "DNA Storage" },
+  { left: "Golgi Body", right: "Packaging Proteins" },
+  { left: "Lysosome", right: "Waste Digestion" },
+  { left: "ER", right: "Lipid Synthesis" },
+  { left: "Cell Membrane", right: "Selective Barrier" },
+  { left: "Chloroplast", right: "Photosynthesis" },
+  { left: "Vacuole", right: "Water Storage" },
+  { left: "Cytoplasm", right: "Gel-like Medium" },
+];
+
+// Stats helper
+function getStats() {
+  if (typeof window === "undefined") return { total: 0, points: 0, best: {} as Record<string, number> };
+  try { return JSON.parse(localStorage.getItem("bio_stats") || '{"total":0,"points":0,"best":{}}'); } catch { return { total: 0, points: 0, best: {} as Record<string, number> }; }
+}
+function saveStats(s: any) {
+  if (typeof window !== "undefined") localStorage.setItem("bio_stats", JSON.stringify(s));
+}
+function addPoints(mode: string, pts: number, pct: number) {
+  const s = getStats();
+  s.total = (s.total || 0) + 1;
+  s.points = (s.points || 0) + pts;
+  if (!s.best) s.best = {};
+  if (!s.best[mode] || pct > s.best[mode]) s.best[mode] = pct;
+  saveStats(s);
+}
+function getLevel(pts: number) {
+  if (pts >= 1000) return { name: "Nobel Laureate", emoji: "🏆", lvl: 5 };
+  if (pts >= 600) return { name: "Professor", emoji: "🎓", lvl: 4 };
+  if (pts >= 300) return { name: "Researcher", emoji: "🔬", lvl: 3 };
+  if (pts >= 100) return { name: "Lab Assistant", emoji: "🧪", lvl: 2 };
+  return { name: "Biology Student", emoji: "📚", lvl: 1 };
+}
+function getGrade(pct: number) {
+  if (pct >= 90) return "A+"; if (pct >= 80) return "A"; if (pct >= 70) return "B";
+  if (pct >= 60) return "C"; if (pct >= 50) return "D"; return "F";
+}
+
+type Mode = "label" | "mcq" | "ftb" | "tf" | "match";
 
 /* ═══════════════════════════════════════════════════════════════
    MODE 1 — LABEL THE CELL
@@ -385,13 +448,179 @@ function FtbMode({ topic }: { topic: string }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   MODE 4 — TRUE/FALSE SPEED ROUND
+   ═══════════════════════════════════════════════════════════════ */
+function TfMode({ topic }: { topic: string }) {
+  const [questions, setQuestions] = useState<TFQ[]>([]);
+  const [current, setCurrent] = useState(0);
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [answered, setAnswered] = useState<boolean | null>(null);
+  const [timer, setTimer] = useState(10);
+  const [done, setDone] = useState(false);
+  const [pts, setPts] = useState(0);
+
+  useEffect(() => {
+    const filtered = topic === "all" ? TFS : TFS.filter(q => q.category === topic);
+    const shuffled = [...filtered].sort(() => 0.5 - Math.random()).slice(0, 10);
+    setQuestions(shuffled); setCurrent(0); setScore(0); setStreak(0); setAnswered(null); setTimer(10); setDone(false); setPts(0);
+  }, [topic]);
+
+  useEffect(() => {
+    if (done || answered !== null || questions.length === 0) return;
+    const id = setInterval(() => setTimer(t => { if (t <= 1) { handleAnswer(null); return 10; } return t - 1; }), 1000);
+    return () => clearInterval(id);
+  });
+
+  const handleAnswer = (ans: boolean | null) => {
+    if (answered !== null) return;
+    const q = questions[current];
+    const correct = ans === q?.answer;
+    setAnswered(ans);
+    const newStreak = correct ? streak + 1 : 0;
+    setStreak(newStreak);
+    const mult = newStreak >= 3 ? 2 : 1;
+    const earned = correct ? 10 * mult : 0;
+    setPts(p => p + earned);
+    if (correct) setScore(s => s + 1);
+    setTimeout(() => {
+      if (current < questions.length - 1) { setCurrent(c => c + 1); setAnswered(null); setTimer(10); }
+      else { setDone(true); addPoints("tf", pts + earned, Math.round(((score + (correct ? 1 : 0)) / questions.length) * 100)); }
+    }, 1200);
+  };
+
+  if (questions.length === 0) return <div style={{ textAlign: "center", padding: 40, color: "rgba(200,245,200,0.5)" }}>No questions for this topic.</div>;
+  if (done) {
+    const pct = Math.round((score / questions.length) * 100);
+    return (
+      <div style={S.scoreBox}>
+        <span style={{ fontSize: "3rem" }}>{pct >= 80 ? "🏆" : pct >= 50 ? "🎉" : "📚"}</span>
+        <span style={{ fontSize: "2rem", fontWeight: 700, color: "#39FF14" }}>{score}/{questions.length}</span>
+        <span style={{ fontSize: "1.2rem", color: "#F59E0B", fontWeight: 700 }}>Grade: {getGrade(pct)}</span>
+        <span style={{ fontSize: "0.85rem", color: "rgba(200,245,200,0.5)" }}>{pts} points earned</span>
+        <button onClick={() => { const filtered = topic === "all" ? TFS : TFS.filter(q => q.category === topic); setQuestions([...filtered].sort(() => 0.5 - Math.random()).slice(0, 10)); setCurrent(0); setScore(0); setStreak(0); setAnswered(null); setTimer(10); setDone(false); setPts(0); }} style={S.retryBtn}>Play Again</button>
+      </div>
+    );
+  }
+
+  const q = questions[current];
+  return (
+    <div style={{ maxWidth: 550, margin: "0 auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+        <span style={{ fontSize: "0.72rem", color: "rgba(200,245,200,0.4)", letterSpacing: "0.1em" }}>QUESTION {current + 1} OF {questions.length}</span>
+        {streak >= 3 && <span style={{ fontSize: "0.7rem", color: "#F59E0B", fontWeight: 700 }}>🔥 {streak} streak (2x)</span>}
+      </div>
+      {/* Timer bar */}
+      <div style={{ width: "100%", height: 4, borderRadius: 2, background: "rgba(255,255,255,0.06)", marginBottom: 20 }}>
+        <div style={{ width: `${(timer / 10) * 100}%`, height: "100%", borderRadius: 2, background: timer <= 3 ? "#EF4444" : "#39FF14", transition: "width 1s linear" }} />
+      </div>
+      <h3 style={{ color: "#C8F5C8", fontSize: "1.1rem", fontWeight: 600, margin: "0 0 24px", lineHeight: 1.6, textAlign: "center" }}>"{q.statement}"</h3>
+      <div style={{ display: "flex", gap: 12 }}>
+        {[true, false].map(val => {
+          const isThis = answered === val;
+          const correct = val === q.answer;
+          const showFb = answered !== null;
+          let bg = "rgba(255,255,255,0.03)"; let border = "rgba(255,255,255,0.08)"; let color = "rgba(200,245,200,0.8)";
+          if (showFb && correct) { bg = "rgba(57,255,20,0.1)"; border = "#39FF14"; color = "#39FF14"; }
+          else if (showFb && isThis && !correct) { bg = "rgba(226,75,74,0.1)"; border = "#E24B4A"; color = "#E24B4A"; }
+          return <button key={String(val)} onClick={() => handleAnswer(val)} style={{ ...S.optBtn, flex: 1, justifyContent: "center", background: bg, borderColor: border, color, fontSize: "1.1rem", fontWeight: 700 }}>{val ? "TRUE" : "FALSE"}</button>;
+        })}
+      </div>
+      {answered !== null && <p style={{ textAlign: "center", fontSize: "0.82rem", color: "rgba(200,245,200,0.6)", marginTop: 12, lineHeight: 1.5 }}>{q.explanation}</p>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODE 5 — MATCH THE PAIRS
+   ═══════════════════════════════════════════════════════════════ */
+function MatchMode() {
+  const [pairs] = useState(() => {
+    const shuffledRight = [...MATCH_PAIRS].sort(() => 0.5 - Math.random());
+    return { left: MATCH_PAIRS.map(p => p.left), right: shuffledRight.map(p => p.right) };
+  });
+  const [selectedLeft, setSelectedLeft] = useState<number | null>(null);
+  const [matched, setMatched] = useState<Record<number, number>>({});
+  const [wrong, setWrong] = useState<number | null>(null);
+  const [score, setScore] = useState(0);
+
+  const done = Object.keys(matched).length === 10;
+
+  const handleRight = (ri: number) => {
+    if (selectedLeft === null) return;
+    const leftLabel = pairs.left[selectedLeft];
+    const rightLabel = pairs.right[ri];
+    const pair = MATCH_PAIRS.find(p => p.left === leftLabel);
+    if (pair && pair.right === rightLabel) {
+      setMatched(m => ({ ...m, [selectedLeft]: ri }));
+      setScore(s => s + 1);
+    } else {
+      setWrong(ri);
+      setTimeout(() => setWrong(null), 600);
+    }
+    setSelectedLeft(null);
+  };
+
+  useEffect(() => { if (done) addPoints("match", score * 10, Math.round((score / 10) * 100)); }, [done, score]);
+
+  if (done) {
+    return (
+      <div style={S.scoreBox}>
+        <span style={{ fontSize: "3rem" }}>{score >= 9 ? "🏆" : "🎉"}</span>
+        <span style={{ fontSize: "2rem", fontWeight: 700, color: "#39FF14" }}>{score}/10</span>
+        <span style={{ fontSize: "0.85rem", color: "rgba(200,245,200,0.5)" }}>All pairs matched!</span>
+        <button onClick={() => window.location.reload()} style={S.retryBtn}>Play Again</button>
+      </div>
+    );
+  }
+
+  const matchedLefts = Object.keys(matched).map(Number);
+  const matchedRights = Object.values(matched);
+
+  return (
+    <div style={{ maxWidth: 600, margin: "0 auto" }}>
+      <p style={{ color: "rgba(200,245,200,0.4)", fontSize: "0.72rem", marginBottom: 16, letterSpacing: "0.1em", textAlign: "center" }}>SELECT LEFT, THEN RIGHT TO MATCH</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        {/* Left column */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {pairs.left.map((l, i) => (
+            <button key={i} onClick={() => !matchedLefts.includes(i) && setSelectedLeft(i)} disabled={matchedLefts.includes(i)} style={{
+              ...S.optBtn, justifyContent: "center", fontSize: "0.85rem",
+              borderColor: matchedLefts.includes(i) ? "#39FF1440" : selectedLeft === i ? "#39FF14" : "rgba(255,255,255,0.08)",
+              background: matchedLefts.includes(i) ? "rgba(57,255,20,0.08)" : selectedLeft === i ? "rgba(57,255,20,0.1)" : "rgba(255,255,255,0.03)",
+              color: matchedLefts.includes(i) ? "#39FF1480" : selectedLeft === i ? "#39FF14" : "rgba(200,245,200,0.8)",
+              opacity: matchedLefts.includes(i) ? 0.5 : 1,
+            }}>{matchedLefts.includes(i) ? "✓ " : ""}{l}</button>
+          ))}
+        </div>
+        {/* Right column */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {pairs.right.map((r, i) => (
+            <button key={i} onClick={() => handleRight(i)} disabled={matchedRights.includes(i)} style={{
+              ...S.optBtn, justifyContent: "center", fontSize: "0.85rem",
+              borderColor: matchedRights.includes(i) ? "#39FF1440" : wrong === i ? "#EF4444" : "rgba(255,255,255,0.08)",
+              background: matchedRights.includes(i) ? "rgba(57,255,20,0.08)" : wrong === i ? "rgba(239,68,68,0.1)" : "rgba(255,255,255,0.03)",
+              color: matchedRights.includes(i) ? "#39FF1480" : wrong === i ? "#EF4444" : "rgba(200,245,200,0.8)",
+              opacity: matchedRights.includes(i) ? 0.5 : 1,
+              transition: "all 0.3s",
+            }}>{matchedRights.includes(i) ? "✓ " : ""}{r}</button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
    PAGE
    ═══════════════════════════════════════════════════════════════ */
 
 const TABS: { id: Mode; label: string; emoji: string }[] = [
-  { id: "label", label: "Label the Cell", emoji: "🔬" },
+  { id: "label", label: "Label Cell", emoji: "🔬" },
   { id: "mcq", label: "Quick Fire", emoji: "⚡" },
-  { id: "ftb", label: "Fill the Blank", emoji: "✏️" },
+  { id: "ftb", label: "Fill Blank", emoji: "✏️" },
+  { id: "tf", label: "True/False", emoji: "⏱️" },
+  { id: "match", label: "Match Pairs", emoji: "🔗" },
 ];
 
 const TOPICS = [
@@ -399,18 +628,32 @@ const TOPICS = [
   { id: "cells", label: "Cell Biology" },
   { id: "microbes", label: "Microbes" },
   { id: "viruses", label: "Viruses" },
-  { id: "anatomy", label: "Human Body" }
+  { id: "anatomy", label: "Human Body" },
 ];
 
 export default function QuizPage() {
   const [mode, setMode] = useState<Mode>("mcq");
   const [topic, setTopic] = useState<string>("all");
+  const [stats, setStats] = useState(getStats());
+
+  useEffect(() => {
+    const interval = setInterval(() => setStats(getStats()), 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const level = getLevel(stats.points || 0);
 
   return (
     <div style={S.root}>
       <div style={S.header}>
         <h1 style={S.title}>Biology Quiz</h1>
         <p style={S.subtitle}>Test your knowledge</p>
+        {/* Stats bar */}
+        <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12, flexWrap: "wrap" }}>
+          <span style={{ fontSize: "0.72rem", color: "rgba(200,245,200,0.5)" }}>{level.emoji} <strong style={{ color: "#39FF14" }}>{level.name}</strong></span>
+          <span style={{ fontSize: "0.72rem", color: "rgba(200,245,200,0.4)" }}>🏅 {stats.points || 0} pts</span>
+          <span style={{ fontSize: "0.72rem", color: "rgba(200,245,200,0.4)" }}>📊 {stats.total || 0} quizzes</span>
+        </div>
       </div>
 
       {/* Mode tabs */}
@@ -423,22 +666,11 @@ export default function QuizPage() {
         ))}
       </div>
 
-      {/* Topic selector (only for MCQ and FTB) */}
-      {mode !== "label" && (
+      {/* Topic selector */}
+      {(mode === "mcq" || mode === "ftb" || mode === "tf") && (
         <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 32, flexWrap: "wrap" }}>
           {TOPICS.map(t => (
-            <button
-              key={t.id}
-              onClick={() => setTopic(t.id)}
-              style={{
-                ...S.chip,
-                borderColor: topic === t.id ? "#378ADD" : "rgba(255,255,255,0.06)",
-                background: topic === t.id ? "rgba(55,138,221,0.15)" : "rgba(5,10,5,0.5)",
-                color: topic === t.id ? "#5AAFFF" : "rgba(200,245,200,0.5)",
-                fontSize: "0.75rem",
-                padding: "6px 12px"
-              }}
-            >
+            <button key={t.id} onClick={() => setTopic(t.id)} style={{ ...S.chip, borderColor: topic === t.id ? "#378ADD" : "rgba(255,255,255,0.06)", background: topic === t.id ? "rgba(55,138,221,0.15)" : "rgba(5,10,5,0.5)", color: topic === t.id ? "#5AAFFF" : "rgba(200,245,200,0.5)", fontSize: "0.75rem", padding: "6px 12px" }}>
               {t.label}
             </button>
           ))}
@@ -450,6 +682,8 @@ export default function QuizPage() {
         {mode === "label" && <LabelMode />}
         {mode === "mcq" && <McqMode topic={topic} />}
         {mode === "ftb" && <FtbMode topic={topic} />}
+        {mode === "tf" && <TfMode topic={topic} />}
+        {mode === "match" && <MatchMode />}
       </div>
     </div>
   );

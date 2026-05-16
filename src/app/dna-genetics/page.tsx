@@ -6,14 +6,18 @@ import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 
 /* ── Base pair data ────────────────────────────────────────── */
-const BASE_PAIRS = ["AT", "GC", "GC", "AT", "GC", "AT", "AT", "GC", "AT", "GC", "AT", "GC", "GC", "AT", "AT"] as const;
-const PAIR_COLORS: Record<string, string> = { AT: "#E24B4A", GC: "#534AB7" };
-const PAIR_INFO: Record<string, { full: string; desc: string }> = {
-  AT: { full: "Adenine — Thymine", desc: "Connected by 2 hydrogen bonds. Adenine always pairs with Thymine in DNA." },
-  GC: { full: "Guanine — Cytosine", desc: "Connected by 3 hydrogen bonds. Stronger bond than A-T pairing." },
+const BASE_SEQ = ["AT","GC","GC","AT","GC","AT","AT","GC","AT","GC","AT","GC","GC","AT","AT","GC","AT","GC","AT","AT","GC","GC","AT"] as const;
+const BASE_PAIRS = BASE_SEQ;
+const PAIR_COLORS: Record<string, string> = { AT: "#EF4444", GC: "#8B5CF6" };
+const BASE_COLORS = { A: "#EF4444", T: "#F59E0B", G: "#8B5CF6", C: "#3B82F6" };
+const PAIR_INFO: Record<string, { full: string; bonds: number; desc: string }> = {
+  AT: { full: "Adenine — Thymine", bonds: 2, desc: "Connected by 2 hydrogen bonds. Adenine always pairs with Thymine in DNA." },
+  GC: { full: "Guanine — Cytosine", bonds: 3, desc: "Connected by 3 hydrogen bonds. Stronger bond than A-T pairing." },
 };
+const CODONS: Record<string, string> = { ATG: "Methionine (Start)", TAA: "Stop", TAG: "Stop", TGA: "Stop", GCT: "Alanine", GCA: "Alanine", TTC: "Phenylalanine", TTT: "Phenylalanine", GAA: "Glutamic Acid", GAG: "Glutamic Acid", AAA: "Lysine", AAG: "Lysine", GGT: "Glycine", GGA: "Glycine", CAA: "Glutamine", GTT: "Valine", TCT: "Serine", CCT: "Proline", ACT: "Threonine", TGT: "Cysteine", TAT: "Tyrosine", CAT: "Histidine", AAT: "Asparagine", GAT: "Aspartic Acid", TGG: "Tryptophan" };
+const MUTATIONS = ["Substitution", "Insertion", "Deletion"] as const;
 
-const POINTS_PER_STRAND = 60;
+const POINTS_PER_STRAND = 90;
 const RUNGS_EVERY = 4;
 
 /* ── DNA Helix 3D ──────────────────────────────────────────── */
@@ -118,28 +122,34 @@ function Scene({ separation, onRungClick }: { separation: number; onRungClick: (
 
 /* ── Info Cards ────────────────────────────────────────────── */
 const CARDS = [
-  { title: "Base Pairs", emoji: "🔗", color: "#E24B4A", items: [
-    { label: "A — T", color: "#E24B4A", desc: "Adenine pairs with Thymine (2 hydrogen bonds)" },
-    { label: "G — C", color: "#534AB7", desc: "Guanine pairs with Cytosine (3 hydrogen bonds)" },
-  ], text: "The two strands of DNA are held together by hydrogen bonds between complementary base pairs." },
-  { title: "Codons", emoji: "📖", color: "#39FF14", items: [], text: "Every 3 bases form a codon — a molecular instruction that codes for one amino acid. For example, ATG codes for Methionine (the start signal for protein synthesis)." },
-  { title: "Genes", emoji: "🧬", color: "#378ADD", items: [], text: "Genes are specific sections of DNA that contain the complete instructions to build a protein. Humans have approximately 20,000-25,000 protein-coding genes." },
+  { title: "Structure", emoji: "🧬", color: "#39FF14", text: "DNA is a double helix of two antiparallel sugar-phosphate backbones connected by complementary base pairs. It twists once every 10 base pairs (3.4 nm)." },
+  { title: "Base Pairing", emoji: "🔗", color: "#EF4444", text: "A-T connected by 2 hydrogen bonds; G-C by 3. Chargaff's rule: A=T and G=C in amount. This complementarity enables faithful replication." },
+  { title: "Genes", emoji: "📖", color: "#3B82F6", text: "Segments of DNA coding for proteins. Contain promoters, exons (coding), introns (non-coding), and terminators. Humans have ~20,000 genes." },
+  { title: "Replication", emoji: "🔄", color: "#8B5CF6", text: "Semiconservative: each strand serves as template. DNA polymerase adds nucleotides at ~1,000 bases/second with 1 error per billion bases." },
+  { title: "Mutations", emoji: "⚡", color: "#F59E0B", text: "Changes in base sequence. Substitution (swap), insertion (add), deletion (remove). Can be silent, missense (wrong amino acid), or nonsense (premature stop)." },
+  { title: "Human Genome", emoji: "🌍", color: "#1D9E75", text: "3.2 billion base pairs, ~20,000 protein-coding genes. 99.9% identical between humans. If stretched out, DNA from one cell = 2 meters long." },
+];
+const DNA_FACTS = [
+  "If stretched out, DNA from one cell = 2 meters long",
+  "DNA replicates at 1,000 base pairs per second",
+  "99.9% of human DNA is identical between people",
+  "Humans share 50% DNA with bananas",
+  "Your body replaces ~3.8 million cells per second, each copying all DNA",
 ];
 
 /* ── Page ───────────────────────────────────────────────────── */
 export default function DnaGeneticsPage() {
   const [separation, setSeparation] = useState(0);
   const [selectedPair, setSelectedPair] = useState<number | null>(null);
+  const [codonMode, setCodonMode] = useState(false);
+  const [mutationResult, setMutationResult] = useState<{type:string;pos:number;before:string;after:string;effect:string}|null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Scroll-driven unzip
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const onScroll = () => {
-      const scrollY = el.scrollTop;
-      const maxScroll = 400;
-      const t = Math.min(scrollY / maxScroll, 1);
+      const t = Math.min(el.scrollTop / 400, 1);
       setSeparation(t * 3);
     };
     el.addEventListener("scroll", onScroll, { passive: true });
@@ -148,6 +158,15 @@ export default function DnaGeneticsPage() {
 
   const handleRungClick = useCallback((i: number) => {
     setSelectedPair(prev => (prev === i ? null : i));
+  }, []);
+
+  const simulateMutation = useCallback(() => {
+    const type = MUTATIONS[Math.floor(Math.random() * MUTATIONS.length)];
+    const pos = Math.floor(Math.random() * BASE_PAIRS.length);
+    const before = BASE_PAIRS[pos];
+    const after = before === "AT" ? "GC" : "AT";
+    const effects = ["Silent — no amino acid change", "Missense — different amino acid produced", "Nonsense — premature stop codon created"];
+    setMutationResult({ type, pos, before, after, effect: effects[Math.floor(Math.random() * effects.length)] });
   }, []);
 
   const pairData = selectedPair !== null ? BASE_PAIRS[selectedPair] : null;
@@ -166,7 +185,23 @@ export default function DnaGeneticsPage() {
         <div style={S.header}>
           <h1 style={S.title}>🧬 DNA & Genetics</h1>
           <p style={S.subtitle}>Scroll to unzip the double helix</p>
+          <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "center" }}>
+            <button onClick={() => setCodonMode(!codonMode)} style={{ padding: "6px 14px", borderRadius: 8, border: codonMode ? "1px solid #39FF1460" : "1px solid rgba(255,255,255,0.1)", background: codonMode ? "rgba(57,255,20,0.12)" : "rgba(5,10,5,0.5)", color: codonMode ? "#39FF14" : "rgba(200,245,200,0.5)", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", pointerEvents: "auto" as const }}>{codonMode ? "Hide Codons" : "Highlight Codons"}</button>
+            <button onClick={simulateMutation} style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.08)", color: "#F59E0B", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", pointerEvents: "auto" as const }}>⚡ Simulate Mutation</button>
+          </div>
         </div>
+
+        {/* Mutation Result */}
+        {mutationResult && (
+          <div style={{ position: "absolute", bottom: 70, left: "50%", transform: "translateX(-50%)", zIndex: 15, padding: "12px 20px", borderRadius: 12, background: "rgba(5,10,5,0.9)", border: "1px solid rgba(245,158,11,0.3)", backdropFilter: "blur(12px)", maxWidth: 340, textAlign: "center" }}>
+            <div style={{ fontSize: "0.7rem", color: "#F59E0B", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, marginBottom: 4 }}>⚡ {mutationResult.type} Mutation</div>
+            <div style={{ fontSize: "0.85rem", color: "rgba(200,245,200,0.85)", marginBottom: 4 }}>
+              Base pair #{mutationResult.pos + 1}: <span style={{ color: PAIR_COLORS[mutationResult.before], fontWeight: 700 }}>{mutationResult.before}</span> → <span style={{ color: PAIR_COLORS[mutationResult.after], fontWeight: 700 }}>{mutationResult.after}</span>
+            </div>
+            <div style={{ fontSize: "0.75rem", color: "rgba(200,245,200,0.55)" }}>{mutationResult.effect}</div>
+            <button onClick={() => setMutationResult(null)} style={{ marginTop: 8, padding: "4px 12px", borderRadius: 6, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", color: "rgba(200,245,200,0.5)", fontSize: "0.65rem", cursor: "pointer", fontFamily: "inherit" }}>Dismiss</button>
+          </div>
+        )}
 
         {/* Scroll indicator */}
         <div style={S.scrollHint}>
@@ -185,7 +220,20 @@ export default function DnaGeneticsPage() {
               <p style={S.pairDesc}>{PAIR_INFO[pairData].desc}</p>
               <div style={S.pairBadge}>
                 <span style={{ fontSize: "0.65rem", textTransform: "uppercase" as const, letterSpacing: "0.1em", color: "rgba(200,245,200,0.4)", fontWeight: 600 }}>Bond Type</span>
-                <span style={{ color: "rgba(200,245,200,0.85)", fontSize: "0.85rem" }}>{pairData === "AT" ? "2 Hydrogen Bonds" : "3 Hydrogen Bonds"}</span>
+                <span style={{ color: "rgba(200,245,200,0.85)", fontSize: "0.85rem" }}>{PAIR_INFO[pairData].bonds} Hydrogen Bonds</span>
+              </div>
+              <div style={S.pairBadge}>
+                <span style={{ fontSize: "0.65rem", textTransform: "uppercase" as const, letterSpacing: "0.1em", color: "rgba(200,245,200,0.4)", fontWeight: 600 }}>Position</span>
+                <span style={{ color: "rgba(200,245,200,0.85)", fontSize: "0.85rem" }}>Base pair #{(selectedPair||0) + 1} of {BASE_PAIRS.length}</span>
+              </div>
+              {/* Base colors */}
+              <div style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center" }}>
+                {pairData.split("").map((b, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ width: 12, height: 12, borderRadius: "50%", background: BASE_COLORS[b as keyof typeof BASE_COLORS], display: "inline-block" }} />
+                    <span style={{ fontSize: "0.8rem", color: "rgba(200,245,200,0.8)", fontWeight: 600 }}>{b === "A" ? "Adenine" : b === "T" ? "Thymine" : b === "G" ? "Guanine" : "Cytosine"}</span>
+                  </div>
+                ))}
               </div>
             </>
           )}
@@ -200,36 +248,67 @@ export default function DnaGeneticsPage() {
             <div key={i} style={{ ...S.card, borderColor: `${card.color}25` }}>
               <div style={{ fontSize: "1.6rem", marginBottom: "8px" }}>{card.emoji}</div>
               <h3 style={{ ...S.cardTitle, color: card.color }}>{card.title}</h3>
-              {card.items.length > 0 && (
-                <div style={{ display: "flex", gap: "12px", margin: "10px 0" }}>
-                  {card.items.map((it, j) => (
-                    <div key={j} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <span style={{ width: 10, height: 10, borderRadius: "50%", background: it.color, display: "inline-block", boxShadow: `0 0 6px ${it.color}80` }} />
-                      <span style={{ fontSize: "0.8rem", color: "rgba(200,245,200,0.8)", fontWeight: 600 }}>{it.label}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
               <p style={S.cardText}>{card.text}</p>
             </div>
           ))}
         </div>
 
-        {/* Codon table */}
-        <div style={S.codonSection}>
-          <h3 style={{ color: "#39FF14", fontSize: "1.1rem", fontWeight: 700, marginBottom: "12px" }}>Common Codons</h3>
-          <div style={S.codonGrid}>
+        {/* Gene Structure Diagram */}
+        <div style={{ maxWidth: 1000, margin: "40px auto 0", padding: "24px", borderRadius: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(57,255,20,0.08)" }}>
+          <h3 style={{ color: "#39FF14", fontSize: "1.1rem", fontWeight: 700, marginBottom: 16, margin: "0 0 16px" }}>Gene Structure</h3>
+          <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", height: 40 }}>
             {[
-              { codon: "ATG", amino: "Methionine (Start)", c: "#39FF14" },
-              { codon: "TAA", amino: "Stop Signal", c: "#E24B4A" },
-              { codon: "GCT", amino: "Alanine", c: "#534AB7" },
-              { codon: "TTC", amino: "Phenylalanine", c: "#378ADD" },
-              { codon: "GAA", amino: "Glutamic Acid", c: "#EF9F27" },
-              { codon: "AAA", amino: "Lysine", c: "#1D9E75" },
-            ].map((c, i) => (
-              <div key={i} style={S.codonCard}>
-                <span style={{ fontFamily: "monospace", fontSize: "1.1rem", fontWeight: 700, color: c.c, letterSpacing: "0.15em" }}>{c.codon}</span>
-                <span style={{ fontSize: "0.72rem", color: "rgba(200,245,200,0.65)" }}>{c.amino}</span>
+              { label: "Promoter", color: "#F59E0B", flex: 1 },
+              { label: "Exon 1", color: "#39FF14", flex: 1.5 },
+              { label: "Intron", color: "#4B5563", flex: 2 },
+              { label: "Exon 2", color: "#39FF14", flex: 1.5 },
+              { label: "Intron", color: "#4B5563", flex: 1.5 },
+              { label: "Exon 3", color: "#39FF14", flex: 1 },
+              { label: "Terminator", color: "#EF4444", flex: 0.8 },
+            ].map((seg, i) => (
+              <div key={i} style={{ flex: seg.flex, background: `${seg.color}25`, borderRight: "1px solid rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: seg.color, fontWeight: 700, letterSpacing: "0.05em" }}>{seg.label}</div>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 16, marginTop: 12, flexWrap: "wrap" }}>
+            {[
+              { color: "#F59E0B", label: "Promoter — RNA polymerase binding site" },
+              { color: "#39FF14", label: "Exons — Coding regions (become protein)" },
+              { color: "#4B5563", label: "Introns — Non-coding (spliced out)" },
+              { color: "#EF4444", label: "Terminator — Stop signal" },
+            ].map((l, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ width: 8, height: 8, borderRadius: 2, background: l.color, flexShrink: 0 }} />
+                <span style={{ fontSize: "0.7rem", color: "rgba(200,245,200,0.6)" }}>{l.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Full Codon Table */}
+        <div style={S.codonSection}>
+          <h3 style={{ color: "#39FF14", fontSize: "1.1rem", fontWeight: 700, marginBottom: "12px", margin: "0 0 12px" }}>Genetic Code — Codon Table</h3>
+          <div style={S.codonGrid}>
+            {Object.entries(CODONS).map(([codon, amino], i) => {
+              const isStop = amino === "Stop";
+              const isStart = codon === "ATG";
+              return (
+                <div key={i} style={{ ...S.codonCard, borderColor: isStop ? "#EF444425" : isStart ? "#39FF1425" : "rgba(255,255,255,0.05)" }}>
+                  <span style={{ fontFamily: "monospace", fontSize: "1rem", fontWeight: 700, color: isStop ? "#EF4444" : isStart ? "#39FF14" : "#8B5CF6", letterSpacing: "0.15em" }}>{codon}</span>
+                  <span style={{ fontSize: "0.68rem", color: "rgba(200,245,200,0.6)" }}>{amino}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* DNA Facts */}
+        <div style={{ maxWidth: 1000, margin: "40px auto 0", padding: "24px", borderRadius: 16, background: "rgba(57,255,20,0.03)", border: "1px solid rgba(57,255,20,0.08)" }}>
+          <h3 style={{ color: "#39FF14", fontSize: "1.1rem", fontWeight: 700, margin: "0 0 16px" }}>💡 Did You Know?</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {DNA_FACTS.map((fact, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "8px 12px", borderRadius: 8, background: "rgba(57,255,20,0.04)" }}>
+                <span style={{ color: "#39FF14", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0 }}>•</span>
+                <span style={{ fontSize: "0.85rem", color: "rgba(200,245,200,0.75)", lineHeight: 1.5 }}>{fact}</span>
               </div>
             ))}
           </div>

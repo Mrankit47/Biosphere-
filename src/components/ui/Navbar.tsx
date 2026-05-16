@@ -2,42 +2,64 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/cell-explorer", label: "Cell Explorer" },
-  { href: "/microorganisms", label: "Microbes" },
-  { href: "/dna-genetics", label: "DNA" },
-  { href: "/human-body", label: "Human Body" },
-  { href: "/viruses", label: "Viruses" },
-  { href: "/ecosystems", label: "Ecosystems" },
-  { href: "/tree-of-life", label: "Tree of Life" },
-  { href: "/quiz", label: "Quiz" },
+  { href: "/", label: "Home", icon: "🏠" },
+  { href: "/cell-explorer", label: "Cell Explorer", icon: "🔬" },
+  { href: "/microorganisms", label: "Microorganisms", icon: "🦠" },
+  { href: "/dna-genetics", label: "DNA & Genetics", icon: "🧬" },
+  { href: "/human-body", label: "Human Body", icon: "🫀" },
+  { href: "/ecosystems", label: "Ecosystems", icon: "🌿" },
+  { href: "/tree-of-life", label: "Tree of Life", icon: "🌳" },
+  { href: "/quiz", label: "Quiz", icon: "📝" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
-  /* Track scroll to intensify backdrop on scroll */
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+  /* ── Scroll: hide on down, show on up, intensify bg ──── */
+  const handleScroll = useCallback(() => {
+    const y = window.scrollY;
+    setScrolled(y > 40);
+
+    // Only toggle visibility after a scroll threshold to avoid jitter
+    if (Math.abs(y - lastScrollY.current) < 10) return;
+
+    setVisible(y < lastScrollY.current || y < 80);
+    lastScrollY.current = y;
   }, []);
 
-  /* Lock body scroll when mobile menu is open */
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  /* ── Lock body scroll when mobile menu is open ───────── */
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
+
+  /* ── Close mobile menu on route change ────────────────── */
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const navTransform = visible ? "translateY(0)" : "translateY(-100%)";
 
   return (
     <>
       <nav
         className="bio-navbar"
+        role="navigation"
+        aria-label="Main navigation"
         style={{
           position: "fixed",
           top: 0,
@@ -49,17 +71,18 @@ export default function Navbar() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 clamp(16px, 4vw, 48px)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
           background: scrolled
-            ? "rgba(5, 10, 5, 0.85)"
-            : "rgba(5, 10, 5, 0.7)",
+            ? "rgba(5, 10, 5, 0.92)"
+            : "rgba(5, 10, 5, 0.65)",
           borderBottom: "1px solid rgba(57, 255, 20, 0.08)",
-          transition: "background 0.4s ease",
+          transition: "background 0.4s ease, transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)",
+          transform: navTransform,
         }}
       >
         {/* ── Logo ─────────────────────────────────────── */}
-        <Link href="/" style={{ textDecoration: "none" }}>
+        <Link href="/" style={{ textDecoration: "none" }} aria-label="BioSphere Home">
           <span
             style={{
               fontSize: "1.35rem",
@@ -73,38 +96,27 @@ export default function Navbar() {
               cursor: "none",
             }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ filter: "drop-shadow(0 0 8px rgba(57,255,20,0.6))" }}
-            >
-              <path d="M6 18h8" />
-              <path d="M3 22h18" />
-              <path d="M14 22a7 7 0 1 0 0-14h-1" />
-              <path d="M9 14h2" />
-              <path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z" />
-              <path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3" />
-            </svg>
-            BioSphere
+            🔬
+            <span style={{ textShadow: "0 0 18px rgba(57,255,20,0.6)" }}>
+              BIOSPHERE
+            </span>
           </span>
         </Link>
 
         {/* ── Desktop Links ────────────────────────────── */}
-        <ul className="nav-desktop-links">
+        <ul className="nav-desktop-links" role="menubar">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
             return (
-              <li key={link.href}>
+              <li key={link.href} role="none">
                 <Link
                   href={link.href}
+                  role="menuitem"
                   className={`nav-link ${isActive ? "nav-link--active" : ""}`}
+                  aria-current={isActive ? "page" : undefined}
                 >
                   {link.label}
                 </Link>
@@ -117,32 +129,55 @@ export default function Navbar() {
         <button
           className="nav-hamburger"
           onClick={() => setMobileOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileOpen}
         >
           <div className={`hamburger-bar ${mobileOpen ? "open" : ""}`} />
         </button>
       </nav>
 
-      {/* ── Mobile Slide-in Panel ──────────────────────── */}
+      {/* ── Mobile Full-Screen Overlay ──────────────────── */}
       <div
         className={`nav-mobile-overlay ${mobileOpen ? "visible" : ""}`}
         onClick={() => setMobileOpen(false)}
+        aria-hidden="true"
       />
-      <aside className={`nav-mobile-panel ${mobileOpen ? "open" : ""}`}>
+
+      {/* ── Mobile Slide-in Panel ──────────────────────── */}
+      <aside
+        className={`nav-mobile-panel ${mobileOpen ? "open" : ""}`}
+        aria-label="Mobile navigation"
+      >
+        {/* Close button */}
+        <button
+          className="mobile-close-btn"
+          onClick={() => setMobileOpen(false)}
+          aria-label="Close menu"
+        >
+          ✕
+        </button>
+
         <ul>
           {navLinks.map((link, i) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
             return (
               <li
                 key={link.href}
-                style={{ transitionDelay: mobileOpen ? `${i * 60}ms` : "0ms" }}
+                style={{
+                  transitionDelay: mobileOpen ? `${i * 60}ms` : "0ms",
+                }}
                 className={`mobile-link-item ${mobileOpen ? "show" : ""}`}
               >
                 <Link
                   href={link.href}
                   className={`mobile-link ${isActive ? "mobile-link--active" : ""}`}
                   onClick={() => setMobileOpen(false)}
+                  aria-current={isActive ? "page" : undefined}
                 >
+                  <span className="mobile-link-icon">{link.icon}</span>
                   {link.label}
                 </Link>
               </li>
@@ -173,6 +208,12 @@ export default function Navbar() {
           cursor: none;
           letter-spacing: 0.03em;
           transition: color 0.3s ease;
+        }
+
+        .nav-link:focus-visible {
+          outline: 2px solid #39FF14;
+          outline-offset: 2px;
+          border-radius: 4px;
         }
 
         .nav-link::after {
@@ -217,6 +258,7 @@ export default function Navbar() {
           width: 32px;
           height: 32px;
           z-index: 1100;
+          min-height: 44px;
         }
 
         .hamburger-bar,
@@ -265,7 +307,7 @@ export default function Navbar() {
         .nav-mobile-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0, 0, 0, 0.5);
+          background: rgba(0, 0, 0, 0.6);
           z-index: 999;
           opacity: 0;
           visibility: hidden;
@@ -282,17 +324,18 @@ export default function Navbar() {
           position: fixed;
           top: 0;
           right: 0;
-          width: min(320px, 80vw);
+          width: 100vw;
           height: 100vh;
-          background: rgba(5, 10, 5, 0.95);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border-left: 1px solid rgba(57, 255, 20, 0.1);
+          height: 100dvh;
+          background: rgba(2, 5, 2, 0.97);
+          backdrop-filter: blur(24px);
+          -webkit-backdrop-filter: blur(24px);
           z-index: 1050;
           transform: translateX(100%);
           transition: transform 0.45s cubic-bezier(0.25, 0.8, 0.25, 1);
           padding: 100px 32px 40px;
           box-sizing: border-box;
+          overflow-y: auto;
         }
 
         .nav-mobile-panel.open {
@@ -308,6 +351,32 @@ export default function Navbar() {
           gap: 6px;
         }
 
+        /* ── Close Button ──────────────────────────────── */
+        .mobile-close-btn {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          width: 44px;
+          height: 44px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: none;
+          border: 1px solid rgba(57, 255, 20, 0.15);
+          border-radius: 10px;
+          color: #39FF14;
+          font-size: 1.2rem;
+          cursor: pointer;
+          z-index: 1100;
+          transition: all 0.25s ease;
+        }
+
+        .mobile-close-btn:hover {
+          background: rgba(57, 255, 20, 0.08);
+          border-color: rgba(57, 255, 20, 0.3);
+        }
+
+        /* ── Mobile Link Items ─────────────────────────── */
         .mobile-link-item {
           opacity: 0;
           transform: translateX(20px);
@@ -320,17 +389,20 @@ export default function Navbar() {
         }
 
         .mobile-link {
-          display: block;
-          padding: 14px 16px;
-          font-size: 1.05rem;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          padding: 16px 18px;
+          font-size: 1.1rem;
           font-weight: 500;
           color: rgba(200, 245, 200, 0.7);
           text-decoration: none;
-          border-radius: 10px;
+          border-radius: 12px;
           cursor: none;
           letter-spacing: 0.03em;
           transition: all 0.25s ease;
           border: 1px solid transparent;
+          min-height: 44px;
         }
 
         .mobile-link:hover {
@@ -339,10 +411,22 @@ export default function Navbar() {
           border-color: rgba(57, 255, 20, 0.12);
         }
 
+        .mobile-link:focus-visible {
+          outline: 2px solid #39FF14;
+          outline-offset: 2px;
+        }
+
         .mobile-link--active {
           color: #39FF14 !important;
           background: rgba(57, 255, 20, 0.08);
           border-color: rgba(57, 255, 20, 0.15);
+        }
+
+        .mobile-link-icon {
+          font-size: 1.3rem;
+          width: 32px;
+          text-align: center;
+          flex-shrink: 0;
         }
 
         /* ── Responsive ────────────────────────────────── */
