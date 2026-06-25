@@ -1,12 +1,20 @@
 "use client";
 
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import {
+  OrbitControls,
+  Environment,
+  MeshTransmissionMaterial,
+  Float,
+} from "@react-three/drei";
 import * as THREE from "three";
 
 /* ── Base pair data ────────────────────────────────────────── */
-const BASE_SEQ = ["AT","GC","GC","AT","GC","AT","AT","GC","AT","GC","AT","GC","GC","AT","AT","GC","AT","GC","AT","AT","GC","GC","AT"] as const;
+const BASE_SEQ = [
+  "AT","GC","GC","AT","GC","AT","AT","GC","AT","GC",
+  "AT","GC","GC","AT","AT","GC","AT","GC","AT","AT","GC","GC","AT",
+] as const;
 const BASE_PAIRS = BASE_SEQ;
 const PAIR_COLORS: Record<string, string> = { AT: "#EF4444", GC: "#8B5CF6" };
 const BASE_COLORS = { A: "#EF4444", T: "#F59E0B", G: "#8B5CF6", C: "#3B82F6" };
@@ -17,92 +25,422 @@ const PAIR_INFO: Record<string, { full: string; bonds: number; desc: string }> =
 const CODONS: Record<string, string> = { ATG: "Methionine (Start)", TAA: "Stop", TAG: "Stop", TGA: "Stop", GCT: "Alanine", GCA: "Alanine", TTC: "Phenylalanine", TTT: "Phenylalanine", GAA: "Glutamic Acid", GAG: "Glutamic Acid", AAA: "Lysine", AAG: "Lysine", GGT: "Glycine", GGA: "Glycine", CAA: "Glutamine", GTT: "Valine", TCT: "Serine", CCT: "Proline", ACT: "Threonine", TGT: "Cysteine", TAT: "Tyrosine", CAT: "Histidine", AAT: "Asparagine", GAT: "Aspartic Acid", TGG: "Tryptophan" };
 const MUTATIONS = ["Substitution", "Insertion", "Deletion"] as const;
 
-const POINTS_PER_STRAND = 90;
-const RUNGS_EVERY = 4;
+const POINTS_PER_STRAND = 200;
+const RUNGS_EVERY = 9;
+const HELIX_RADIUS = 1.6;
+const HELIX_RISE = 0.22;
+const HELIX_TURNS = 6;
 
-/* ── DNA Helix 3D ──────────────────────────────────────────── */
+/* ── Helper: create smooth tube from points ─────────────────── */
+function createHelixCurve(offset: number, separation: number) {
+  const points: THREE.Vector3[] = [];
+  for (let i = 0; i < POINTS_PER_STRAND; i++) {
+    const t = (i / POINTS_PER_STRAND) * Math.PI * 2 * HELIX_TURNS;
+    const y = (i - POINTS_PER_STRAND / 2) * HELIX_RISE;
+    const r = HELIX_RADIUS;
+    const sepX = offset > 0 ? separation : -separation;
+    points.push(new THREE.Vector3(
+      Math.cos(t + offset) * r + sepX * Math.cos(t + offset) * 0.3,
+      y,
+      Math.sin(t + offset) * r + sepX * Math.sin(t + offset) * 0.3,
+    ));
+  }
+  return new THREE.CatmullRomCurve3(points);
+}
+
+/* ── Phosphate Sphere (backbone node) ──────────────────────── */
+function PhosphateSphere({ position, color, emissive }: { position: THREE.Vector3; color: string; emissive: string }) {
+  return (
+    <mesh position={position} castShadow>
+      <sphereGeometry args={[0.14, 16, 16]} />
+      <meshPhysicalMaterial
+        color={color}
+        emissive={emissive}
+        emissiveIntensity={0.15}
+        roughness={0.25}
+        metalness={0.1}
+        clearcoat={0.8}
+        clearcoatRoughness={0.15}
+      />
+    </mesh>
+  );
+}
+
+/* ── Backbone Tube Strand ──────────────────────────────────── */
+function BackboneStrand({ curve, color, emissive }: { curve: THREE.CatmullRomCurve3; color: string; emissive: string }) {
+  const tubeGeom = useMemo(() => new THREE.TubeGeometry(curve, 300, 0.08, 12, false), [curve]);
+  return (
+    <mesh geometry={tubeGeom} castShadow receiveShadow>
+      <meshPhysicalMaterial
+        color={color}
+        emissive={emissive}
+        emissiveIntensity={0.12}
+        roughness={0.3}
+        metalness={0.05}
+        clearcoat={0.6}
+        clearcoatRoughness={0.2}
+        transparent
+        opacity={0.92}
+      />
+    </mesh>
+  );
+}
+
+/* ── Nucleotide Base (half of a base pair) ────────────────── */
+function NucleotideBase({
+  position,
+  rotation,
+  length,
+  color,
+  onClick,
+}: {
+  position: THREE.Vector3;
+  rotation: THREE.Euler;
+  length: number;
+  color: string;
+  onClick?: () => void;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null!);
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <mesh
+      ref={meshRef}
+      position={position}
+      rotation={rotation}
+      onClick={onClick}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+      castShadow
+    >
+      <cylinderGeometry args={[0.065, 0.065, length, 12]} />
+      <meshPhysicalMaterial
+        color={color}
+        emissive={color}
+        emissiveIntensity={hovered ? 0.6 : 0.2}
+        roughness={0.35}
+        metalness={0.15}
+        clearcoat={0.5}
+        clearcoatRoughness={0.3}
+      />
+    </mesh>
+  );
+}
+
+/* ── Hydrogen Bond (dashed look between base pairs) ───────── */
+function HydrogenBond({ start, end }: { start: THREE.Vector3; end: THREE.Vector3 }) {
+  const mid = start.clone().add(end).multiplyScalar(0.5);
+  const dir = end.clone().sub(start);
+  const len = dir.length();
+  const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
+
+  // Create 3 small dashes for hydrogen bond visualization
+  const dashes = [];
+  const dashCount = 3;
+  const dashLen = len / (dashCount * 2 + 1);
+
+  for (let i = 0; i < dashCount; i++) {
+    const offset = (i - (dashCount - 1) / 2) * dashLen * 2;
+    const pos = mid.clone().add(dir.clone().multiplyScalar(offset));
+    dashes.push(
+      <mesh key={i} position={pos} quaternion={quat}>
+        <cylinderGeometry args={[0.015, 0.015, dashLen, 6]} />
+        <meshPhysicalMaterial
+          color="#FFFFFF"
+          emissive="#88CCFF"
+          emissiveIntensity={0.3}
+          roughness={0.5}
+          metalness={0.0}
+          transparent
+          opacity={0.5}
+        />
+      </mesh>
+    );
+  }
+  return <>{dashes}</>;
+}
+
+/* ── Ambient Particles ─────────────────────────────────────── */
+function AmbientParticles({ count = 200 }: { count?: number }) {
+  const meshRef = useRef<THREE.InstancedMesh>(null!);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+
+  const { positions, speeds } = useMemo(() => {
+    const pos: [number, number, number][] = [];
+    const spd: number[] = [];
+    for (let i = 0; i < count; i++) {
+      pos.push([
+        (Math.random() - 0.5) * 20,
+        (Math.random() - 0.5) * 30,
+        (Math.random() - 0.5) * 20,
+      ]);
+      spd.push(0.002 + Math.random() * 0.008);
+    }
+    return { positions: pos, speeds: spd };
+  }, [count]);
+
+  useFrame((state) => {
+    const t = state.clock.elapsedTime;
+    for (let i = 0; i < count; i++) {
+      const [x, y, z] = positions[i];
+      dummy.position.set(
+        x + Math.sin(t * speeds[i] * 10 + i) * 0.5,
+        y + Math.cos(t * speeds[i] * 8 + i * 0.5) * 0.3,
+        z + Math.sin(t * speeds[i] * 6 + i * 0.3) * 0.4,
+      );
+      const scale = 0.02 + Math.sin(t * 2 + i) * 0.01;
+      dummy.scale.setScalar(scale);
+      dummy.updateMatrix();
+      meshRef.current.setMatrixAt(i, dummy.matrix);
+    }
+    meshRef.current.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      <sphereGeometry args={[1, 6, 6]} />
+      <meshBasicMaterial color="#39FF14" transparent opacity={0.25} />
+    </instancedMesh>
+  );
+}
+
+/* ── DNA Helix 3D (Realistic) ──────────────────────────────── */
 function DnaHelix({ separation, onRungClick }: { separation: number; onRungClick: (i: number) => void }) {
   const groupRef = useRef<THREE.Group>(null!);
 
-  const { strand1, strand2, rungs } = useMemo(() => {
-    const s1: THREE.Vector3[] = [], s2: THREE.Vector3[] = [];
-    const r: { pos: THREE.Vector3; rot: THREE.Euler; scaleX: number; pairIdx: number; midY: number }[] = [];
+  const helixData = useMemo(() => {
+    const s1Points: THREE.Vector3[] = [];
+    const s2Points: THREE.Vector3[] = [];
+    const rungs: {
+      pairIdx: number;
+      s1Pos: THREE.Vector3;
+      s2Pos: THREE.Vector3;
+      midY: number;
+    }[] = [];
 
     for (let i = 0; i < POINTS_PER_STRAND; i++) {
-      const t = (i / POINTS_PER_STRAND) * Math.PI * 6;
-      const y = (i - POINTS_PER_STRAND / 2) * 0.3;
-      s1.push(new THREE.Vector3(Math.cos(t) * 1.5, y, Math.sin(t) * 1.5));
-      s2.push(new THREE.Vector3(Math.cos(t + Math.PI) * 1.5, y, Math.sin(t + Math.PI) * 1.5));
+      const t = (i / POINTS_PER_STRAND) * Math.PI * 2 * HELIX_TURNS;
+      const y = (i - POINTS_PER_STRAND / 2) * HELIX_RISE;
+      const r = HELIX_RADIUS;
+      s1Points.push(new THREE.Vector3(Math.cos(t) * r, y, Math.sin(t) * r));
+      s2Points.push(new THREE.Vector3(Math.cos(t + Math.PI) * r, y, Math.sin(t + Math.PI) * r));
 
-      if (i % RUNGS_EVERY === 0 && i > 0) {
-        const a = s1[i], b = s2[i];
-        const mid = a.clone().add(b).multiplyScalar(0.5);
-        const dir = b.clone().sub(a);
-        const len = dir.length();
-        const angle = Math.atan2(dir.z, dir.x);
-        r.push({ pos: mid, rot: new THREE.Euler(0, -angle, Math.PI / 2), scaleX: len, pairIdx: Math.floor(i / RUNGS_EVERY) % BASE_PAIRS.length, midY: mid.y });
+      if (i % RUNGS_EVERY === 0 && i > 0 && i < POINTS_PER_STRAND - 1) {
+        rungs.push({
+          pairIdx: Math.floor(i / RUNGS_EVERY) % BASE_PAIRS.length,
+          s1Pos: s1Points[i].clone(),
+          s2Pos: s2Points[i].clone(),
+          midY: y,
+        });
       }
     }
-    return { strand1: s1, strand2: s2, rungs: r };
+
+    // Phosphate positions (every 5th point along backbone)
+    const phosphates1: THREE.Vector3[] = [];
+    const phosphates2: THREE.Vector3[] = [];
+    for (let i = 0; i < POINTS_PER_STRAND; i += 5) {
+      phosphates1.push(s1Points[i].clone());
+      phosphates2.push(s2Points[i].clone());
+    }
+
+    return { s1Points, s2Points, rungs, phosphates1, phosphates2 };
   }, []);
 
-  useFrame(() => { groupRef.current.rotation.y += 0.005; });
+  // Create curves for tube geometry
+  const curve1 = useMemo(() => {
+    const pts = helixData.s1Points.map(p => {
+      const sep = separation * 0.3;
+      return new THREE.Vector3(
+        p.x + sep * (p.x / HELIX_RADIUS) * 0.5,
+        p.y,
+        p.z + sep * (p.z / HELIX_RADIUS) * 0.5
+      );
+    });
+    return new THREE.CatmullRomCurve3(pts);
+  }, [helixData.s1Points, separation]);
+
+  const curve2 = useMemo(() => {
+    const pts = helixData.s2Points.map(p => {
+      const sep = separation * 0.3;
+      return new THREE.Vector3(
+        p.x - sep * (p.x / HELIX_RADIUS) * 0.5,
+        p.y,
+        p.z - sep * (p.z / HELIX_RADIUS) * 0.5
+      );
+    });
+    return new THREE.CatmullRomCurve3(pts);
+  }, [helixData.s2Points, separation]);
+
+  useFrame((state) => {
+    groupRef.current.rotation.y += 0.003;
+  });
 
   return (
     <group ref={groupRef}>
-      {/* Strand 1 — green */}
-      {strand1.map((p, i) => (
-        <mesh key={`s1-${i}`} position={[p.x + separation, p.y, p.z]}>
-          <sphereGeometry args={[0.1, 8, 8]} />
-          <meshStandardMaterial color="#39FF14" emissive="#39FF14" emissiveIntensity={0.3} />
-        </mesh>
-      ))}
-      {/* Strand backbone 1 */}
-      {strand1.slice(0, -1).map((p, i) => {
-        const next = strand1[i + 1];
-        const mid = p.clone().add(next).multiplyScalar(0.5);
-        mid.x += separation;
-        const dir = next.clone().sub(p);
+      {/* Strand 1 — smooth tube (green/teal) */}
+      <BackboneStrand curve={curve1} color="#00E676" emissive="#00C853" />
+      {/* Strand 2 — smooth tube (blue/cyan) */}
+      <BackboneStrand curve={curve2} color="#29B6F6" emissive="#0288D1" />
+
+      {/* Phosphate groups on strand 1 */}
+      {helixData.phosphates1.map((p, i) => {
+        const sep = separation * 0.3;
+        const pos = new THREE.Vector3(
+          p.x + sep * (p.x / HELIX_RADIUS) * 0.5,
+          p.y,
+          p.z + sep * (p.z / HELIX_RADIUS) * 0.5
+        );
         return (
-          <mesh key={`b1-${i}`} position={[mid.x, mid.y, mid.z]} quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize())}>
-            <cylinderGeometry args={[0.03, 0.03, dir.length(), 6]} />
-            <meshStandardMaterial color="#39FF14" emissive="#1a7a0a" emissiveIntensity={0.2} transparent opacity={0.6} />
-          </mesh>
+          <PhosphateSphere
+            key={`p1-${i}`}
+            position={pos}
+            color="#00E676"
+            emissive="#00C853"
+          />
         );
       })}
 
-      {/* Strand 2 — blue */}
-      {strand2.map((p, i) => (
-        <mesh key={`s2-${i}`} position={[p.x - separation, p.y, p.z]}>
-          <sphereGeometry args={[0.1, 8, 8]} />
-          <meshStandardMaterial color="#378ADD" emissive="#378ADD" emissiveIntensity={0.3} />
-        </mesh>
-      ))}
-      {/* Strand backbone 2 */}
-      {strand2.slice(0, -1).map((p, i) => {
-        const next = strand2[i + 1];
-        const mid = p.clone().add(next).multiplyScalar(0.5);
-        mid.x -= separation;
-        const dir = next.clone().sub(p);
+      {/* Phosphate groups on strand 2 */}
+      {helixData.phosphates2.map((p, i) => {
+        const sep = separation * 0.3;
+        const pos = new THREE.Vector3(
+          p.x - sep * (p.x / HELIX_RADIUS) * 0.5,
+          p.y,
+          p.z - sep * (p.z / HELIX_RADIUS) * 0.5
+        );
         return (
-          <mesh key={`b2-${i}`} position={[mid.x, mid.y, mid.z]} quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize())}>
-            <cylinderGeometry args={[0.03, 0.03, dir.length(), 6]} />
-            <meshStandardMaterial color="#378ADD" emissive="#1a4a7a" emissiveIntensity={0.2} transparent opacity={0.6} />
-          </mesh>
+          <PhosphateSphere
+            key={`p2-${i}`}
+            position={pos}
+            color="#29B6F6"
+            emissive="#0288D1"
+          />
         );
       })}
 
-      {/* Rungs */}
-      {rungs.map((r, i) => {
-        const pair = BASE_PAIRS[r.pairIdx];
-        const color = PAIR_COLORS[pair];
+      {/* Base pair rungs with hydrogen bonds */}
+      {helixData.rungs.map((rung, i) => {
+        const pair = BASE_PAIRS[rung.pairIdx];
+        const bases = pair.split("") as ("A" | "T" | "G" | "C")[];
+        const sep = separation * 0.3;
+
+        // Adjust positions for separation
+        const s1 = new THREE.Vector3(
+          rung.s1Pos.x + sep * (rung.s1Pos.x / HELIX_RADIUS) * 0.5,
+          rung.s1Pos.y,
+          rung.s1Pos.z + sep * (rung.s1Pos.z / HELIX_RADIUS) * 0.5
+        );
+        const s2 = new THREE.Vector3(
+          rung.s2Pos.x - sep * (rung.s2Pos.x / HELIX_RADIUS) * 0.5,
+          rung.s2Pos.y,
+          rung.s2Pos.z - sep * (rung.s2Pos.z / HELIX_RADIUS) * 0.5
+        );
+
+        const mid = s1.clone().add(s2).multiplyScalar(0.5);
+        const dir = s2.clone().sub(s1);
+        const fullLen = dir.length();
+        const halfLen = fullLen * 0.42; // each base is 42% of rung
+        const dirNorm = dir.clone().normalize();
+
+        // Positions for each half of the base pair
+        const base1Pos = s1.clone().add(dirNorm.clone().multiplyScalar(halfLen / 2));
+        const base2Pos = s2.clone().sub(dirNorm.clone().multiplyScalar(halfLen / 2));
+
+        // Rotation to align cylinder along the rung direction
+        const quat = new THREE.Quaternion().setFromUnitVectors(
+          new THREE.Vector3(0, 1, 0),
+          dirNorm
+        );
+        const euler = new THREE.Euler().setFromQuaternion(quat);
+
+        // Hide rungs when too separated
+        const rungOpacity = separation < 0.5 ? 1 : Math.max(0, 1 - (separation - 0.5) * 1.5);
+        if (rungOpacity <= 0) return null;
+
+        // Hydrogen bond points (between the two bases)
+        const bondStart = s1.clone().add(dirNorm.clone().multiplyScalar(halfLen));
+        const bondEnd = s2.clone().sub(dirNorm.clone().multiplyScalar(halfLen));
+        const bondCount = PAIR_INFO[pair].bonds;
+
         return (
-          <mesh key={`r-${i}`} position={r.pos} rotation={r.rot} onClick={() => onRungClick(r.pairIdx)} scale={[separation < 0.3 ? 1 : Math.max(0, 1 - separation * 0.8), 1, 1]}>
-            <cylinderGeometry args={[0.04, 0.04, r.scaleX, 8]} />
-            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={0.4} />
-          </mesh>
+          <group key={`rung-${i}`}>
+            {/* Base 1 (from strand 1 side) */}
+            <NucleotideBase
+              position={base1Pos}
+              rotation={euler}
+              length={halfLen}
+              color={BASE_COLORS[bases[0]]}
+              onClick={() => onRungClick(rung.pairIdx)}
+            />
+            {/* Nucleotide sphere at strand junction */}
+            <mesh position={s1} castShadow>
+              <sphereGeometry args={[0.11, 12, 12]} />
+              <meshPhysicalMaterial
+                color={BASE_COLORS[bases[0]]}
+                emissive={BASE_COLORS[bases[0]]}
+                emissiveIntensity={0.3}
+                roughness={0.3}
+                metalness={0.1}
+                clearcoat={0.7}
+              />
+            </mesh>
+
+            {/* Base 2 (from strand 2 side) */}
+            <NucleotideBase
+              position={base2Pos}
+              rotation={euler}
+              length={halfLen}
+              color={BASE_COLORS[bases[1]]}
+              onClick={() => onRungClick(rung.pairIdx)}
+            />
+            {/* Nucleotide sphere at strand junction */}
+            <mesh position={s2} castShadow>
+              <sphereGeometry args={[0.11, 12, 12]} />
+              <meshPhysicalMaterial
+                color={BASE_COLORS[bases[1]]}
+                emissive={BASE_COLORS[bases[1]]}
+                emissiveIntensity={0.3}
+                roughness={0.3}
+                metalness={0.1}
+                clearcoat={0.7}
+              />
+            </mesh>
+
+            {/* Hydrogen bonds between bases */}
+            {Array.from({ length: bondCount }).map((_, bi) => {
+              // Offset bonds perpendicular to the rung direction
+              const perpOffset = (bi - (bondCount - 1) / 2) * 0.06;
+              const perp = new THREE.Vector3(-dirNorm.z, 0, dirNorm.x).normalize();
+              const bStart = bondStart.clone().add(perp.clone().multiplyScalar(perpOffset));
+              const bEnd = bondEnd.clone().add(perp.clone().multiplyScalar(perpOffset));
+              return <HydrogenBond key={`hb-${i}-${bi}`} start={bStart} end={bEnd} />;
+            })}
+          </group>
         );
       })}
+
+      {/* Ambient floating particles */}
+      <AmbientParticles count={150} />
+    </group>
+  );
+}
+
+/* ── Minor/Major Groove Glow Lines ────────────────────────── */
+function GrooveGlow() {
+  const ref = useRef<THREE.Group>(null!);
+  useFrame((state) => {
+    ref.current.rotation.y = state.clock.elapsedTime * 0.003;
+  });
+
+  return (
+    <group ref={ref}>
+      {/* Soft glow ring at top and bottom */}
+      {[-1, 1].map((sign) => (
+        <mesh key={sign} position={[0, sign * (POINTS_PER_STRAND * HELIX_RISE * 0.45), 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <ringGeometry args={[HELIX_RADIUS - 0.3, HELIX_RADIUS + 0.3, 64]} />
+          <meshBasicMaterial color="#39FF14" transparent opacity={0.03} side={THREE.DoubleSide} />
+        </mesh>
+      ))}
     </group>
   );
 }
@@ -111,11 +449,65 @@ function DnaHelix({ separation, onRungClick }: { separation: number; onRungClick
 function Scene({ separation, onRungClick }: { separation: number; onRungClick: (i: number) => void }) {
   return (
     <>
-      <ambientLight intensity={0.35} />
-      <pointLight position={[5, 8, 5]} intensity={1.2} />
-      <pointLight position={[-4, -5, 3]} intensity={0.5} color="#39FF14" />
-      <DnaHelix separation={separation} onRungClick={onRungClick} />
-      <OrbitControls enablePan={false} minDistance={5} maxDistance={20} enableDamping dampingFactor={0.05} />
+      {/* Ambient fill */}
+      <ambientLight intensity={0.25} color="#E0F7FA" />
+
+      {/* Key light — warm white from top-right */}
+      <directionalLight
+        position={[6, 10, 5]}
+        intensity={1.8}
+        color="#FFFFFF"
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+      />
+
+      {/* Fill light — cool blue from left */}
+      <directionalLight
+        position={[-5, -3, 4]}
+        intensity={0.6}
+        color="#64B5F6"
+      />
+
+      {/* Rim light — green accent from behind */}
+      <pointLight position={[0, 5, -8]} intensity={0.8} color="#00E676" distance={25} decay={2} />
+      <pointLight position={[0, -5, -6]} intensity={0.4} color="#29B6F6" distance={20} decay={2} />
+
+      {/* Accent spot lights */}
+      <spotLight
+        position={[3, 8, 6]}
+        angle={0.3}
+        penumbra={0.8}
+        intensity={1.0}
+        color="#B2FF59"
+        castShadow
+      />
+      <spotLight
+        position={[-4, -6, 5]}
+        angle={0.4}
+        penumbra={0.9}
+        intensity={0.5}
+        color="#80D8FF"
+      />
+
+      {/* Environment for reflections */}
+      <Environment preset="night" />
+
+      {/* DNA Model */}
+      <Float speed={0.5} rotationIntensity={0.05} floatIntensity={0.3}>
+        <DnaHelix separation={separation} onRungClick={onRungClick} />
+      </Float>
+
+      <GrooveGlow />
+
+      <OrbitControls
+        enablePan={false}
+        minDistance={5}
+        maxDistance={22}
+        enableDamping
+        dampingFactor={0.05}
+        autoRotate={false}
+      />
     </>
   );
 }
@@ -179,31 +571,79 @@ export default function DnaGeneticsPage() {
       <div style={S.canvasSection}>
         <div style={S.canvasWrap}>
           {mounted && (
-            <Canvas camera={{ position: [0, 0, 12], fov: 45 }} dpr={[1, 2]} gl={{ antialias: true }} style={{ background: "#050A05" }}>
+            <Canvas
+              camera={{ position: [0, 2, 14], fov: 42 }}
+              dpr={[1, 2]}
+              gl={{
+                antialias: true,
+                toneMapping: THREE.ACESFilmicToneMapping,
+                toneMappingExposure: 1.1,
+              }}
+              shadows
+              style={{ background: "linear-gradient(180deg, #020808 0%, #050A05 40%, #030606 100%)" }}
+            >
               <Scene separation={separation} onRungClick={handleRungClick} />
             </Canvas>
           )}
+          {/* Vignette overlay */}
+          <div style={S.vignette} />
         </div>
 
         {/* Header overlay */}
         <div style={S.header}>
           <h1 style={S.title}>🧬 DNA & Genetics</h1>
           <p style={S.subtitle}>Scroll to unzip the double helix</p>
-          <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "center" }}>
-            <button onClick={() => setCodonMode(!codonMode)} style={{ padding: "6px 14px", borderRadius: 8, border: codonMode ? "1px solid #39FF1460" : "1px solid rgba(255,255,255,0.1)", background: codonMode ? "rgba(57,255,20,0.12)" : "rgba(5,10,5,0.5)", color: codonMode ? "#39FF14" : "rgba(200,245,200,0.5)", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", pointerEvents: "auto" as const }}>{codonMode ? "Hide Codons" : "Highlight Codons"}</button>
-            <button onClick={simulateMutation} style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid rgba(245,158,11,0.3)", background: "rgba(245,158,11,0.08)", color: "#F59E0B", fontSize: "0.72rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", pointerEvents: "auto" as const }}>⚡ Simulate Mutation</button>
+          <div style={{ display: "flex", gap: 10, marginTop: 14, justifyContent: "center" }}>
+            <button onClick={() => setCodonMode(!codonMode)} style={{
+              padding: "8px 18px",
+              borderRadius: 10,
+              border: codonMode ? "1px solid rgba(57,255,20,0.4)" : "1px solid rgba(255,255,255,0.08)",
+              background: codonMode ? "rgba(57,255,20,0.1)" : "rgba(5,10,5,0.6)",
+              color: codonMode ? "#39FF14" : "rgba(200,245,200,0.5)",
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              fontFamily: "inherit",
+              pointerEvents: "auto" as const,
+              backdropFilter: "blur(12px)",
+              transition: "all 0.3s ease",
+            }}>
+              {codonMode ? "Hide Codons" : "Highlight Codons"}
+            </button>
+            <button onClick={simulateMutation} style={{
+              padding: "8px 18px",
+              borderRadius: 10,
+              border: "1px solid rgba(245,158,11,0.25)",
+              background: "rgba(245,158,11,0.06)",
+              color: "#F59E0B",
+              fontSize: "0.75rem",
+              fontWeight: 600,
+              cursor: "pointer",
+              fontFamily: "inherit",
+              pointerEvents: "auto" as const,
+              backdropFilter: "blur(12px)",
+              transition: "all 0.3s ease",
+            }}>
+              ⚡ Simulate Mutation
+            </button>
           </div>
         </div>
 
         {/* Mutation Result */}
         {mutationResult && (
-          <div style={{ position: "absolute", bottom: 70, left: "50%", transform: "translateX(-50%)", zIndex: 15, padding: "12px 20px", borderRadius: 12, background: "rgba(5,10,5,0.9)", border: "1px solid rgba(245,158,11,0.3)", backdropFilter: "blur(12px)", maxWidth: 340, textAlign: "center" }}>
-            <div style={{ fontSize: "0.7rem", color: "#F59E0B", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, marginBottom: 4 }}>⚡ {mutationResult.type} Mutation</div>
-            <div style={{ fontSize: "0.85rem", color: "rgba(200,245,200,0.85)", marginBottom: 4 }}>
+          <div style={{
+            position: "absolute", bottom: 80, left: "50%", transform: "translateX(-50%)", zIndex: 15,
+            padding: "14px 24px", borderRadius: 14,
+            background: "rgba(5,10,5,0.85)", border: "1px solid rgba(245,158,11,0.25)",
+            backdropFilter: "blur(16px)", maxWidth: 360, textAlign: "center",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.5), 0 0 20px rgba(245,158,11,0.05)",
+          }}>
+            <div style={{ fontSize: "0.7rem", color: "#F59E0B", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, marginBottom: 6 }}>⚡ {mutationResult.type} Mutation</div>
+            <div style={{ fontSize: "0.85rem", color: "rgba(200,245,200,0.85)", marginBottom: 6 }}>
               Base pair #{mutationResult.pos + 1}: <span style={{ color: PAIR_COLORS[mutationResult.before], fontWeight: 700 }}>{mutationResult.before}</span> → <span style={{ color: PAIR_COLORS[mutationResult.after], fontWeight: 700 }}>{mutationResult.after}</span>
             </div>
             <div style={{ fontSize: "0.75rem", color: "rgba(200,245,200,0.55)" }}>{mutationResult.effect}</div>
-            <button onClick={() => setMutationResult(null)} style={{ marginTop: 8, padding: "4px 12px", borderRadius: 6, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", color: "rgba(200,245,200,0.5)", fontSize: "0.65rem", cursor: "pointer", fontFamily: "inherit" }}>Dismiss</button>
+            <button onClick={() => setMutationResult(null)} style={{ marginTop: 10, padding: "5px 14px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.04)", color: "rgba(200,245,200,0.5)", fontSize: "0.65rem", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease" }}>Dismiss</button>
           </div>
         )}
 
@@ -218,7 +658,7 @@ export default function DnaGeneticsPage() {
           {pairData && (
             <>
               <button style={S.sideClose} onClick={() => setSelectedPair(null)}>✕</button>
-              <div style={{ ...S.pairDot, background: PAIR_COLORS[pairData], boxShadow: `0 0 16px ${PAIR_COLORS[pairData]}60` }} />
+              <div style={{ ...S.pairDot, background: PAIR_COLORS[pairData], boxShadow: `0 0 24px ${PAIR_COLORS[pairData]}40, 0 0 60px ${PAIR_COLORS[pairData]}15` }} />
               <h3 style={{ ...S.pairTitle, color: PAIR_COLORS[pairData] }}>{PAIR_INFO[pairData].full}</h3>
               <div style={S.pairDivider} />
               <p style={S.pairDesc}>{PAIR_INFO[pairData].desc}</p>
@@ -234,7 +674,7 @@ export default function DnaGeneticsPage() {
               <div style={{ display: "flex", gap: 12, width: "100%", justifyContent: "center" }}>
                 {pairData.split("").map((b, i) => (
                   <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ width: 12, height: 12, borderRadius: "50%", background: BASE_COLORS[b as keyof typeof BASE_COLORS], display: "inline-block" }} />
+                    <span style={{ width: 12, height: 12, borderRadius: "50%", background: BASE_COLORS[b as keyof typeof BASE_COLORS], display: "inline-block", boxShadow: `0 0 8px ${BASE_COLORS[b as keyof typeof BASE_COLORS]}40` }} />
                     <span style={{ fontSize: "0.8rem", color: "rgba(200,245,200,0.8)", fontWeight: 600 }}>{b === "A" ? "Adenine" : b === "T" ? "Thymine" : b === "G" ? "Guanine" : "Cytosine"}</span>
                   </div>
                 ))}
@@ -333,8 +773,13 @@ const S: Record<string, React.CSSProperties> = {
   canvasSection: { position: "sticky", top: 0, width: "100%", height: "calc(100vh - 64px)", minHeight: "500px" },
   canvasWrap: { position: "absolute", inset: 0, zIndex: 0 },
 
+  vignette: {
+    position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+    background: "radial-gradient(ellipse at center, transparent 40%, rgba(2,8,8,0.6) 100%)",
+  },
+
   header: { position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 10, textAlign: "center", pointerEvents: "none" },
-  title: { fontSize: "1.4rem", fontWeight: 700, color: "#39FF14", letterSpacing: "0.06em", margin: 0, textShadow: "0 0 20px rgba(57,255,20,0.3)" },
+  title: { fontSize: "1.4rem", fontWeight: 700, color: "#39FF14", letterSpacing: "0.06em", margin: 0, textShadow: "0 0 30px rgba(57,255,20,0.35), 0 0 60px rgba(57,255,20,0.1)" },
   subtitle: { fontSize: "0.75rem", color: "rgba(200,245,200,0.45)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
 
   scrollHint: { position: "absolute", bottom: 28, left: "50%", transform: "translateX(-50%)", zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", color: "rgba(57,255,20,0.4)", fontSize: "0.72rem", letterSpacing: "0.1em", pointerEvents: "none" },
@@ -342,7 +787,7 @@ const S: Record<string, React.CSSProperties> = {
 
   // Sidebar
   sidebar: { position: "absolute", top: 0, right: 0, width: "min(300px, 80vw)", height: "100%", zIndex: 20, background: "rgba(5,10,5,0.9)", backdropFilter: "blur(20px)", borderLeft: "1px solid rgba(57,255,20,0.1)", padding: "48px 24px", boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", transition: "transform 0.5s cubic-bezier(0.25,0.8,0.25,1), opacity 0.4s ease" },
-  sideClose: { position: "absolute", top: 14, right: 14, background: "none", border: "none", color: "rgba(200,245,200,0.4)", fontSize: "1rem", cursor: "none", fontFamily: "inherit" },
+  sideClose: { position: "absolute", top: 14, right: 14, background: "none", border: "none", color: "rgba(200,245,200,0.4)", fontSize: "1rem", cursor: "pointer", fontFamily: "inherit" },
   pairDot: { width: 48, height: 48, borderRadius: "50%" },
   pairTitle: { fontSize: "1.15rem", fontWeight: 700, margin: 0, textAlign: "center" },
   pairDivider: { width: 30, height: 2, background: "rgba(57,255,20,0.15)", borderRadius: 1 },
