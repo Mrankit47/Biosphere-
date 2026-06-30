@@ -57,6 +57,12 @@ const FEATURES = [
     href: "/viruses",
   },
   {
+    emoji: "🦁",
+    title: "Rare Species",
+    desc: "100 endangered creatures — from vaquita to axolotl — with interactive 3D models.",
+    href: "/rare-species",
+  },
+  {
     emoji: "🌿",
     title: "Ecosystems",
     desc: "Dive into biomes — forests, oceans, deserts — with interactive food webs.",
@@ -65,7 +71,7 @@ const FEATURES = [
 ];
 
 const MARQUEE_TEXT =
-  "CELLS · DNA · MICROORGANISMS · VIRUSES · ECOSYSTEMS · EVOLUTION · GENETICS · ORGANISMS · PHOTOSYNTHESIS · MITOSIS · RIBOSOMES · ";
+  "CELLS · DNA · MICROORGANISMS · VIRUSES · RARE SPECIES · ECOSYSTEMS · EVOLUTION · GENETICS · ORGANISMS · PHOTOSYNTHESIS · MITOSIS · RIBOSOMES · ";
 
 /* ═══════════════════════════════════════════════════════════════
    ▸ 3-D  SCENE  COMPONENTS

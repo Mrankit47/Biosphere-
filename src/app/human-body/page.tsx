@@ -2291,6 +2291,21 @@ export default function HumanBodyPage() {
             padding: 1.25rem;
           }
         }
+
+        .medical-label {
+          background: rgba(1, 4, 1, 0.95);
+          border: 1px solid rgba(56, 189, 248, 0.4);
+          color: #38bdf8;
+          padding: 5px 12px;
+          border-radius: 4px;
+          font-size: 0.68rem;
+          font-weight: 800;
+          white-space: nowrap;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 10px rgba(56, 189, 248, 0.15);
+          letter-spacing: 0.05em;
+          pointer-events: none;
+          transform: translate(-50%, -100%);
+        }
       `}</style>
     </div>
   )

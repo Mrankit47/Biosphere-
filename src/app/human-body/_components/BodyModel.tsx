@@ -1138,8 +1138,8 @@ export function Organs({
   }
 
   // Radial Explode vector offsets for each organ
-  const getOffset = (id: string) => {
-    const defaultOffset = [0, 0, 0]
+  const getOffset = (id: string): [number, number, number] => {
+    const defaultOffset: [number, number, number] = [0, 0, 0]
     if (explode === 0) return defaultOffset
 
     const directions: Record<string, [number, number, number]> = {
