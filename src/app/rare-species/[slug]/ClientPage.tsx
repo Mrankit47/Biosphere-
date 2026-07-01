@@ -1,6 +1,7 @@
 "use client";
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
+import * as THREE from "three";
 import { OrbitControls } from "@react-three/drei";
 import Link from "next/link";
 import { getSpeciesById, STATUS_LABELS } from "../_data/species";
@@ -15,14 +16,12 @@ function DetailScene({ speciesId }: { speciesId: string }) {
 
   return (
     <>
-      <ambientLight intensity={0.35} />
-      <pointLight position={[4, 4, 4]} intensity={1.2} color="#ffffff" />
-      <pointLight position={[-3, -2, 3]} intensity={0.5} color={species.color} />
-      <pointLight position={[0, 0, 0]} intensity={0.3} color={species.accentColor} />
+      <ambientLight intensity={0.8} />
+      <directionalLight position={[5, 8, 5]} intensity={1.0} />
       <fog attach="fog" args={["#050A05", 15, 30]} />
 
       <Suspense fallback={null}>
-        <ProceduralCreature bodyType={species.bodyType} bodyParams={species.bodyParams} detail />
+        <ProceduralCreature bodyType={species.bodyType} bodyParams={species.bodyParams} detail speciesId={species.id} emoji={species.emoji} />
       </Suspense>
 
       <OrbitControls
@@ -57,7 +56,7 @@ export default function ClientPage({ slug }: { slug: string }) {
     <div style={S.root}>
       {/* 3D Canvas */}
       <div style={S.canvasWrap}>
-        <Canvas camera={{ position: [0, 1, 4], fov: 45 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }} style={{ background: "#050A05" }}>
+        <Canvas camera={{ position: [0, 0.2, 4], fov: 42 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }} style={{ background: "#050A05" }}>
           <DetailScene speciesId={slug} />
         </Canvas>
       </div>

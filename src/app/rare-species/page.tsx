@@ -95,32 +95,6 @@ function HeroScene() {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   MINI 3D CARD PREVIEW
-   ══════════════════════════════════════════════════════════════ */
-function MiniCreature({ color, accentColor }: { color: string; accentColor: string }) {
-  const ref = useRef<THREE.Mesh>(null!);
-  useFrame(({ clock }) => {
-    ref.current.rotation.y = clock.getElapsedTime() * 0.3;
-    const p = 1 + Math.sin(clock.getElapsedTime() * 2) * 0.03;
-    ref.current.scale.setScalar(p);
-  });
-  return (
-    <>
-      <ambientLight intensity={0.3} />
-      <pointLight position={[2, 2, 2]} intensity={0.8} color={color} />
-      <mesh ref={ref}>
-        <icosahedronGeometry args={[0.9, 3]} />
-        <meshStandardMaterial color={color} emissive={accentColor} emissiveIntensity={0.3} transparent opacity={0.6} roughness={0.4} />
-      </mesh>
-      <mesh>
-        <icosahedronGeometry args={[0.92, 2]} />
-        <meshBasicMaterial color={color} wireframe transparent opacity={0.08} />
-      </mesh>
-    </>
-  );
-}
-
-/* ══════════════════════════════════════════════════════════════
    LAZY CANVAS CARD (IntersectionObserver)
    ══════════════════════════════════════════════════════════════ */
 function useInView(rootMargin = "100px") {
@@ -144,8 +118,12 @@ function LazySpeciesCanvas({ species }: { species: typeof RARE_SPECIES[0] }) {
       {inView ? (
         <Suspense fallback={<div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: species.color, fontSize: "2rem" }}>{species.emoji}</div>}>
           {typeof window !== "undefined" && (
-            <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: false, alpha: true }} style={{ background: "transparent" }}>
-              <MiniCreature color={species.color} accentColor={species.accentColor} />
+            <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3.2], fov: 42 }} gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }} style={{ background: "transparent" }}>
+              <ambientLight intensity={0.8} />
+              <directionalLight position={[3, 4, 5]} intensity={1.0} />
+              <Suspense fallback={null}>
+                <ProceduralCreature bodyType={species.bodyType} bodyParams={species.bodyParams} speciesId={species.id} emoji={species.emoji} />
+              </Suspense>
             </Canvas>
           )}
         </Suspense>
