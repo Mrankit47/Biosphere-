@@ -31,14 +31,6 @@ interface Props {
   emoji?: string;
 }
 
-/* ── Species with generated images ─────────────────────────────── */
-const SPECIES_WITH_IMAGES = new Set([
-  "vaquita", "amur-leopard", "sumatran-rhino", "pangolin", "saola",
-  "javan-rhino", "snow-leopard", "red-panda", "okapi", "saiga-antelope",
-  "axolotl", "narwhal", "black-footed-ferret", "iberian-lynx",
-  "pygmy-sloth", "ethiopian-wolf", "northern-hairy-nosed-wombat",
-]);
-
 /* ── Glow particles ──────────────────────────────────────────── */
 function SpecimenParticles({ color, radius, count = 100 }: { color: string; radius: number; count?: number }) {
   const ref = useRef<THREE.Points>(null!);
@@ -87,7 +79,7 @@ export default function ProceduralCreature({ bodyType, bodyParams, detail = fals
     displacementMap: null,
   });
 
-  const hasImage = speciesId && SPECIES_WITH_IMAGES.has(speciesId);
+  const hasImage = !!speciesId;
 
   // Generate Color and Displacement map on the fly
   useEffect(() => {
@@ -101,45 +93,79 @@ export default function ProceduralCreature({ bodyType, bodyParams, detail = fals
       img.onload = () => {
         if (!active) return;
 
+        const w = img.width;
+        const h = img.height;
+
+        // Temporary canvas to analyze pixels and build displacement map
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = w;
+        tempCanvas.height = h;
+        const tCtx = tempCanvas.getContext("2d")!;
+        tCtx.drawImage(img, 0, 0);
+
+        const imgData = tCtx.getImageData(0, 0, w, h);
+        const data = imgData.data;
+
+        // Check if there is transparency in the image (alpha < 240)
+        let hasAlpha = false;
+        for (let i = 3; i < data.length; i += 4) {
+          if (data[i] < 240) {
+            hasAlpha = true;
+            break;
+          }
+        }
+
         // Color texture canvas
         const colorCanvas = document.createElement("canvas");
-        colorCanvas.width = img.width;
-        colorCanvas.height = img.height;
+        colorCanvas.width = w;
+        colorCanvas.height = h;
         const cCtx = colorCanvas.getContext("2d")!;
-        cCtx.drawImage(img, 0, 0);
 
         // Displacement heightmap canvas
         const dispCanvas = document.createElement("canvas");
-        dispCanvas.width = img.width;
-        dispCanvas.height = img.height;
+        dispCanvas.width = w;
+        dispCanvas.height = h;
         const dCtx = dispCanvas.getContext("2d")!;
 
         // Fill background with black (neutral depth)
         dCtx.fillStyle = "#000000";
-        dCtx.fillRect(0, 0, dispCanvas.width, dispCanvas.height);
+        dCtx.fillRect(0, 0, w, h);
 
-        // Draw alpha silhouette in white
-        const tempCanvas = document.createElement("canvas");
-        tempCanvas.width = img.width;
-        tempCanvas.height = img.height;
-        const tCtx = tempCanvas.getContext("2d")!;
-        tCtx.drawImage(img, 0, 0);
+        if (hasAlpha) {
+          // Transparent image (original style): draw directly
+          cCtx.drawImage(img, 0, 0);
 
-        const imgData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-        const data = imgData.data;
+          // Convert non-transparent pixels to solid white based on alpha channel
+          for (let i = 0; i < data.length; i += 4) {
+            const alpha = data[i + 3];
+            data[i] = alpha;
+            data[i + 1] = alpha;
+            data[i + 2] = alpha;
+          }
+          tCtx.putImageData(imgData, 0, 0);
 
-        // Convert non-transparent pixels to solid white based on alpha channel
-        for (let i = 0; i < data.length; i += 4) {
-          const alpha = data[i + 3];
-          data[i] = alpha;
-          data[i + 1] = alpha;
-          data[i + 2] = alpha;
+          // Blur the silhouette to create smooth rounded slopes at edges
+          dCtx.filter = "blur(12px)";
+          dCtx.drawImage(tempCanvas, 0, 0);
+        } else {
+          // Opaque photo (Wikipedia style): rounded corner mask and volumetric cushion
+          cCtx.beginPath();
+          cCtx.roundRect(w * 0.05, h * 0.05, w * 0.9, h * 0.9, Math.min(w, h) * 0.08);
+          cCtx.clip();
+          cCtx.drawImage(img, 0, 0);
+
+          // Heightmap: Draw a white rounded rectangle slightly inset
+          tCtx.fillStyle = "#000000";
+          tCtx.fillRect(0, 0, w, h);
+          tCtx.fillStyle = "#ffffff";
+          tCtx.beginPath();
+          tCtx.roundRect(w * 0.08, h * 0.08, w * 0.84, h * 0.84, Math.min(w, h) * 0.08);
+          tCtx.fill();
+
+          // Blur heavily to create a smooth pillowy dome cushion shape
+          dCtx.filter = "blur(20px)";
+          dCtx.drawImage(tempCanvas, 0, 0);
         }
-        tCtx.putImageData(imgData, 0, 0);
-
-        // Blur the silhouette to create smooth rounded slopes at edges
-        dCtx.filter = "blur(12px)";
-        dCtx.drawImage(tempCanvas, 0, 0);
 
         const colorTex = new THREE.CanvasTexture(colorCanvas);
         colorTex.colorSpace = THREE.SRGBColorSpace;
@@ -213,7 +239,7 @@ export default function ProceduralCreature({ bodyType, bodyParams, detail = fals
     return () => {
       active = false;
     };
-  }, [speciesId, emoji, bodyParams.primaryColor, hasImage]);
+  }, [speciesId, emoji, bodyParams.primaryColor]);
 
   // Idle floating and rotating animation
   useFrame(({ clock }) => {
