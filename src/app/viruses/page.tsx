@@ -5,6 +5,80 @@ import * as THREE from "three";
 import Link from "next/link";
 import { VIRUSES } from "./_data/viruses";
 import "./_styles/viruses.css";
+import dynamic from "next/dynamic";
+
+/* ── DYNAMICALLY IMPORT VIRUS MODELS ── */
+const CoronavirusMdl = dynamic(() => import("./_models/CoronavirusMdl"), { ssr: false });
+const HIVMdl = dynamic(() => import("./_models/HIVMdl"), { ssr: false });
+const InfluenzaMdl = dynamic(() => import("./_models/InfluenzaMdl"), { ssr: false });
+const EbolaMdl = dynamic(() => import("./_models/EbolaMdl"), { ssr: false });
+const RabiesMdl = dynamic(() => import("./_models/RabiesMdl"), { ssr: false });
+const BacteriophageMdl = dynamic(() => import("./_models/BacteriophageMdl"), { ssr: false });
+const DengueMdl = dynamic(() => import("./_models/DengueMdl"), { ssr: false });
+const HepatitisBMdl = dynamic(() => import("./_models/HepatitisBMdl"), { ssr: false });
+const MeaslesMdl = dynamic(() => import("./_models/MeaslesMdl"), { ssr: false });
+const TMVMdl = dynamic(() => import("./_models/TMVMdl"), { ssr: false });
+const AdenovirusMdl = dynamic(() => import("./_models/AdenovirusMdl"), { ssr: false });
+const ZikaMdl = dynamic(() => import("./_models/ZikaMdl"), { ssr: false });
+const SmallpoxMdl = dynamic(() => import("./_models/SmallpoxMdl"), { ssr: false });
+const HerpesMdl = dynamic(() => import("./_models/HerpesMdl"), { ssr: false });
+const RotavirusMdl = dynamic(() => import("./_models/RotavirusMdl"), { ssr: false });
+const MarburgMdl = dynamic(() => import("./_models/MarburgMdl"), { ssr: false });
+const NorovirusMdl = dynamic(() => import("./_models/NorovirusMdl"), { ssr: false });
+const HPVMdl = dynamic(() => import("./_models/HPVMdl"), { ssr: false });
+const PoliovirusMdl = dynamic(() => import("./_models/PoliovirusMdl"), { ssr: false });
+const MimivirusMdl = dynamic(() => import("./_models/MimivirusMdl"), { ssr: false });
+const LambdaPhageMdl = dynamic(() => import("./_models/LambdaPhageMdl"), { ssr: false });
+const RubellaMdl = dynamic(() => import("./_models/RubellaMdl"), { ssr: false });
+const MumpsMdl = dynamic(() => import("./_models/MumpsMdl"), { ssr: false });
+const HCVMdl = dynamic(() => import("./_models/HCVMdl"), { ssr: false });
+const LassaMdl = dynamic(() => import("./_models/LassaMdl"), { ssr: false });
+const HantavirusMdl = dynamic(() => import("./_models/HantavirusMdl"), { ssr: false });
+const NipahMdl = dynamic(() => import("./_models/NipahMdl"), { ssr: false });
+const RiftValleyMdl = dynamic(() => import("./_models/RiftValleyMdl"), { ssr: false });
+const ChikungunyaMdl = dynamic(() => import("./_models/ChikungunyaMdl"), { ssr: false });
+const JapaneseEncephalitisMdl = dynamic(() => import("./_models/JapaneseEncephalitisMdl"), { ssr: false });
+const VaricellaMdl = dynamic(() => import("./_models/VaricellaMdl"), { ssr: false });
+const RhinovirusMdl = dynamic(() => import("./_models/RhinovirusMdl"), { ssr: false });
+const WestNileMdl = dynamic(() => import("./_models/WestNileMdl"), { ssr: false });
+const MERSMdl = dynamic(() => import("./_models/MERSMdl"), { ssr: false });
+
+const MODEL_MAP: Record<string, React.ComponentType<{ detail?: boolean }>> = {
+  "sars-cov-2": CoronavirusMdl,
+  hiv: HIVMdl,
+  influenza: InfluenzaMdl,
+  ebola: EbolaMdl,
+  rabies: RabiesMdl,
+  bacteriophage: BacteriophageMdl,
+  dengue: DengueMdl,
+  "hepatitis-b": HepatitisBMdl,
+  measles: MeaslesMdl,
+  tmv: TMVMdl,
+  adenovirus: AdenovirusMdl,
+  zika: ZikaMdl,
+  smallpox: SmallpoxMdl,
+  herpes: HerpesMdl,
+  rotavirus: RotavirusMdl,
+  marburg: MarburgMdl,
+  norovirus: NorovirusMdl,
+  hpv: HPVMdl,
+  poliovirus: PoliovirusMdl,
+  mimivirus: MimivirusMdl,
+  "lambda-phage": LambdaPhageMdl,
+  rubella: RubellaMdl,
+  mumps: MumpsMdl,
+  "hepatitis-c": HCVMdl,
+  lassa: LassaMdl,
+  hanta: HantavirusMdl,
+  nipah: NipahMdl,
+  "rift-valley": RiftValleyMdl,
+  chikungunya: ChikungunyaMdl,
+  "japanese-encephalitis": JapaneseEncephalitisMdl,
+  varicella: VaricellaMdl,
+  rhinovirus: RhinovirusMdl,
+  "west-nile": WestNileMdl,
+  mers: MERSMdl,
+};
 
 /* ══════════════════════════════════════════════════════════════
    HERO PARTICLES
@@ -118,6 +192,47 @@ function MiniVirus({ color, accentColor }: { color: string; accentColor: string 
 }
 
 /* ══════════════════════════════════════════════════════════════
+   ACTUAL CARD VIRUS RENDERER WITH PERFORMANCE SWITCH
+   ══════════════════════════════════════════════════════════════ */
+function CardVirus({ v }: { v: any }) {
+  const ModelComponent = MODEL_MAP[v.id];
+  const groupRef = useRef<THREE.Group>(null!);
+
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y = clock.getElapsedTime() * 0.22;
+      const p = 0.96 + Math.sin(clock.getElapsedTime() * 1.5) * 0.025;
+      groupRef.current.scale.setScalar(p);
+    }
+  });
+
+  // Calculate customized scale to fit within card bounds
+  let scale = 0.85;
+  if (v.id === "ebola") scale = 0.45;
+  else if (v.id === "bacteriophage" || v.id === "lambda-phage") scale = 0.7;
+  else if (v.id === "tmv") scale = 0.65;
+
+  return (
+    <>
+      <ambientLight intensity={0.45} />
+      <pointLight position={[2, 2, 2]} intensity={1.0} color="#ffffff" />
+      <pointLight position={[-2, -2, 2]} intensity={0.5} color={v.color} />
+      <group ref={groupRef}>
+        {ModelComponent ? (
+          <Suspense fallback={null}>
+            <group scale={scale}>
+              <ModelComponent detail={false} />
+            </group>
+          </Suspense>
+        ) : (
+          <MiniVirus color={v.color} accentColor={v.accentColor} />
+        )}
+      </group>
+    </>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    LAZY CANVAS CARD
    ══════════════════════════════════════════════════════════════ */
 function useInView(rootMargin = "100px") {
@@ -141,7 +256,7 @@ function LazyVirusCanvas({ v }: { v: any }) {
       {inView ? (
         <Suspense fallback={<div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: v.color, fontSize: "2rem" }}>{v.emoji}</div>}>
           <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: false, alpha: true }} style={{ background: "transparent" }}>
-            <MiniVirus color={v.color} accentColor={v.accentColor} />
+            <CardVirus v={v} />
           </Canvas>
         </Suspense>
       ) : (

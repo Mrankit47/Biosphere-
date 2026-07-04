@@ -5,6 +5,82 @@ import * as THREE from "three";
 import Link from "next/link";
 import { ORGANISMS } from "./_data/organisms";
 import "./_styles/microorganisms.css";
+import dynamic from "next/dynamic";
+
+/* ── DYNAMICALLY IMPORT ORGANISM MODELS ── */
+const AmoebaMdl = dynamic(() => import("./_models/AmoebaMdl"), { ssr: false });
+const EcoliMdl = dynamic(() => import("./_models/EcoliMdl"), { ssr: false });
+const ChlorellaMdl = dynamic(() => import("./_models/ChlorellaMdl"), { ssr: false });
+const VolvoxMdl = dynamic(() => import("./_models/VolvoxMdl"), { ssr: false });
+const ParameciumMdl = dynamic(() => import("./_models/ParameciumMdl"), { ssr: false });
+const EuglenaMdl = dynamic(() => import("./_models/EuglenaMdl"), { ssr: false });
+const DNAHelixMdl = dynamic(() => import("./_models/DNAHelixMdl"), { ssr: false });
+const AnimalCellMdl = dynamic(() => import("./_models/AnimalCellMdl"), { ssr: false });
+const PlantCellMdl = dynamic(() => import("./_models/PlantCellMdl"), { ssr: false });
+const BacteriaMdl = dynamic(() => import("./_models/BacteriaMdl"), { ssr: false });
+const TardigradeMdl = dynamic(() => import("./_models/TardigradeMdl"), { ssr: false });
+const DiatomMdl = dynamic(() => import("./_models/DiatomMdl"), { ssr: false });
+const SpirogyraMdl = dynamic(() => import("./_models/SpirogyraMdl"), { ssr: false });
+const StentorMdl = dynamic(() => import("./_models/StentorMdl"), { ssr: false });
+const HalobacteriumMdl = dynamic(() => import("./_models/HalobacteriumMdl"), { ssr: false });
+const CyanobacteriaMdl = dynamic(() => import("./_models/CyanobacteriaMdl"), { ssr: false });
+const YeastMdl = dynamic(() => import("./_models/YeastMdl"), { ssr: false });
+const PenicilliumMdl = dynamic(() => import("./_models/PenicilliumMdl"), { ssr: false });
+const RadiolariaMdl = dynamic(() => import("./_models/RadiolariaMdl"), { ssr: false });
+const DinoflagellateMdl = dynamic(() => import("./_models/DinoflagellateMdl"), { ssr: false });
+const SpirocheteMdl = dynamic(() => import("./_models/SpirocheteMdl"), { ssr: false });
+const SlimeMoldMdl = dynamic(() => import("./_models/SlimeMoldMdl"), { ssr: false });
+const VorticellaMdl = dynamic(() => import("./_models/VorticellaMdl"), { ssr: false });
+const RotiferMdl = dynamic(() => import("./_models/RotiferMdl"), { ssr: false });
+const NematodeMdl = dynamic(() => import("./_models/NematodeMdl"), { ssr: false });
+const HydraMdl = dynamic(() => import("./_models/HydraMdl"), { ssr: false });
+const DaphniaMdl = dynamic(() => import("./_models/DaphniaMdl"), { ssr: false });
+const PlanariaMdl = dynamic(() => import("./_models/PlanariaMdl"), { ssr: false });
+const OstracodMdl = dynamic(() => import("./_models/OstracodMdl"), { ssr: false });
+const ThermophileMdl = dynamic(() => import("./_models/ThermophileMdl"), { ssr: false });
+const TrypanosomaMdl = dynamic(() => import("./_models/TrypanosomaMdl"), { ssr: false });
+const GiardiaMdl = dynamic(() => import("./_models/GiardiaMdl"), { ssr: false });
+const StreptococcusMdl = dynamic(() => import("./_models/StreptococcusMdl"), { ssr: false });
+const BacillusMdl = dynamic(() => import("./_models/BacillusMdl"), { ssr: false });
+const MethanogenMdl = dynamic(() => import("./_models/MethanogenMdl"), { ssr: false });
+
+const MODEL_MAP: Record<string, React.ComponentType<{ detail?: boolean }>> = {
+  amoeba: AmoebaMdl,
+  ecoli: EcoliMdl,
+  chlorella: ChlorellaMdl,
+  volvox: VolvoxMdl,
+  paramecium: ParameciumMdl,
+  euglena: EuglenaMdl,
+  "dna-helix": DNAHelixMdl,
+  "animal-cell": AnimalCellMdl,
+  "plant-cell": PlantCellMdl,
+  bacteria: BacteriaMdl,
+  tardigrade: TardigradeMdl,
+  diatom: DiatomMdl,
+  spirogyra: SpirogyraMdl,
+  stentor: StentorMdl,
+  halobacterium: HalobacteriumMdl,
+  cyanobacteria: CyanobacteriaMdl,
+  yeast: YeastMdl,
+  penicillium: PenicilliumMdl,
+  radiolaria: RadiolariaMdl,
+  dinoflagellate: DinoflagellateMdl,
+  spirochete: SpirocheteMdl,
+  "slime-mold": SlimeMoldMdl,
+  vorticella: VorticellaMdl,
+  rotifer: RotiferMdl,
+  nematode: NematodeMdl,
+  hydra: HydraMdl,
+  daphnia: DaphniaMdl,
+  planaria: PlanariaMdl,
+  ostracod: OstracodMdl,
+  thermophile: ThermophileMdl,
+  trypanosoma: TrypanosomaMdl,
+  giardia: GiardiaMdl,
+  streptococcus: StreptococcusMdl,
+  bacillus: BacillusMdl,
+  methanogen: MethanogenMdl,
+};
 
 /* ══════════════════════════════════════════════════════════════
    HERO PARTICLES
@@ -183,6 +259,43 @@ function MiniOrg({ color, accentColor }: { color: string; accentColor: string })
 }
 
 /* ══════════════════════════════════════════════════════════════
+   ACTUAL CARD ORGANISM RENDERER WITH PERFORMANCE SWITCH
+   ══════════════════════════════════════════════════════════════ */
+function CardOrganism({ org }: { org: any }) {
+  const ModelComponent = MODEL_MAP[org.id];
+  const groupRef = useRef<THREE.Group>(null!);
+
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y = clock.getElapsedTime() * 0.22;
+      const p = 0.96 + Math.sin(clock.getElapsedTime() * 1.5) * 0.025;
+      groupRef.current.scale.setScalar(p);
+    }
+  });
+
+  const scale = org.id === "volvox" ? 0.65 : org.id === "dna-helix" ? 0.45 : 0.85;
+
+  return (
+    <>
+      <ambientLight intensity={0.45} />
+      <pointLight position={[2, 2, 2]} intensity={1.0} color="#ffffff" />
+      <pointLight position={[-2, -2, 2]} intensity={0.5} color={org.color} />
+      <group ref={groupRef}>
+        {ModelComponent ? (
+          <Suspense fallback={null}>
+            <group scale={scale}>
+              <ModelComponent detail={false} />
+            </group>
+          </Suspense>
+        ) : (
+          <MiniOrg color={org.color} accentColor={org.accentColor} />
+        )}
+      </group>
+    </>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
    LAZY CANVAS CARD
    ══════════════════════════════════════════════════════════════ */
 function useInView(rootMargin = "100px") {
@@ -207,7 +320,7 @@ function LazyMicroCanvas({ org }: { org: any }) {
         <Suspense fallback={<div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: org.color, fontSize: "2rem" }}>{org.emoji}</div>}>
           {typeof window !== 'undefined' && (
             <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: false, alpha: true }} style={{ background: "transparent" }}>
-              <MiniOrg color={org.color} accentColor={org.accentColor} />
+              <CardOrganism org={org} />
             </Canvas>
           )}
         </Suspense>
