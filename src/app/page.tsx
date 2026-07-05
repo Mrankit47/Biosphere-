@@ -80,7 +80,6 @@ const MARQUEE_TEXT =
 /* ── Mouse-parallax camera rig ──────────────────────────────── */
 
 function CameraRig() {
-  const { camera } = useThree();
   const mouse = useRef({ x: 0, y: 0 });
   const target = useRef({ x: 0, y: 0 });
 
@@ -93,7 +92,7 @@ function CameraRig() {
     return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
-  useFrame(() => {
+  useFrame(({ camera }) => {
     target.current.x += (mouse.current.x * 1.2 - target.current.x) * 0.04;
     target.current.y += (-mouse.current.y * 0.8 - target.current.y) * 0.04;
     camera.position.x = target.current.x;
