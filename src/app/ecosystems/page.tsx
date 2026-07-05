@@ -2126,7 +2126,13 @@ function Scene({
         castShadow
       />
 
-      <Environment preset={biomeId === "vent" ? "night" : biomeId === "coral_reef" || biomeId === "mangrove" ? "sunset" : "forest"} />
+      <Environment files={
+        biomeId === "vent"
+          ? "/hdr/dikhololo_night_1k.hdr"
+          : biomeId === "coral_reef" || biomeId === "mangrove"
+          ? "/hdr/venice_sunset_1k.hdr"
+          : "/hdr/forest_slope_1k.hdr"
+      } />
 
       <Float speed={0.4} rotationIntensity={0.06} floatIntensity={0.25}>
         {activeViewMode === "pyramid" ? (

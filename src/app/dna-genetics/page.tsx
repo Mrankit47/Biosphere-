@@ -491,7 +491,7 @@ function Scene({ separation, onRungClick }: { separation: number; onRungClick: (
       />
 
       {/* Environment for reflections */}
-      <Environment preset="night" />
+      <Environment files="/hdr/dikhololo_night_1k.hdr" />
 
       {/* DNA Model */}
       <Float speed={0.5} rotationIntensity={0.05} floatIntensity={0.3}>

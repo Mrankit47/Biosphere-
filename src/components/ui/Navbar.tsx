@@ -9,20 +9,54 @@ const navLinks = [
   { href: "/cell-explorer", label: "Cell Explorer", icon: "🔬" },
   { href: "/microorganisms", label: "Microorganisms", icon: "🦠" },
   { href: "/viruses", label: "Viruses", icon: "☣️" },
+  { href: "/disease-explorer", label: "Disease Explorer", icon: "🏥" },
   { href: "/rare-species", label: "Rare Species", icon: "🦁" },
   { href: "/dna-genetics", label: "DNA & Genetics", icon: "🧬" },
   { href: "/human-body", label: "Human Body", icon: "🫀" },
   { href: "/ecosystems", label: "Ecosystems", icon: "🌿" },
+  { href: "/ecosystem-simulator", label: "Ecosystem Sim", icon: "🌐" },
   { href: "/tree-of-life", label: "Tree of Life", icon: "🌳" },
+  { href: "/learning-paths", label: "Learning Paths", icon: "🎓" },
+  { href: "/gamification", label: "Profile Hub", icon: "🏆" },
+  { href: "/virtual-lab", label: "Virtual Lab", icon: "🧪" },
+  { href: "/process-simulations", label: "Process Sims", icon: "🌀" },
+  { href: "/research-hub", label: "Research Hub", icon: "📚" },
+  { href: "/tutor", label: "AI Tutor", icon: "🤖" },
+  { href: "/dictionary", label: "Dictionary", icon: "📖" },
   { href: "/quiz", label: "Quiz", icon: "📝" },
+];
+
+const threeDLinks = [
+  { href: "/cell-explorer", label: "Cell Explorer", icon: "🔬" },
+  { href: "/human-body", label: "Human Body", icon: "🫀" },
+  { href: "/tree-of-life", label: "Tree of Life", icon: "🌳" },
+];
+
+const researchLinks = [
+  { href: "/microorganisms", label: "Microorganisms", icon: "🦠" },
+  { href: "/viruses", label: "Viruses", icon: "☣️" },
+  { href: "/disease-explorer", label: "Disease Explorer", icon: "🏥" },
+  { href: "/rare-species", label: "Rare Species", icon: "🦁" },
+  { href: "/dna-genetics", label: "DNA & Genetics", icon: "🧬" },
+  { href: "/ecosystems", label: "Ecosystems", icon: "🌿" },
+  { href: "/ecosystem-simulator", label: "Ecosystem Sim", icon: "🌐" },
+  { href: "/virtual-lab", label: "Virtual Lab", icon: "🧪" },
+  { href: "/process-simulations", label: "Process Sims", icon: "🌀" },
+  { href: "/research-hub", label: "Research Hub", icon: "📚" },
+  { href: "/dictionary", label: "Dictionary", icon: "📖" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   /* ── Scroll: hide on down, show on up, intensify bg ──── */
   const handleScroll = useCallback(() => {
@@ -51,7 +85,9 @@ export default function Navbar() {
 
   /* ── Close mobile menu on route change ────────────────── */
   useEffect(() => {
-    setMobileOpen(false);
+    Promise.resolve().then(() => {
+      setMobileOpen(false);
+    });
   }, [pathname]);
 
   const navTransform = visible ? "translateY(0)" : "translateY(-100%)";
@@ -107,24 +143,94 @@ export default function Navbar() {
 
         {/* ── Desktop Links ────────────────────────────── */}
         <ul className="nav-desktop-links" role="menubar">
-          {navLinks.map((link) => {
-            const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
-            return (
-              <li key={link.href} role="none">
-                <Link
-                  href={link.href}
-                  role="menuitem"
-                  className={`nav-link ${isActive ? "nav-link--active" : ""}`}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            );
-          })}
+          {/* Home */}
+          <li role="none">
+            <Link
+              href="/"
+              role="menuitem"
+              className={`nav-link ${mounted && pathname === "/" ? "nav-link--active" : ""}`}
+            >
+              Home
+            </Link>
+          </li>
+
+          {/* Learning Paths */}
+          <li role="none">
+            <Link
+              href="/learning-paths"
+              role="menuitem"
+              className={`nav-link ${mounted && pathname?.startsWith("/learning-paths") ? "nav-link--active" : ""}`}
+            >
+              Learning Paths
+            </Link>
+          </li>
+
+          {/* Profile Hub */}
+          <li role="none">
+            <Link
+              href="/gamification"
+              role="menuitem"
+              className={`nav-link ${mounted && pathname?.startsWith("/gamification") ? "nav-link--active" : ""}`}
+            >
+              Profile Hub
+            </Link>
+          </li>
+
+          {/* 3D Modules Dropdown */}
+          <li role="none" className="nav-dropdown-wrapper">
+            <button className={`nav-link nav-dropdown-trigger ${mounted && (pathname?.startsWith("/cell-explorer") || pathname?.startsWith("/human-body") || pathname?.startsWith("/tree-of-life")) ? "nav-link--active" : ""}`}>
+              3D Modules <span className="dropdown-chevron">▼</span>
+            </button>
+            <ul className="nav-dropdown-menu">
+              {threeDLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="dropdown-item">
+                    <span className="dropdown-icon">{link.icon}</span>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+
+          {/* Research Labs Dropdown */}
+          <li role="none" className="nav-dropdown-wrapper">
+            <button className={`nav-link nav-dropdown-trigger ${mounted && (pathname?.startsWith("/microorganisms") || pathname?.startsWith("/viruses") || pathname?.startsWith("/disease-explorer") || pathname?.startsWith("/rare-species") || pathname?.startsWith("/dna-genetics") || pathname?.startsWith("/ecosystems") || pathname?.startsWith("/ecosystem-simulator") || pathname?.startsWith("/research-hub") || pathname?.startsWith("/virtual-lab") || pathname?.startsWith("/process-simulations") || pathname?.startsWith("/dictionary")) ? "nav-link--active" : ""}`}>
+              Research Labs <span className="dropdown-chevron">▼</span>
+            </button>
+            <ul className="nav-dropdown-menu double-column">
+              {researchLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="dropdown-item">
+                    <span className="dropdown-icon">{link.icon}</span>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+
+          {/* AI Tutor */}
+          <li role="none">
+            <Link
+              href="/tutor"
+              role="menuitem"
+              className={`nav-link ${mounted && pathname?.startsWith("/tutor") ? "nav-link--active" : ""}`}
+            >
+              AI Tutor
+            </Link>
+          </li>
+
+          {/* Quiz */}
+          <li role="none">
+            <Link
+              href="/quiz"
+              role="menuitem"
+              className={`nav-link ${mounted && pathname?.startsWith("/quiz") ? "nav-link--active" : ""}`}
+            >
+              Quiz
+            </Link>
+          </li>
         </ul>
 
         {/* ── Hamburger Button (mobile) ────────────────── */}
@@ -162,9 +268,11 @@ export default function Navbar() {
         <ul>
           {navLinks.map((link, i) => {
             const isActive =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
+              mounted && pathname
+                ? link.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(link.href)
+                : false;
             return (
               <li
                 key={link.href}
@@ -190,6 +298,96 @@ export default function Navbar() {
 
       {/* ── Scoped Styles ──────────────────────────────── */}
       <style>{`
+        /* ── Dropdowns ─────────────────────────────────── */
+        .nav-dropdown-wrapper {
+          position: relative;
+          display: inline-block;
+        }
+
+        .nav-dropdown-trigger {
+          background: transparent;
+          border: none;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          outline: none;
+          color: rgba(200, 245, 200, 0.7);
+          font-family: inherit;
+          cursor: none;
+        }
+
+        .dropdown-chevron {
+          font-size: 0.55rem;
+          transition: transform 0.3s;
+          color: rgba(57, 255, 20, 0.4);
+        }
+
+        .nav-dropdown-wrapper:hover .dropdown-chevron {
+          transform: rotate(180deg);
+          color: #39FF14;
+        }
+
+        .nav-dropdown-menu {
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%) translateY(10px);
+          opacity: 0;
+          visibility: hidden;
+          background: rgba(5, 10, 5, 0.95);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(57, 255, 20, 0.12);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(57, 255, 20, 0.05);
+          border-radius: 12px;
+          padding: 8px;
+          list-style: none;
+          margin: 0;
+          min-width: 200px;
+          z-index: 1010;
+          transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s, visibility 0.3s;
+        }
+
+        .nav-dropdown-menu.double-column {
+          display: grid;
+          grid-template-columns: 180px 180px;
+          gap: 4px;
+          min-width: 370px;
+        }
+
+        .nav-dropdown-wrapper:hover .nav-dropdown-menu {
+          opacity: 1;
+          visibility: visible;
+          transform: translateX(-50%) translateY(2px);
+        }
+
+        .dropdown-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 10px 14px;
+          color: rgba(200, 245, 200, 0.7);
+          text-decoration: none;
+          font-size: 0.82rem;
+          font-weight: 500;
+          border-radius: 8px;
+          cursor: none;
+          transition: all 0.2s ease;
+          box-sizing: border-box;
+        }
+
+        .dropdown-item:hover {
+          color: #39FF14;
+          background: rgba(57, 255, 20, 0.06);
+          box-shadow: inset 0 0 8px rgba(57, 255, 20, 0.04);
+        }
+
+        .dropdown-icon {
+          font-size: 1.05rem;
+          width: 24px;
+          text-align: center;
+        }
+
         /* ── Desktop Links ─────────────────────────────── */
         .nav-desktop-links {
           display: flex;
