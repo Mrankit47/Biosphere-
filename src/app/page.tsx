@@ -1,9 +1,10 @@
 "use client";
 
 import { useRef, useMemo, useEffect, useState, useCallback } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Link from "next/link";
+import { PillBadge, GlowButton, GlassCard, GalleryGrid } from "@/components/ds";
 
 /* ═══════════════════════════════════════════════════════════════
    ▸ CONSTANTS
@@ -221,7 +222,7 @@ function VolvoxSpheres() {
       const s = spheres[idx];
       child.position.x = s.pos[0] + Math.sin(t * s.speed + s.phase) * 1.5;
       child.position.y =
-        s.pos[1] + Math.cos(t * s.speed * 0.8 + s.phase) * 1.2;
+          s.pos[1] + Math.cos(t * s.speed * 0.8 + s.phase) * 1.2;
       child.rotation.x = t * s.speed * 0.3;
       child.rotation.y = t * s.speed * 0.2;
     });
@@ -251,10 +252,10 @@ function VolvoxSpheres() {
 
 function Marquee() {
   return (
-    <div className="hp-marquee-strip" aria-hidden="true">
-      <div className="hp-marquee-track">
+    <div className="relative z-2 w-full overflow-hidden bg-[var(--ds-accent)] py-3.5" aria-hidden="true">
+      <div className="flex w-max whitespace-nowrap animate-marquee">
         {[0, 1, 2, 3].map((i) => (
-          <span key={i} className="hp-marquee-seg">
+          <span key={i} className="text-[length:var(--ds-text-sm)] font-bold text-[var(--ds-bg-primary)] tracking-[0.25em] pr-8">
             {MARQUEE_TEXT}
           </span>
         ))}
@@ -281,19 +282,20 @@ function FeatureCard({
   delay: number;
 }) {
   return (
-    <Link
+    <GlassCard
       href={href}
-      className="hp-card"
-      style={{ animationDelay: `${delay}ms` }}
-      aria-label={`Explore ${title}`}
+      animate
+      animationDelay={delay}
+      className="p-[32px_28px] gap-2.5 hover:bg-[var(--ds-gradient-card-hover)] ds-card-group"
+      ariaLabel={`Explore ${title}`}
     >
-      <span className="hp-card-emoji">{emoji}</span>
-      <h3 className="hp-card-title">{title}</h3>
-      <p className="hp-card-desc">{desc}</p>
-      <span className="hp-card-link">
-        Explore <span className="hp-card-arrow">→</span>
+      <span className="text-[2.2rem] leading-none select-none">{emoji}</span>
+      <h3 className="text-[length:var(--ds-text-lg)] font-bold text-[var(--ds-fg)] m-0">{title}</h3>
+      <p className="text-[length:var(--ds-text-base)] text-[var(--ds-fg-muted)] leading-[1.55] m-0 flex-1">{desc}</p>
+      <span className="inline-flex items-center gap-1.5 text-[length:var(--ds-text-sm)] font-semibold text-[var(--ds-accent)] mt-2 tracking-[0.04em] transition-[gap] duration-300 ds-card-group-hover:gap-3">
+        Explore <span className="transition-transform duration-300 ds-card-group-hover:translate-x-1">→</span>
       </span>
-    </Link>
+    </GlassCard>
   );
 }
 
@@ -318,14 +320,15 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="hp-root">
+    <div className="relative w-full bg-[var(--ds-bg-primary)] overflow-x-hidden">
       {/* ────────────── 3D CANVAS (covers entire hero) ──────── */}
-      <div className="hp-canvas-wrap">
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <Canvas
           camera={{ position: [0, 0, 10], fov: 60 }}
           dpr={[1, 1.5]}
           gl={{ antialias: false, alpha: true }}
           style={{ background: "transparent" }}
+          className="pointer-events-auto"
         >
           <CameraRig />
           <Particles />
@@ -334,425 +337,73 @@ export default function HomePage() {
       </div>
 
       {/* ────────────── HERO ────────────────────────────────── */}
-      <section className="hp-hero" aria-label="Hero">
+      <section className="relative z-1 min-h-[calc(100vh-64px)] flex flex-col items-center justify-center text-center p-[0_24px_60px] gap-[22px]" aria-label="Hero">
         {/* Pill badge */}
-        <span className={`hp-pill ${mounted ? "show" : ""}`}>
-          <span className="hp-pill-dot" />
-          INTERACTIVE 3D BIOLOGY
-        </span>
+        <div className={`transition-all duration-800 transform ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3.5"}`}>
+          <PillBadge pulseDot>
+            INTERACTIVE 3D BIOLOGY
+          </PillBadge>
+        </div>
 
         {/* Title */}
-        <h1 className={`hp-title ${mounted ? "show" : ""}`}>
-          <span className="hp-title-bio">BIO</span>
-          <span className="hp-title-sphere">SPHERE</span>
+        <h1 className={`m-0 text-[clamp(4rem,12vw,10rem)] font-black leading-none tracking-[0.06em] font-sans transition-all duration-1000 delay-150 transform ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[30px]"}`}>
+          <span className="text-white drop-shadow-[0_0_50px_rgba(57,255,20,0.12)]">BIO</span>
+          <span className="text-transparent [-webkit-text-stroke:2px_var(--ds-accent)] filter drop-shadow-[0_0_24px_rgba(57,255,20,0.35)]">SPHERE</span>
         </h1>
 
         {/* Subtitle */}
-        <p className={`hp-subtitle ${mounted ? "show" : ""}`}>
+        <p className={`max-w-[600px] m-0 text-[clamp(0.95rem,2.2vw,1.35rem)] font-normal text-[var(--ds-fg-muted)] tracking-[0.05em] leading-relaxed transition-all duration-900 delay-350 transform ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}>
           Explore life at every scale — from atoms to ecosystems, in stunning 3D
         </p>
 
         {/* CTA */}
-        <Link
-          href="/cell-explorer"
-          className={`hp-cta ${mounted ? "show" : ""}`}
-          aria-label="Enter the Cell Explorer"
-        >
-          Enter the Cell →
-        </Link>
+        <div className={`transition-all duration-900 delay-500 transform ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[18px]"}`}>
+          <GlowButton href="/cell-explorer" ariaLabel="Enter the Cell Explorer">
+            Enter the Cell →
+          </GlowButton>
+        </div>
 
         {/* Scroll hint */}
         <button
-          className={`hp-scroll-hint ${mounted ? "show" : ""}`}
+          className={`absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 bg-transparent border-none cursor-none min-h-11 transition-all duration-1000 delay-1000 ${mounted ? "opacity-50 translate-y-0 hover:opacity-90" : "opacity-0 translate-y-2.5"}`}
           onClick={scrollToFeatures}
           aria-label="Scroll to features"
         >
-          <span className="hp-scroll-label">Scroll</span>
-          <span className="hp-scroll-arrow">⌄</span>
+          <span className="text-[0.65rem] tracking-[0.2em] text-[var(--ds-fg-subtle)] uppercase">Scroll</span>
+          <span className="text-[1.4rem] text-[var(--ds-accent)] ds-animate-bounce">⌄</span>
         </button>
       </section>
 
       {/* ────────────── FEATURES ────────────────────────────── */}
-      <section className="hp-features" id="features" aria-label="Features">
-        <h2 className="hp-features-heading">Every chapter, alive in 3D</h2>
+      <section className="relative z-2 bg-[var(--ds-bg-secondary)] p-[100px_clamp(16px,5vw,80px)_120px]" id="features" aria-label="Features">
+        <h2 className="text-center text-[clamp(1.6rem,4vw,2.6rem)] font-bold text-[var(--ds-fg)] m-[0_0_56px] tracking-[0.04em]">
+          Every chapter, alive in 3D
+        </h2>
 
-        <div className="hp-grid feature-grid">
+        <GalleryGrid minItemWidth="280px" gap="24px" className="max-w-[1100px] w-full">
           {FEATURES.map((f, i) => (
             <FeatureCard key={f.href} {...f} delay={100 + i * 80} />
           ))}
-        </div>
+        </GalleryGrid>
       </section>
 
       {/* ────────────── MARQUEE ─────────────────────────────── */}
       <Marquee />
 
-      {/* ────────────── SCOPED STYLES ──────────────────────── */}
+      {/* ────────────── SCOPED ANIMATIONS / BEHAVIOR ────────── */}
       <style>{`
-        /* ============================
-           ROOT
-           ============================ */
-        .hp-root {
-          position: relative;
-          width: 100%;
-          background: #050A05;
-          overflow-x: hidden;
-        }
-
-        /* ============================
-           3-D CANVAS
-           ============================ */
-        .hp-canvas-wrap {
-          position: fixed;
-          inset: 0;
-          z-index: 0;
-          pointer-events: none;
-        }
-        .hp-canvas-wrap canvas {
-          pointer-events: auto;
-        }
-
-        /* ============================
-           HERO
-           ============================ */
-        .hp-hero {
-          position: relative;
-          z-index: 1;
-          min-height: calc(100vh - 64px);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          padding: 0 24px 60px;
-          gap: 22px;
-        }
-
-        /* -- Pill badge -- */
-        .hp-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          padding: 6px 18px;
-          border-radius: 999px;
-          border: 1px solid rgba(57,255,20,0.25);
-          background: rgba(57,255,20,0.06);
-          color: #39FF14;
-          font-size: 0.75rem;
-          font-weight: 600;
-          letter-spacing: 0.14em;
-          opacity: 0;
-          transform: translateY(14px);
-          transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-        .hp-pill.show {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        .hp-pill-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: #39FF14;
-          box-shadow: 0 0 8px #39FF14;
-          animation: pillPulse 2s ease-in-out infinite;
-        }
-        @keyframes pillPulse {
-          0%, 100% { opacity: 1;   box-shadow: 0 0 8px #39FF14; }
-          50%      { opacity: 0.4; box-shadow: 0 0 2px #39FF14; }
-        }
-
-        /* -- Title -- */
-        .hp-title {
-          margin: 0;
-          font-size: clamp(4rem, 12vw, 10rem);
-          font-weight: 900;
-          line-height: 1;
-          letter-spacing: 0.06em;
-          font-family: system-ui, -apple-system, sans-serif;
-          opacity: 0;
-          transform: translateY(30px);
-          transition: opacity 1s ease 0.15s, transform 1s ease 0.15s;
-        }
-        .hp-title.show {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        .hp-title-bio {
-          color: #ffffff;
-          text-shadow: 0 0 50px rgba(57,255,20,0.12);
-        }
-        .hp-title-sphere {
-          color: transparent;
-          -webkit-text-stroke: 2px #39FF14;
-          filter: drop-shadow(0 0 24px rgba(57,255,20,0.35));
-        }
-
-        /* -- Subtitle -- */
-        .hp-subtitle {
-          max-width: 600px;
-          margin: 0;
-          font-size: clamp(0.95rem, 2.2vw, 1.35rem);
-          font-weight: 400;
-          color: rgba(200,245,200,0.6);
-          letter-spacing: 0.05em;
-          line-height: 1.6;
-          opacity: 0;
-          transform: translateY(20px);
-          transition: opacity 0.9s ease 0.35s, transform 0.9s ease 0.35s;
-        }
-        .hp-subtitle.show {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        /* -- CTA Button -- */
-        .hp-cta {
-          display: inline-block;
-          padding: 16px 48px;
-          border-radius: 999px;
-          border: 1.5px solid #39FF14;
-          color: #39FF14;
-          font-size: 1.05rem;
-          font-weight: 600;
-          letter-spacing: 0.06em;
-          text-decoration: none;
-          cursor: none;
-          background: rgba(57,255,20,0.07);
-          box-shadow:
-            0 0 24px rgba(57,255,20,0.18),
-            0 0 60px rgba(57,255,20,0.08),
-            inset 0 0 24px rgba(57,255,20,0.06);
-          opacity: 0;
-          transform: translateY(18px);
-          transition:
-            opacity 0.9s ease 0.55s,
-            transform 0.9s ease 0.55s,
-            background 0.35s ease,
-            box-shadow 0.35s ease;
-        }
-        .hp-cta.show {
-          opacity: 1;
-          transform: translateY(0);
-        }
-        .hp-cta:hover {
-          background: rgba(57,255,20,0.18);
-          box-shadow:
-            0 0 36px rgba(57,255,20,0.3),
-            0 0 80px rgba(57,255,20,0.14),
-            inset 0 0 30px rgba(57,255,20,0.1);
-        }
-
-        /* -- Scroll hint -- */
-        .hp-scroll-hint {
-          position: absolute;
-          bottom: 24px;
-          left: 50%;
-          transform: translateX(-50%) translateY(10px);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 4px;
-          background: none;
-          border: none;
-          cursor: none;
-          opacity: 0;
-          transition: opacity 1s ease 1s, transform 1s ease 1s;
-          min-height: 44px;
-        }
-        .hp-scroll-hint.show {
-          opacity: 0.5;
-          transform: translateX(-50%) translateY(0);
-        }
-        .hp-scroll-hint:hover {
-          opacity: 0.9;
-        }
-        .hp-scroll-label {
-          font-size: 0.65rem;
-          letter-spacing: 0.2em;
-          color: rgba(200,245,200,0.5);
-          text-transform: uppercase;
-        }
-        .hp-scroll-arrow {
-          font-size: 1.4rem;
-          color: #39FF14;
-          animation: scrollBounce 2s ease-in-out infinite;
-        }
-        @keyframes scrollBounce {
-          0%, 100% { transform: translateY(0); }
-          50%      { transform: translateY(6px); }
-        }
-
-        /* ============================
-           FEATURES SECTION
-           ============================ */
-        .hp-features {
-          position: relative;
-          z-index: 2;
-          background: #0A1410;
-          padding: 100px clamp(16px, 5vw, 80px) 120px;
-        }
-
-        .hp-features-heading {
-          text-align: center;
-          font-size: clamp(1.6rem, 4vw, 2.6rem);
-          font-weight: 700;
-          color: #C8F5C8;
-          margin: 0 0 56px;
-          letter-spacing: 0.04em;
-        }
-
-        .hp-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
-          max-width: 1100px;
-          margin: 0 auto;
-        }
-
-        /* -- Card -- */
-        .hp-card {
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          padding: 32px 28px;
-          border-radius: 18px;
-          border: 1px solid rgba(57,255,20,0.12);
-          background: rgba(10,20,10,0.65);
-          backdrop-filter: blur(8px);
-          text-decoration: none;
-          cursor: none;
-          transition:
-            transform 0.35s cubic-bezier(.25,.8,.25,1),
-            border-color 0.35s ease,
-            background 0.35s ease,
-            box-shadow 0.35s ease;
-          animation: cardReveal 0.7s ease both;
-        }
-        @keyframes cardReveal {
-          from { opacity: 0; transform: translateY(30px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .hp-card:hover {
-          transform: scale(1.05);
-          border-color: rgba(57,255,20,0.45);
-          background: linear-gradient(
-            160deg,
-            rgba(57,255,20,0.08) 0%,
-            rgba(10,30,15,0.9) 100%
-          );
-          box-shadow: 0 0 40px rgba(57,255,20,0.08);
-        }
-
-        .hp-card-emoji {
-          font-size: 2.2rem;
-          line-height: 1;
-        }
-
-        .hp-card-title {
-          font-size: 1.15rem;
-          font-weight: 700;
-          color: #C8F5C8;
-          margin: 4px 0 0;
-        }
-
-        .hp-card-desc {
-          font-size: 0.88rem;
-          color: rgba(200,245,200,0.5);
-          line-height: 1.55;
-          margin: 0;
-          flex: 1;
-        }
-
-        .hp-card-link {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 0.85rem;
-          font-weight: 600;
-          color: #39FF14;
-          margin-top: 8px;
-          letter-spacing: 0.04em;
-          transition: gap 0.3s ease;
-        }
-        .hp-card:hover .hp-card-link {
-          gap: 12px;
-        }
-        .hp-card-arrow {
-          transition: transform 0.3s ease;
-        }
-        .hp-card:hover .hp-card-arrow {
-          transform: translateX(4px);
-        }
-
-        /* ============================
-           MARQUEE
-           ============================ */
-        .hp-marquee-strip {
-          position: relative;
-          z-index: 2;
-          width: 100%;
-          overflow: hidden;
-          background: #39FF14;
-          padding: 14px 0;
-        }
-
-        .hp-marquee-track {
-          display: flex;
-          width: max-content;
-          animation: marqueeScroll 40s linear infinite;
-          white-space: nowrap;
-        }
-
-        .hp-marquee-seg {
-          font-size: 0.8rem;
-          font-weight: 700;
-          color: #050A05;
-          letter-spacing: 0.25em;
-          padding-right: 2rem;
-        }
-
         @keyframes marqueeScroll {
           from { transform: translateX(0); }
           to   { transform: translateX(-50%); }
         }
-
-        /* ============================
-           RESPONSIVE
-           ============================ */
-        @media (max-width: 900px) {
-          .hp-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-          }
+        .animate-marquee {
+          animation: marqueeScroll 40s linear infinite;
         }
-
-        @media (max-width: 768px) {
-          .hp-hero {
-            padding-bottom: 80px;
-          }
-          .hp-title-sphere {
-            -webkit-text-stroke-width: 1.5px;
-          }
-          .hp-cta {
-            padding: 14px 36px;
-            font-size: 0.95rem;
-          }
-          .hp-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 16px;
-          }
-          .hp-card {
-            padding: 24px 20px;
-          }
+        .ds-card-group:hover .ds-card-group-hover\\:gap-3 {
+          gap: 0.75rem;
         }
-
-        @media (max-width: 480px) {
-          .hp-grid {
-            grid-template-columns: 1fr !important;
-          }
-          .hp-features {
-            padding: 64px 16px 80px;
-          }
+        .ds-card-group:hover .ds-card-group-hover\\:translate-x-1 {
+          transform: translateX(0.25rem);
         }
       `}</style>
     </div>

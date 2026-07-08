@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { JOURNEYS } from '@/data/learningPaths'
 import { getUserProgress, getOrCreateUserId, UserProgressData } from '@/utils/supabase'
+import { BackLink } from '@/components/ds'
 
 interface AchievementConfig {
   id: string
@@ -242,10 +243,7 @@ export default function GamificationDashboard() {
       {/* HEADER */}
       <header className="game-header">
         <div className="header-left">
-          <Link href="/" className="back-btn">
-            ← Main Hub
-          </Link>
-          <div className="divider-line" />
+          <BackLink href="/" label="Home" />
           <div>
             <h1 className="header-title">ACADEMY PROFILE HUB</h1>
             <p className="header-subtitle">XP, STREAKS, AND LEVEL ACHIEVEMENTS</p>
@@ -376,12 +374,12 @@ export default function GamificationDashboard() {
 
       <style jsx global>{`
         .game-root {
-          background: #050A05;
+          background: var(--ds-bg-primary);
           min-height: calc(100vh - 64px);
-          color: #C8F5C8;
+          color: var(--ds-fg);
           position: relative;
           overflow-x: hidden;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: inherit;
         }
 
         .game-grid-bg {
@@ -413,7 +411,7 @@ export default function GamificationDashboard() {
           align-items: center;
           justify-content: space-between;
           padding: 1.25rem 2rem 0.5rem;
-          border-bottom: 1px solid rgba(57, 255, 20, 0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           position: relative;
           z-index: 2;
         }
@@ -425,27 +423,27 @@ export default function GamificationDashboard() {
         }
 
         .back-btn {
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: none;
           font-size: 0.82rem;
           font-weight: 700;
           letter-spacing: 0.05em;
           padding: 6px 14px;
           border-radius: 8px;
-          background: rgba(57, 255, 20, 0.05);
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           transition: all 0.2s ease;
         }
 
         .back-btn:hover {
           background: rgba(57, 255, 20, 0.12);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .divider-line {
           width: 1px;
           height: 32px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
         }
 
         .header-title {
@@ -458,7 +456,7 @@ export default function GamificationDashboard() {
 
         .header-subtitle {
           font-size: 0.6rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           margin: 0;
           letter-spacing: 0.25em;
           font-weight: 700;
@@ -478,8 +476,8 @@ export default function GamificationDashboard() {
 
         .panel-card {
           border-radius: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          background: rgba(10, 20, 10, 0.35);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(12px);
           box-sizing: border-box;
           padding: 1.5rem;
@@ -492,11 +490,11 @@ export default function GamificationDashboard() {
         .panel-section-title {
           font-size: 0.68rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.12em;
           text-transform: uppercase;
           margin: 0 0 1rem 0;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           padding-bottom: 8px;
         }
 
@@ -517,12 +515,12 @@ export default function GamificationDashboard() {
           width: 96px;
           height: 96px;
           border-radius: 50%;
-          border: 4px solid #39FF14;
+          border: 4px solid var(--ds-accent);
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(57, 255, 20, 0.02);
-          box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+          background: var(--ds-accent-faint);
+          box-shadow: var(--ds-glow-sm);
           flex-shrink: 0;
         }
 
@@ -535,7 +533,7 @@ export default function GamificationDashboard() {
         .level-lbl {
           font-size: 0.5rem;
           font-weight: 800;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.08em;
         }
 
@@ -565,7 +563,7 @@ export default function GamificationDashboard() {
         .gauge-bar-track {
           height: 6px;
           border-radius: 3px;
-          background: rgba(255,255,255,0.05);
+          background: var(--ds-surface-subtle);
           width: 100%;
           overflow: hidden;
           margin-bottom: 8px;
@@ -573,15 +571,15 @@ export default function GamificationDashboard() {
 
         .gauge-bar-fill {
           height: 100%;
-          background: linear-gradient(90deg, #39FF14, #00D4AA);
+          background: linear-gradient(90deg, var(--ds-accent), var(--ds-accent-muted));
           border-radius: 3px;
-          box-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .gauge-sub-notes {
           margin: 0;
           font-size: 0.68rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
         }
 
         .streak-widget {
@@ -621,7 +619,7 @@ export default function GamificationDashboard() {
 
         .streak-label {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-subtle);
         }
 
         .streak-week-grid {
@@ -635,8 +633,8 @@ export default function GamificationDashboard() {
           flex-direction: column;
           align-items: center;
           gap: 4px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.04);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 6px;
           padding: 6px 4px;
           opacity: 0.45;
@@ -644,31 +642,31 @@ export default function GamificationDashboard() {
 
         .week-box.active {
           opacity: 1.0;
-          border-color: rgba(57, 255, 20, 0.25);
-          background: rgba(57, 255, 20, 0.03);
+          border-color: var(--ds-border-accent);
+          background: var(--ds-accent-faint);
         }
 
         .box-day {
           font-size: 0.65rem;
           font-weight: 800;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
         }
 
         .box-circle {
           width: 14px;
           height: 14px;
           border-radius: 50%;
-          background: rgba(255,255,255,0.05);
+          background: var(--ds-surface-raised);
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 0.58rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           font-weight: 800;
         }
 
         .week-box.active .box-circle {
-          background: rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
         }
 
         /* ROW 2: CHALLENGES & BADGES */
@@ -688,36 +686,36 @@ export default function GamificationDashboard() {
           display: flex;
           align-items: flex-start;
           gap: 12px;
-          background: rgba(255, 255, 255, 0.01);
-          border: 1px solid rgba(255,255,255,0.03);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           padding: 12px;
           transition: all 0.2s;
         }
 
         .challenge-row-item.done {
-          border-color: rgba(57, 255, 20, 0.12);
-          background: rgba(57, 255, 20, 0.01);
+          border-color: var(--ds-border-accent);
+          background: var(--ds-accent-faint);
         }
 
         .chk-box {
           width: 18px;
           height: 18px;
-          border: 1px solid rgba(255,255,255,0.15);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 4px;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 0.68rem;
           font-weight: 800;
-          color: #39FF14;
+          color: var(--ds-accent);
           flex-shrink: 0;
           margin-top: 2px;
         }
 
         .challenge-row-item.done .chk-box {
-          border-color: #39FF14;
-          background: rgba(57, 255, 20, 0.08);
+          border-color: var(--ds-accent);
+          background: var(--ds-accent-faint);
         }
 
         .info-col {
@@ -739,13 +737,13 @@ export default function GamificationDashboard() {
         .chk-desc {
           margin: 0;
           font-size: 0.68rem;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-subtle);
           line-height: 1.35;
         }
 
         .chk-xp {
           font-size: 0.6rem;
-          color: #00D4AA;
+          color: var(--ds-accent);
           font-family: monospace;
           margin-top: 2px;
           display: block;
@@ -754,24 +752,24 @@ export default function GamificationDashboard() {
         .challenge-action-link {
           font-size: 0.72rem;
           font-weight: 700;
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: none;
           padding: 4px 10px;
           border-radius: 4px;
-          background: rgba(57, 255, 20, 0.05);
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           white-space: nowrap;
         }
 
         .challenge-action-link:hover {
-          background: rgba(57, 255, 20, 0.12);
+          background: var(--ds-accent-subtle);
         }
 
         .claimed-badge {
           font-size: 0.6rem;
           text-transform: uppercase;
-          background: rgba(255,255,255,0.04);
-          color: rgba(255,255,255,0.3);
+          background: var(--ds-surface-subtle);
+          color: var(--ds-fg-subtle);
           padding: 2px 6px;
           border-radius: 4px;
           font-weight: 700;
@@ -788,17 +786,17 @@ export default function GamificationDashboard() {
           flex-direction: column;
           align-items: center;
           padding: 12px 6px;
-          background: rgba(255, 255, 255, 0.01);
-          border: 1px solid rgba(255, 255, 255, 0.03);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           transition: all 0.25s ease;
           text-align: center;
         }
 
         .wall-badge-card.unlocked {
-          border-color: rgba(57, 255, 20, 0.18);
-          background: rgba(57, 255, 20, 0.02);
-          box-shadow: 0 4px 15px rgba(57, 255, 20, 0.03);
+          border-color: var(--ds-border-accent);
+          background: var(--ds-accent-faint);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .wall-badge-card.locked {
@@ -809,8 +807,8 @@ export default function GamificationDashboard() {
           width: 42px;
           height: 42px;
           border-radius: 50%;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.02);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-raised);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -818,9 +816,9 @@ export default function GamificationDashboard() {
         }
 
         .wall-badge-card.unlocked .badge-icon-box {
-          border-color: #39FF14;
-          background: rgba(57, 255, 20, 0.08);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+          border-color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .badge-icon-face {
@@ -835,12 +833,12 @@ export default function GamificationDashboard() {
         }
 
         .wall-badge-card.unlocked .badge-name {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .badge-progress-str {
           font-size: 0.58rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           font-family: monospace;
           margin-top: 2px;
           display: block;
@@ -849,7 +847,7 @@ export default function GamificationDashboard() {
         /* ROW 3: LEADERBOARD LADDER */
         .leaderboard-subtitle-text {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-subtle);
           margin: -8px 0 16px 0;
         }
 
@@ -864,14 +862,14 @@ export default function GamificationDashboard() {
           align-items: center;
           padding: 10px 14px;
           border-radius: 8px;
-          background: rgba(255,255,255,0.01);
-          border: 1px solid rgba(255,255,255,0.03);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
         }
 
         .leaderboard-row-item.self-row {
-          background: rgba(57, 255, 20, 0.04);
-          border-color: rgba(57, 255, 20, 0.25);
-          box-shadow: 0 0 15px rgba(57, 255, 20, 0.05);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-border-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .user-rank {
@@ -879,11 +877,11 @@ export default function GamificationDashboard() {
           font-size: 0.78rem;
           font-weight: 800;
           width: 32px;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-subtle);
         }
 
         .leaderboard-row-item.self-row .user-rank {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .user-avatar {
@@ -901,7 +899,7 @@ export default function GamificationDashboard() {
         }
 
         .leaderboard-row-item.self-row .user-name {
-          color: #39FF14;
+          color: var(--ds-accent);
           font-weight: 700;
         }
 
@@ -914,8 +912,8 @@ export default function GamificationDashboard() {
         .user-lvl {
           font-size: 0.65rem;
           font-weight: 700;
-          color: rgba(200,245,200,0.5);
-          background: rgba(255,255,255,0.04);
+          color: var(--ds-fg-subtle);
+          background: var(--ds-surface-raised);
           padding: 2px 6px;
           border-radius: 4px;
         }
@@ -924,7 +922,7 @@ export default function GamificationDashboard() {
           font-size: 0.78rem;
           font-family: monospace;
           font-weight: 700;
-          color: #00D4AA;
+          color: var(--ds-accent);
           width: 60px;
           text-align: right;
         }
@@ -936,15 +934,15 @@ export default function GamificationDashboard() {
           align-items: center;
           justify-content: center;
           min-height: 100vh;
-          background: #050A05;
+          background: var(--ds-bg-primary);
         }
 
         .pulse-dot {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #39FF14;
-          box-shadow: 0 0 15px #39FF14;
+          background: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
           animation: pulse-dot-key 1.5s infinite ease-in-out;
         }
 
@@ -954,7 +952,7 @@ export default function GamificationDashboard() {
         }
 
         .loading-text {
-          color: rgba(200,245,200,0.5);
+          color: var(--ds-fg-subtle);
           font-size: 0.9rem;
           margin-top: 12px;
         }

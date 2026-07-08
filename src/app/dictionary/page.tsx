@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BackLink } from '@/components/ds'
 
 interface DictionaryTerm {
   id: string
@@ -376,10 +377,7 @@ export default function BiologyDictionary() {
       {/* HEADER SECTION */}
       <header className="dict-header">
         <div className="header-left">
-          <Link href="/" className="back-btn">
-            ← Main Hub
-          </Link>
-          <div className="divider-line" />
+          <BackLink href="/" label="Home" />
           <div>
             <h1 className="header-title">BIOLOGY DICTIONARY</h1>
             <p className="header-subtitle">LEXICON & TERMINOLOGY ENGINE</p>
@@ -588,13 +586,13 @@ export default function BiologyDictionary() {
 
       <style jsx global>{`
         .dict-root {
-          background: #050A05;
+          background: var(--ds-bg-primary);
           min-height: calc(100vh - 64px);
-          color: #C8F5C8;
+          color: var(--ds-fg);
           position: relative;
           overflow-x: hidden;
           box-sizing: border-box;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          font-family: inherit;
         }
 
         .dict-grid-bg {
@@ -626,7 +624,7 @@ export default function BiologyDictionary() {
           align-items: center;
           justify-content: space-between;
           padding: 1.25rem 2rem 0.5rem;
-          border-bottom: 1px solid rgba(57, 255, 20, 0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           position: relative;
           z-index: 2;
         }
@@ -638,27 +636,27 @@ export default function BiologyDictionary() {
         }
 
         .back-btn {
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: none;
           font-size: 0.82rem;
           font-weight: 700;
           letter-spacing: 0.05em;
           padding: 6px 14px;
           border-radius: 8px;
-          background: rgba(57, 255, 20, 0.05);
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           transition: all 0.2s ease;
         }
 
         .back-btn:hover {
           background: rgba(57, 255, 20, 0.12);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .divider-line {
           width: 1px;
           height: 32px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
         }
 
         .header-title {
@@ -671,7 +669,7 @@ export default function BiologyDictionary() {
 
         .header-subtitle {
           font-size: 0.6rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           margin: 0;
           letter-spacing: 0.25em;
           font-weight: 700;
@@ -699,9 +697,9 @@ export default function BiologyDictionary() {
 
         .panel-card {
           border-radius: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          border: 1px solid var(--ds-border-muted);
           padding: 1.25rem;
-          background: rgba(10, 20, 10, 0.35);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(12px);
           box-sizing: border-box;
         }
@@ -724,7 +722,7 @@ export default function BiologyDictionary() {
 
         .search-icon {
           font-size: 0.95rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
         }
 
         .search-input {
@@ -732,19 +730,19 @@ export default function BiologyDictionary() {
           background: transparent;
           border: none;
           outline: none;
-          color: #fff;
+          color: var(--ds-fg);
           font-size: 0.85rem;
           padding: 4px 0;
         }
 
         .search-input::placeholder {
-          color: rgba(200, 245, 200, 0.3);
+          color: var(--ds-fg-subtle);
         }
 
         .clear-search-btn {
           background: transparent;
           border: none;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-muted);
           cursor: pointer;
           font-size: 0.85rem;
           padding: 4px;
@@ -752,7 +750,7 @@ export default function BiologyDictionary() {
         }
 
         .clear-search-btn:hover {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .category-scroll-wrap {
@@ -771,9 +769,9 @@ export default function BiologyDictionary() {
 
         .category-pill-btn {
           flex-shrink: 0;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          color: rgba(200, 245, 200, 0.6);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-muted);
           padding: 6px 12px;
           border-radius: 20px;
           font-size: 0.65rem;
@@ -785,15 +783,15 @@ export default function BiologyDictionary() {
 
         .category-pill-btn:hover {
           color: #fff;
-          background: rgba(57, 255, 20, 0.05);
-          border-color: rgba(57, 255, 20, 0.2);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent-muted);
         }
 
         .category-pill-btn.active {
-          color: #39FF14;
-          background: rgba(57, 255, 20, 0.08);
-          border-color: rgba(57, 255, 20, 0.3);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
+          color: var(--ds-accent);
+          background: var(--ds-accent-subtle);
+          border-color: var(--ds-border-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .terms-list-scroller {
@@ -825,8 +823,8 @@ export default function BiologyDictionary() {
         .term-row-card {
           width: 100%;
           text-align: left;
-          background: rgba(255, 255, 255, 0.01);
-          border: 1px solid rgba(255, 255, 255, 0.03);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           padding: 0.85rem 1rem;
           cursor: pointer;
@@ -837,14 +835,14 @@ export default function BiologyDictionary() {
         }
 
         .term-row-card:hover {
-          background: rgba(57, 255, 20, 0.02);
-          border-color: rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent);
           transform: translateY(-1px);
         }
 
         .term-row-card.active {
-          background: rgba(0, 212, 170, 0.03);
-          border-color: rgba(0, 212, 170, 0.25);
+          background: var(--ds-accent-subtle);
+          border-color: var(--ds-accent);
           box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
@@ -856,22 +854,22 @@ export default function BiologyDictionary() {
 
         .term-card-name {
           font-weight: 700;
-          color: #fff;
+          color: var(--ds-fg);
           font-size: 0.88rem;
           transition: color 0.2s;
         }
 
         .term-row-card.active .term-card-name {
-          color: #00D4AA;
+          color: var(--ds-accent);
         }
 
         .term-card-category {
           font-size: 0.58rem;
           text-transform: uppercase;
-          background: rgba(255, 255, 255, 0.04);
+          background: var(--ds-surface-raised);
           padding: 2px 6px;
           border-radius: 4px;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
           font-weight: 700;
           letter-spacing: 0.04em;
         }
@@ -880,7 +878,7 @@ export default function BiologyDictionary() {
           margin: 0;
           font-size: 0.72rem;
           line-height: 1.4;
-          color: rgba(200, 245, 200, 0.6);
+          color: var(--ds-fg-muted);
           overflow: hidden;
           text-overflow: ellipsis;
           display: -webkit-box;
@@ -891,7 +889,7 @@ export default function BiologyDictionary() {
         .no-results-card {
           text-align: center;
           padding: 2rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           font-size: 0.78rem;
         }
 
@@ -911,7 +909,7 @@ export default function BiologyDictionary() {
         }
 
         .details-card::-webkit-scrollbar-thumb {
-          background: rgba(0, 212, 170, 0.15);
+          background: var(--ds-accent-muted);
           border-radius: 2px;
         }
 
@@ -919,7 +917,7 @@ export default function BiologyDictionary() {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          border-bottom: 1px solid var(--ds-border-muted);
           padding-bottom: 1.25rem;
           margin-bottom: 1.5rem;
           flex-shrink: 0;
@@ -929,12 +927,12 @@ export default function BiologyDictionary() {
           display: inline-block;
           font-size: 0.58rem;
           font-weight: 800;
-          color: #00D4AA;
+          color: var(--ds-accent);
           letter-spacing: 0.15em;
-          border: 1px solid rgba(0, 212, 170, 0.3);
+          border: 1px solid var(--ds-border-accent);
           padding: 2px 8px;
           border-radius: 4px;
-          background: rgba(0, 212, 170, 0.05);
+          background: var(--ds-accent-faint);
           margin-bottom: 8px;
         }
 
@@ -954,13 +952,13 @@ export default function BiologyDictionary() {
 
         .phonetic-text {
           font-family: monospace;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-subtle);
           font-size: 0.8rem;
         }
 
         .pronunciation-hint {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.35);
+          color: var(--ds-fg-subtle);
           font-style: italic;
         }
 
@@ -973,9 +971,9 @@ export default function BiologyDictionary() {
           width: 38px;
           height: 38px;
           border-radius: 50%;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          color: rgba(255, 255, 255, 0.5);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-muted);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -986,15 +984,15 @@ export default function BiologyDictionary() {
 
         .circle-action-btn:hover {
           color: #fff;
-          background: rgba(255, 255, 255, 0.06);
-          border-color: rgba(255, 255, 255, 0.15);
+          background: var(--ds-surface-raised);
+          border-color: var(--ds-fg-subtle);
         }
 
         .circle-action-btn.speaking {
-          color: #00D4AA;
-          background: rgba(0, 212, 170, 0.08);
-          border-color: rgba(0, 212, 170, 0.3);
-          box-shadow: 0 0 10px rgba(0, 212, 170, 0.2);
+          color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-border-accent);
+          box-shadow: var(--ds-glow-sm);
           animation: pulse-speaking 1.5s infinite;
         }
 
@@ -1025,7 +1023,7 @@ export default function BiologyDictionary() {
         .detail-section-title {
           font-size: 0.6rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.15em;
           text-transform: uppercase;
           margin: 0;
@@ -1035,7 +1033,7 @@ export default function BiologyDictionary() {
           margin: 0;
           font-size: 0.82rem;
           line-height: 1.6;
-          color: rgba(200, 245, 200, 0.8);
+          color: var(--ds-fg-muted);
         }
 
         .facts-list {
@@ -1062,7 +1060,7 @@ export default function BiologyDictionary() {
         .fact-text {
           font-size: 0.78rem;
           line-height: 1.5;
-          color: rgba(200, 245, 200, 0.75);
+          color: var(--ds-fg-muted);
         }
 
         .related-terms-row {
@@ -1072,9 +1070,9 @@ export default function BiologyDictionary() {
         }
 
         .related-term-tag {
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          color: #00D4AA;
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-accent);
           font-size: 0.72rem;
           padding: 6px 12px;
           border-radius: 8px;
@@ -1085,9 +1083,9 @@ export default function BiologyDictionary() {
         }
 
         .related-term-tag:hover {
-          background: rgba(0, 212, 170, 0.05);
-          border-color: rgba(0, 212, 170, 0.2);
-          box-shadow: 0 0 8px rgba(0, 212, 170, 0.1);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-border-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         /* SIDEBAR RIGHT */
@@ -1106,7 +1104,7 @@ export default function BiologyDictionary() {
         .sidebar-section-title {
           font-size: 0.65rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.1em;
           margin: 0 0 10px 0;
           flex-shrink: 0;
@@ -1126,15 +1124,15 @@ export default function BiologyDictionary() {
         }
 
         .sidebar-list-wrap::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--ds-border-muted);
           border-radius: 2px;
         }
 
         .sidebar-row-item {
           width: 100%;
           text-align: left;
-          background: rgba(255, 255, 255, 0.01);
-          border: 1px solid rgba(255, 255, 255, 0.03);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           padding: 8px 12px;
           border-radius: 8px;
           cursor: pointer;
@@ -1145,34 +1143,34 @@ export default function BiologyDictionary() {
         }
 
         .sidebar-row-item:hover {
-          background: rgba(255, 255, 255, 0.03);
-          border-color: rgba(255, 255, 255, 0.1);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent-muted);
         }
 
         .sidebar-row-item.active {
-          border-color: rgba(0, 212, 170, 0.2);
-          background: rgba(0, 212, 170, 0.02);
+          border-color: var(--ds-accent);
+          background: var(--ds-accent-subtle);
         }
 
         .row-item-name {
           font-size: 0.75rem;
-          color: #fff;
+          color: var(--ds-fg);
           font-weight: 600;
         }
 
         .sidebar-row-item.active .row-item-name {
-          color: #00D4AA;
+          color: var(--ds-accent);
         }
 
         .row-item-category {
           font-size: 0.52rem;
-          color: rgba(200, 245, 200, 0.35);
+          color: var(--ds-fg-subtle);
           text-transform: uppercase;
         }
 
         .sidebar-empty-text {
           font-size: 0.68rem;
-          color: rgba(200, 245, 200, 0.3);
+          color: var(--ds-fg-subtle);
           line-height: 1.5;
           margin: 0;
           padding: 8px 4px;

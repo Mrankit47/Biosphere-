@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { BackLink } from "@/components/ds";
 
 /* ═══════════════════════════════════════════════════════════════
    DATA
@@ -567,8 +568,8 @@ function MatchMode() {
     return (
       <div style={S.scoreBox}>
         <span style={{ fontSize: "3rem" }}>{score >= 9 ? "🏆" : "🎉"}</span>
-        <span style={{ fontSize: "2rem", fontWeight: 700, color: "#39FF14" }}>{score}/10</span>
-        <span style={{ fontSize: "0.85rem", color: "rgba(200,245,200,0.5)" }}>All pairs matched!</span>
+        <span style={{ fontSize: "2rem", fontWeight: 700, color: "var(--ds-accent)" }}>{score}/10</span>
+        <span style={{ fontSize: "0.85rem", color: "var(--ds-fg-subtle)" }}>All pairs matched!</span>
         <button onClick={() => window.location.reload()} style={S.retryBtn}>Play Again</button>
       </div>
     );
@@ -579,16 +580,16 @@ function MatchMode() {
 
   return (
     <div style={{ maxWidth: 600, margin: "0 auto" }}>
-      <p style={{ color: "rgba(200,245,200,0.4)", fontSize: "0.72rem", marginBottom: 16, letterSpacing: "0.1em", textAlign: "center" }}>SELECT LEFT, THEN RIGHT TO MATCH</p>
+      <p style={{ color: "var(--ds-fg-subtle)", fontSize: "0.72rem", marginBottom: 16, letterSpacing: "0.1em", textAlign: "center" }}>SELECT LEFT, THEN RIGHT TO MATCH</p>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         {/* Left column */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {pairs.left.map((l, i) => (
             <button key={i} onClick={() => !matchedLefts.includes(i) && setSelectedLeft(i)} disabled={matchedLefts.includes(i)} style={{
               ...S.optBtn, justifyContent: "center", fontSize: "0.85rem",
-              borderColor: matchedLefts.includes(i) ? "#39FF1440" : selectedLeft === i ? "#39FF14" : "rgba(255,255,255,0.08)",
-              background: matchedLefts.includes(i) ? "rgba(57,255,20,0.08)" : selectedLeft === i ? "rgba(57,255,20,0.1)" : "rgba(255,255,255,0.03)",
-              color: matchedLefts.includes(i) ? "#39FF1480" : selectedLeft === i ? "#39FF14" : "rgba(200,245,200,0.8)",
+              borderColor: matchedLefts.includes(i) ? "var(--ds-border-accent)" : selectedLeft === i ? "var(--ds-accent)" : "var(--ds-border-muted)",
+              background: matchedLefts.includes(i) ? "var(--ds-accent-faint)" : selectedLeft === i ? "var(--ds-accent-subtle)" : "var(--ds-surface-subtle)",
+              color: matchedLefts.includes(i) ? "var(--ds-accent-muted)" : selectedLeft === i ? "var(--ds-accent)" : "var(--ds-fg-muted)",
               opacity: matchedLefts.includes(i) ? 0.5 : 1,
             }}>{matchedLefts.includes(i) ? "✓ " : ""}{l}</button>
           ))}
@@ -598,9 +599,9 @@ function MatchMode() {
           {pairs.right.map((r, i) => (
             <button key={i} onClick={() => handleRight(i)} disabled={matchedRights.includes(i)} style={{
               ...S.optBtn, justifyContent: "center", fontSize: "0.85rem",
-              borderColor: matchedRights.includes(i) ? "#39FF1440" : wrong === i ? "#EF4444" : "rgba(255,255,255,0.08)",
-              background: matchedRights.includes(i) ? "rgba(57,255,20,0.08)" : wrong === i ? "rgba(239,68,68,0.1)" : "rgba(255,255,255,0.03)",
-              color: matchedRights.includes(i) ? "#39FF1480" : wrong === i ? "#EF4444" : "rgba(200,245,200,0.8)",
+              borderColor: matchedRights.includes(i) ? "var(--ds-border-accent)" : wrong === i ? "#EF4444" : "var(--ds-border-muted)",
+              background: matchedRights.includes(i) ? "var(--ds-accent-faint)" : wrong === i ? "rgba(239,68,68,0.1)" : "var(--ds-surface-subtle)",
+              color: matchedRights.includes(i) ? "var(--ds-accent-muted)" : wrong === i ? "#EF4444" : "var(--ds-fg-muted)",
               opacity: matchedRights.includes(i) ? 0.5 : 1,
               transition: "all 0.3s",
             }}>{matchedRights.includes(i) ? "✓ " : ""}{r}</button>
@@ -645,21 +646,22 @@ export default function QuizPage() {
 
   return (
     <div style={S.root}>
+      <BackLink href="/" label="Home" />
       <div style={S.header}>
         <h1 style={S.title}>Biology Quiz</h1>
         <p style={S.subtitle}>Test your knowledge</p>
         {/* Stats bar */}
         <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 12, flexWrap: "wrap" }}>
-          <span style={{ fontSize: "0.72rem", color: "rgba(200,245,200,0.5)" }}>{level.emoji} <strong style={{ color: "#39FF14" }}>{level.name}</strong></span>
-          <span style={{ fontSize: "0.72rem", color: "rgba(200,245,200,0.4)" }}>🏅 {stats.points || 0} pts</span>
-          <span style={{ fontSize: "0.72rem", color: "rgba(200,245,200,0.4)" }}>📊 {stats.total || 0} quizzes</span>
+          <span style={{ fontSize: "0.72rem", color: "var(--ds-fg-subtle)" }}>{level.emoji} <strong style={{ color: "var(--ds-accent)" }}>{level.name}</strong></span>
+          <span style={{ fontSize: "0.72rem", color: "var(--ds-fg-subtle)" }}>🏅 {stats.points || 0} pts</span>
+          <span style={{ fontSize: "0.72rem", color: "var(--ds-fg-subtle)" }}>📊 {stats.total || 0} quizzes</span>
         </div>
       </div>
 
       {/* Mode tabs */}
       <div style={S.tabs}>
         {TABS.map(t => (
-          <button key={t.id} onClick={() => setMode(t.id)} style={{ ...S.tab, borderColor: mode === t.id ? "#39FF14" : "rgba(255,255,255,0.06)", background: mode === t.id ? "rgba(57,255,20,0.08)" : "rgba(5,10,5,0.5)", color: mode === t.id ? "#39FF14" : "rgba(200,245,200,0.5)" }}>
+          <button key={t.id} onClick={() => setMode(t.id)} style={{ ...S.tab, borderColor: mode === t.id ? "var(--ds-border-accent)" : "var(--ds-border-muted)", background: mode === t.id ? "var(--ds-accent-faint)" : "var(--ds-surface-subtle)", color: mode === t.id ? "var(--ds-accent)" : "var(--ds-fg-subtle)" }}>
             <span>{t.emoji}</span>
             <span style={{ fontSize: "0.78rem", fontWeight: 600 }}>{t.label}</span>
           </button>
@@ -670,7 +672,7 @@ export default function QuizPage() {
       {(mode === "mcq" || mode === "ftb" || mode === "tf") && (
         <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 32, flexWrap: "wrap" }}>
           {TOPICS.map(t => (
-            <button key={t.id} onClick={() => setTopic(t.id)} style={{ ...S.chip, borderColor: topic === t.id ? "#378ADD" : "rgba(255,255,255,0.06)", background: topic === t.id ? "rgba(55,138,221,0.15)" : "rgba(5,10,5,0.5)", color: topic === t.id ? "#5AAFFF" : "rgba(200,245,200,0.5)", fontSize: "0.75rem", padding: "6px 12px" }}>
+            <button key={t.id} onClick={() => setTopic(t.id)} style={{ ...S.chip, borderColor: topic === t.id ? "var(--ds-border-accent)" : "var(--ds-border-muted)", background: topic === t.id ? "var(--ds-accent-faint)" : "var(--ds-surface-subtle)", color: topic === t.id ? "var(--ds-accent)" : "var(--ds-fg-subtle)", fontSize: "0.75rem", padding: "6px 12px" }}>
               {t.label}
             </button>
           ))}
@@ -694,24 +696,24 @@ export default function QuizPage() {
    ═══════════════════════════════════════════════════════════════ */
 
 const S: Record<string, React.CSSProperties> = {
-  root: { width: "100%", minHeight: "calc(100vh - 64px)", background: "#050A05", padding: "24px clamp(16px,4vw,40px) 60px", boxSizing: "border-box" },
+  root: { width: "100%", minHeight: "calc(100vh - 64px)", background: "var(--ds-bg-primary)", padding: "24px clamp(16px,4vw,40px) 60px", boxSizing: "border-box" },
   header: { textAlign: "center", marginBottom: 20 },
-  title: { fontSize: "clamp(1.5rem, 5vw, 2rem)", fontWeight: 800, color: "#39FF14", letterSpacing: "0.06em", margin: 0, textShadow: "0 0 20px rgba(57,255,20,0.3)" },
-  subtitle: { fontSize: "clamp(0.7rem, 2vw, 0.85rem)", color: "rgba(200,245,200,0.45)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
+  title: { fontSize: "clamp(1.5rem, 5vw, 2rem)", fontWeight: 800, color: "var(--ds-accent)", letterSpacing: "0.06em", margin: 0, textShadow: "var(--ds-glow-sm)" },
+  subtitle: { fontSize: "clamp(0.7rem, 2vw, 0.85rem)", color: "var(--ds-fg-muted)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
 
   tabs: { display: "flex", justifyContent: "center", gap: 10, marginBottom: 32, flexWrap: "wrap" as const },
-  tab: { display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 12, border: "1px solid", cursor: "pointer", fontFamily: "inherit", transition: "all 0.25s ease", backdropFilter: "blur(6px)" },
+  tab: { display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 12, border: "1px solid var(--ds-border-muted)", cursor: "pointer", fontFamily: "inherit", transition: "all 0.25s ease", backdropFilter: "blur(6px)" },
 
   content: { maxWidth: 700, margin: "0 auto", width: "100%" },
 
-  chip: { padding: "8px 16px", borderRadius: 10, border: "1px solid", color: "#C8F5C8", fontSize: "0.85rem", fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease" },
+  chip: { padding: "8px 16px", borderRadius: 10, border: "1px solid var(--ds-border-muted)", color: "var(--ds-fg)", fontSize: "0.85rem", fontWeight: 500, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease" },
 
-  scoreBox: { display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 8, padding: "32px 24px", borderRadius: 16, background: "rgba(57,255,20,0.04)", border: "1px solid rgba(57,255,20,0.1)", width: "100%", boxSizing: "border-box" },
-  retryBtn: { padding: "12px 28px", borderRadius: 10, border: "1.5px solid #39FF14", background: "rgba(57,255,20,0.08)", color: "#39FF14", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginTop: 8 },
+  scoreBox: { display: "flex", flexDirection: "column" as const, alignItems: "center", gap: 8, padding: "32px 24px", borderRadius: 16, background: "var(--ds-surface-subtle)", border: "1px solid var(--ds-border-muted)", width: "100%", boxSizing: "border-box" },
+  retryBtn: { padding: "12px 28px", borderRadius: 10, border: "1.5px solid var(--ds-accent)", background: "var(--ds-accent-faint)", color: "var(--ds-accent)", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit", marginTop: 8 },
 
-  optBtn: { display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 12, border: "1px solid", cursor: "pointer", fontFamily: "inherit", fontSize: "0.95rem", fontWeight: 500, transition: "all 0.25s ease", textAlign: "left" as const, minHeight: 56 },
-  optLetter: { width: 32, height: 32, borderRadius: 8, border: "1px solid", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem", fontWeight: 700, flexShrink: 0 },
+  optBtn: { display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", borderRadius: 12, border: "1px solid var(--ds-border-muted)", cursor: "pointer", fontFamily: "inherit", fontSize: "0.95rem", fontWeight: 500, transition: "all 0.25s ease", textAlign: "left" as const, minHeight: 56 },
+  optLetter: { width: 32, height: 32, borderRadius: 8, border: "1px solid var(--ds-border-muted)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.8rem", fontWeight: 700, flexShrink: 0 },
 
-  textInput: { flex: 1, padding: "14px 16px", borderRadius: 10, border: "1px solid rgba(57,255,20,0.15)", background: "rgba(5,10,5,0.6)", color: "#C8F5C8", fontSize: "0.95rem", fontFamily: "inherit", outline: "none", minWidth: 0 },
-  submitBtn: { padding: "14px 24px", borderRadius: 10, border: "1.5px solid #39FF14", background: "rgba(57,255,20,0.1)", color: "#39FF14", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" },
+  textInput: { flex: 1, padding: "14px 16px", borderRadius: 10, border: "1px solid var(--ds-border-muted)", background: "var(--ds-surface-raised)", color: "var(--ds-fg)", fontSize: "0.95rem", fontFamily: "inherit", outline: "none", minWidth: 0 },
+  submitBtn: { padding: "14px 24px", borderRadius: 10, border: "1.5px solid var(--ds-accent)", background: "var(--ds-accent-faint)", color: "var(--ds-accent)", fontSize: "0.9rem", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" },
 };

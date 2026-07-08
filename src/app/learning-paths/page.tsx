@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { JOURNEYS } from '@/data/learningPaths'
 import { getUserProgress, getOrCreateUserId, UserProgressData } from '@/utils/supabase'
+import { BackLink } from '@/components/ds'
 
 export default function LearningPathsDashboard() {
   const [mounted, setMounted] = useState(false)
@@ -263,6 +264,7 @@ export default function LearningPathsDashboard() {
       <div className="lp-glow-effect" />
 
       <div className="lp-container">
+        <BackLink href="/" label="Home" />
         {/* HEADER */}
         <header className="lp-header">
           <span className="lp-sup-title">Interactive Guided Curriculum</span>
@@ -474,12 +476,12 @@ export default function LearningPathsDashboard() {
 
       <style jsx global>{`
         .lp-root {
-          background: #050A05;
+          background: var(--ds-bg-primary);
           min-height: calc(100vh - 64px);
-          color: #C8F5C8;
+          color: var(--ds-fg);
           position: relative;
           overflow-x: hidden;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: inherit;
           padding-top: 80px;
         }
 
@@ -524,7 +526,7 @@ export default function LearningPathsDashboard() {
           font-size: 0.72rem;
           letter-spacing: 0.2em;
           text-transform: uppercase;
-          color: rgba(57, 255, 20, 0.6);
+          color: var(--ds-accent);
           fontWeight: 700;
           display: block;
           margin-bottom: 8px;
@@ -536,12 +538,12 @@ export default function LearningPathsDashboard() {
           color: #fff;
           margin: 0;
           letter-spacing: 0.05em;
-          text-shadow: 0 0 30px rgba(57,255,20,0.15);
+          text-shadow: var(--ds-glow-sm);
         }
 
         .lp-sub-title {
           font-size: 0.95rem;
-          color: rgba(200, 245, 200, 0.55);
+          color: var(--ds-fg-muted);
           max-width: 600px;
           margin: 12px auto 0;
           line-height: 1.6;
@@ -552,8 +554,8 @@ export default function LearningPathsDashboard() {
           display: grid;
           grid-template-columns: 1fr 300px;
           gap: 24px;
-          background: rgba(10, 20, 10, 0.4);
-          border: 1px solid rgba(57, 255, 20, 0.08);
+          background: var(--ds-surface-overlay);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 20px;
           padding: 24px;
           margin-bottom: 40px;
@@ -570,28 +572,28 @@ export default function LearningPathsDashboard() {
           width: 110px;
           height: 110px;
           border-radius: 50%;
-          border: 4px solid rgba(57, 255, 20, 0.08);
+          border: 4px solid var(--ds-border-muted);
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          background: rgba(57, 255, 20, 0.03);
-          box-shadow: inset 0 0 15px rgba(57, 255, 20, 0.05);
+          background: var(--ds-accent-faint);
+          box-shadow: var(--ds-glow-sm);
           flex-shrink: 0;
         }
 
         .pct-val {
           font-size: 1.7rem;
           font-weight: 800;
-          color: #39FF14;
-          text-shadow: 0 0 10px rgba(57, 255, 20, 0.4);
+          color: var(--ds-accent);
+          text-shadow: var(--ds-glow-sm);
         }
 
         .pct-lbl {
           font-size: 0.55rem;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           margin-top: 2px;
         }
 
@@ -604,7 +606,7 @@ export default function LearningPathsDashboard() {
         }
 
         .stats-summary-meta p {
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
           font-size: 0.8rem;
           margin: 0 0 16px 0;
         }
@@ -627,12 +629,12 @@ export default function LearningPathsDashboard() {
 
         .item-lbl {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           margin-top: 2px;
         }
 
         .stats-cta {
-          border-left: 1px solid rgba(255, 255, 255, 0.06);
+          border-left: 1px solid var(--ds-border-muted);
           padding-left: 24px;
           display: flex;
           flex-direction: column;
@@ -641,7 +643,7 @@ export default function LearningPathsDashboard() {
 
         .cta-subtitle {
           font-size: 0.72rem;
-          color: rgba(57, 255, 20, 0.5);
+          color: var(--ds-accent);
           text-transform: uppercase;
           letter-spacing: 0.15em;
           font-weight: 600;
@@ -657,26 +659,26 @@ export default function LearningPathsDashboard() {
         .cta-btn {
           padding: 12px 20px;
           border-radius: 10px;
-          background: linear-gradient(90deg, #39FF14, #00D4AA);
+          background: linear-gradient(90deg, var(--ds-accent), var(--ds-accent-muted));
           color: #000;
           font-weight: 700;
           font-size: 0.85rem;
           text-align: center;
           text-decoration: none;
-          box-shadow: 0 0 20px rgba(57, 255, 20, 0.25);
+          box-shadow: var(--ds-glow-sm);
           transition: transform 0.2s, box-shadow 0.2s;
         }
 
         .cta-btn:hover {
           transform: translateY(-1px);
-          box-shadow: 0 0 25px rgba(57, 255, 20, 0.35);
+          box-shadow: var(--ds-glow-md);
         }
 
         /* TAB COONTROLLER */
         .lp-tab-bar {
           display: flex;
           gap: 12px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          border-bottom: 1px solid var(--ds-border-muted);
           margin-bottom: 30px;
           padding-bottom: 8px;
         }
@@ -684,7 +686,7 @@ export default function LearningPathsDashboard() {
         .tab-btn {
           background: transparent;
           border: none;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
           font-size: 0.9rem;
           font-weight: 700;
           cursor: pointer;
@@ -698,7 +700,7 @@ export default function LearningPathsDashboard() {
         }
 
         .tab-btn.active {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .tab-btn.active::after {
@@ -708,8 +710,7 @@ export default function LearningPathsDashboard() {
           left: 0;
           width: 100%;
           height: 2px;
-          background: #39FF14;
-          box-shadow: 0 0 8px #39FF14;
+          background: var(--ds-accent);
         }
 
         /* JOURNEYS VIEW */
@@ -723,8 +724,8 @@ export default function LearningPathsDashboard() {
           display: flex;
           align-items: center;
           gap: 20px;
-          background: rgba(10, 20, 10, 0.35);
-          border: 1px solid rgba(255, 255, 255, 0.03);
+          background: var(--ds-surface-overlay);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 16px;
           padding: 20px 24px;
           text-decoration: none;
@@ -732,8 +733,8 @@ export default function LearningPathsDashboard() {
         }
 
         .journey-card:hover {
-          border-color: rgba(57, 255, 20, 0.25) !important;
-          background: rgba(10, 20, 10, 0.45);
+          border-color: var(--ds-accent) !important;
+          background: var(--ds-surface-raised);
           transform: translateY(-1px);
         }
 
@@ -761,7 +762,7 @@ export default function LearningPathsDashboard() {
 
         .card-desc {
           font-size: 0.82rem;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
           margin: 0 0 14px 0;
           line-height: 1.5;
         }
@@ -778,7 +779,7 @@ export default function LearningPathsDashboard() {
         }
 
         .count-lbl {
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
         }
 
         .percent-lbl {
@@ -788,7 +789,7 @@ export default function LearningPathsDashboard() {
         .bar-track {
           height: 4px;
           border-radius: 2px;
-          background: rgba(255, 255, 255, 0.05);
+          background: var(--ds-surface-subtle);
           width: 100%;
           overflow: hidden;
         }
@@ -825,16 +826,18 @@ export default function LearningPathsDashboard() {
         .engine-card {
           padding: 1.5rem;
           border-radius: 16px;
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-overlay);
         }
 
         .card-section-title {
           font-size: 0.68rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.12em;
           text-transform: uppercase;
           margin: 0 0 1.25rem 0;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           padding-bottom: 8px;
         }
 
@@ -848,8 +851,8 @@ export default function LearningPathsDashboard() {
           display: flex;
           gap: 14px;
           align-items: flex-start;
-          background: rgba(255, 255, 255, 0.01);
-          border: 1px solid rgba(255, 255, 255, 0.03);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           padding: 12px;
           border-radius: 10px;
         }
@@ -866,7 +869,7 @@ export default function LearningPathsDashboard() {
         .rec-tag {
           font-size: 0.58rem;
           font-weight: 800;
-          color: #00D4AA;
+          color: var(--ds-accent);
           text-transform: uppercase;
           letter-spacing: 0.06em;
           display: block;
@@ -883,7 +886,7 @@ export default function LearningPathsDashboard() {
         .rec-desc {
           margin: 0;
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-muted);
           line-height: 1.4;
         }
 
@@ -891,9 +894,9 @@ export default function LearningPathsDashboard() {
           align-self: center;
           padding: 6px 12px;
           border-radius: 6px;
-          background: rgba(57, 255, 20, 0.08);
-          border: 1px solid rgba(57, 255, 20, 0.2);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-size: 0.75rem;
           font-weight: 700;
           text-decoration: none;
@@ -901,8 +904,8 @@ export default function LearningPathsDashboard() {
         }
 
         .rec-action-btn:hover {
-          background: rgba(57, 255, 20, 0.15);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.25);
+          background: var(--ds-accent-subtle);
+          box-shadow: var(--ds-glow-sm);
         }
 
         /* WEAK TOPICS WIDGET */
@@ -948,7 +951,8 @@ export default function LearningPathsDashboard() {
         .weak-reason {
           margin: 0;
           font-size: 0.72rem;
-          color: rgba(239, 68, 68, 0.6);
+          color: var(--ds-fg-muted);
+          line-height: 1.4;
         }
 
         .weak-review-btn {
@@ -983,35 +987,31 @@ export default function LearningPathsDashboard() {
           line-height: 1.5;
         }
 
-        /* ACHIEVEMENTS GRID WIDGET */
-        .achievements-grid-box {
+        /* ACHIEVEMENTS LIST */
+        .achievements-list {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 12px;
         }
 
         .ach-card {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 12px;
-          border-radius: 10px;
-          border: 1px solid rgba(255,255,255,0.03);
-          transition: all 0.3s;
+          gap: 16px;
+          padding: 1rem;
+          border-radius: 12px;
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          position: relative;
         }
 
         .ach-card.unlocked {
-          background: rgba(57, 255, 20, 0.02);
-          border-color: rgba(57, 255, 20, 0.15);
-        }
-
-        .ach-card.locked {
-          background: rgba(255, 255, 255, 0.01);
-          opacity: 0.45;
+          border-color: var(--ds-border-accent);
+          background: var(--ds-accent-faint);
         }
 
         .ach-icon {
-          font-size: 1.5rem;
+          font-size: 1.75rem;
           flex-shrink: 0;
         }
 
@@ -1020,30 +1020,29 @@ export default function LearningPathsDashboard() {
         }
 
         .ach-name {
-          font-size: 0.82rem;
+          font-size: 0.85rem;
           font-weight: 700;
           color: #fff;
           display: block;
         }
 
         .ach-card.unlocked .ach-name {
-          color: #39FF14;
-          text-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          color: var(--ds-accent);
         }
 
         .ach-desc {
-          margin: 0;
-          font-size: 0.68rem;
-          color: rgba(200, 245, 200, 0.5);
-          line-height: 1.3;
+          margin: 4px 0 0 0;
+          font-size: 0.72rem;
+          color: var(--ds-fg-muted);
+          line-height: 1.4;
         }
 
         .ach-progress-count {
-          font-size: 0.6rem;
-          color: rgba(200, 245, 200, 0.35);
+          font-size: 0.65rem;
+          color: var(--ds-fg-subtle);
           font-family: monospace;
-          margin-top: 2px;
           display: block;
+          margin-top: 4px;
         }
 
         .ach-badge-status {
@@ -1056,25 +1055,25 @@ export default function LearningPathsDashboard() {
         }
 
         .ach-card.unlocked .ach-badge-status {
-          background: rgba(57, 255, 20, 0.08);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          color: var(--ds-accent);
         }
 
         .ach-card.locked .ach-badge-status {
-          background: rgba(255, 255, 255, 0.05);
-          color: rgba(255,255,255,0.4);
+          background: var(--ds-surface-subtle);
+          color: var(--ds-fg-subtle);
         }
 
         /* MOCK HEATMAP WIDGET */
         .heatmap-sub-desc {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           margin: -8px 0 16px 0;
         }
 
         .heatmap-container {
-          background: rgba(0,0,0,0.3);
-          border: 1px solid rgba(255,255,255,0.03);
+          background: var(--ds-surface-raised);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 10px;
           padding: 1rem;
           display: flex;
@@ -1095,24 +1094,24 @@ export default function LearningPathsDashboard() {
         }
 
         .heatmap-box.empty {
-          background: rgba(255,255,255,0.03);
+          background: var(--ds-surface-subtle);
         }
 
         .heatmap-box.medium {
-          background: rgba(57, 255, 20, 0.2);
+          background: var(--ds-accent-muted);
           box-shadow: 0 0 6px rgba(57, 255, 20, 0.05);
         }
 
         .heatmap-box.high {
-          background: rgba(57, 255, 20, 0.55);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .heatmap-labels-row {
           display: flex;
           justify-content: space-between;
           font-size: 0.6rem;
-          color: rgba(200, 245, 200, 0.35);
+          color: var(--ds-fg-subtle);
           font-family: monospace;
           margin-top: 4px;
         }
@@ -1124,15 +1123,15 @@ export default function LearningPathsDashboard() {
           align-items: center;
           justify-content: center;
           min-height: 100vh;
-          background: #050A05;
+          background: var(--ds-bg-primary);
         }
 
         .pulse-dot {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #39FF14;
-          box-shadow: 0 0 15px #39FF14;
+          background: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
           animation: pulse-dot-key 1.5s infinite ease-in-out;
         }
 
@@ -1142,7 +1141,7 @@ export default function LearningPathsDashboard() {
         }
 
         .loading-text {
-          color: rgba(200,245,200,0.5);
+          color: var(--ds-fg-subtle);
           font-size: 0.9rem;
           margin-top: 12px;
         }

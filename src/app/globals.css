@@ -1,18 +1,155 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════
+   BIOSPHERE DESIGN SYSTEM — CSS Custom Properties
+   ═══════════════════════════════════════════════════════════════ */
+
 :root {
+  /* ── Legacy tokens (preserved) ─────────────────────────── */
   --green: #39FF14;
   --green-dim: #1a3a1a;
   --background: #050A05;
   --foreground: #C8F5C8;
+
+  /* ── Surface / Glass ───────────────────────────────────── */
+  --ds-surface: rgba(10, 20, 10, 0.65);
+  --ds-surface-hover: rgba(10, 30, 15, 0.9);
+  --ds-surface-raised: rgba(10, 20, 10, 0.85);
+  --ds-surface-overlay: rgba(5, 10, 5, 0.88);
+  --ds-surface-subtle: rgba(255, 255, 255, 0.03);
+  --ds-surface-subtle-hover: rgba(255, 255, 255, 0.06);
+
+  /* ── Glass Effect ──────────────────────────────────────── */
+  --ds-glass-bg: rgba(10, 20, 10, 0.65);
+  --ds-glass-bg-heavy: rgba(5, 10, 5, 0.88);
+  --ds-glass-border: rgba(57, 255, 20, 0.12);
+  --ds-glass-border-hover: rgba(57, 255, 20, 0.25);
+  --ds-glass-border-active: rgba(57, 255, 20, 0.45);
+
+  /* ── Foreground / Text ─────────────────────────────────── */
+  --ds-fg: #C8F5C8;
+  --ds-fg-muted: rgba(200, 245, 200, 0.6);
+  --ds-fg-subtle: rgba(200, 245, 200, 0.4);
+  --ds-fg-faint: rgba(200, 245, 200, 0.25);
+  --ds-fg-bright: #ffffff;
+
+  /* ── Accent ────────────────────────────────────────────── */
+  --ds-accent: #39FF14;
+  --ds-accent-dim: #1a3a1a;
+  --ds-accent-muted: rgba(57, 255, 20, 0.6);
+  --ds-accent-subtle: rgba(57, 255, 20, 0.15);
+  --ds-accent-faint: rgba(57, 255, 20, 0.06);
+
+  /* ── Semantic Colors ───────────────────────────────────── */
+  --ds-danger: #E24B4A;
+  --ds-danger-subtle: rgba(226, 75, 74, 0.12);
+  --ds-danger-border: rgba(226, 75, 74, 0.2);
+  --ds-warning: #F59E0B;
+  --ds-warning-subtle: rgba(245, 158, 11, 0.12);
+  --ds-success: #10B981;
+  --ds-success-subtle: rgba(16, 185, 129, 0.12);
+  --ds-info: #3B82F6;
+  --ds-info-subtle: rgba(59, 130, 246, 0.12);
+
+  /* ── Borders ───────────────────────────────────────────── */
+  --ds-border: rgba(255, 255, 255, 0.06);
+  --ds-border-muted: rgba(255, 255, 255, 0.08);
+  --ds-border-accent: rgba(57, 255, 20, 0.12);
+  --ds-border-accent-hover: rgba(57, 255, 20, 0.25);
+  --ds-border-accent-active: rgba(57, 255, 20, 0.45);
+
+  /* ── Shadows / Glow ────────────────────────────────────── */
+  --ds-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --ds-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --ds-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --ds-glow-sm: 0 0 20px rgba(57, 255, 20, 0.08);
+  --ds-glow-md: 0 0 40px rgba(57, 255, 20, 0.12);
+  --ds-glow-lg: 0 0 60px rgba(57, 255, 20, 0.06);
+  --ds-glow-intense: 0 0 80px rgba(57, 255, 20, 0.18);
+  --ds-glow-cta: 0 0 24px rgba(57, 255, 20, 0.18), 0 0 60px rgba(57, 255, 20, 0.08), inset 0 0 24px rgba(57, 255, 20, 0.06);
+  --ds-glow-cta-hover: 0 0 36px rgba(57, 255, 20, 0.3), 0 0 80px rgba(57, 255, 20, 0.14), inset 0 0 30px rgba(57, 255, 20, 0.1);
+
+  /* ── Gradients ─────────────────────────────────────────── */
+  --ds-gradient-card-hover: linear-gradient(160deg, rgba(57, 255, 20, 0.08) 0%, rgba(10, 30, 15, 0.9) 100%);
+  --ds-gradient-fade-down: linear-gradient(to bottom, transparent, var(--background));
+  --ds-gradient-fade-accent: linear-gradient(to bottom, transparent, rgba(57, 255, 20, 0.15), transparent);
+
+  /* ── Spacing Scale ─────────────────────────────────────── */
+  --ds-space-xs: 4px;
+  --ds-space-sm: 8px;
+  --ds-space-md: 16px;
+  --ds-space-lg: 24px;
+  --ds-space-xl: 32px;
+  --ds-space-2xl: 48px;
+  --ds-space-3xl: 64px;
+  --ds-space-4xl: 80px;
+  --ds-space-5xl: 100px;
+
+  /* ── Border Radius Scale ───────────────────────────────── */
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 12px;
+  --ds-radius-xl: 16px;
+  --ds-radius-2xl: 20px;
+  --ds-radius-3xl: 24px;
+  --ds-radius-full: 999px;
+
+  /* ── Typography Scale ──────────────────────────────────── */
+  --ds-text-xs: 0.65rem;
+  --ds-text-sm: 0.75rem;
+  --ds-text-base: 0.85rem;
+  --ds-text-md: 0.95rem;
+  --ds-text-lg: 1.15rem;
+  --ds-text-xl: 1.35rem;
+  --ds-text-2xl: 1.5rem;
+  --ds-text-3xl: 2rem;
+  --ds-text-4xl: 2.5rem;
+
+  /* ── Animation Tokens ──────────────────────────────────── */
+  --ds-duration-fast: 0.15s;
+  --ds-duration-normal: 0.3s;
+  --ds-duration-slow: 0.5s;
+  --ds-duration-slower: 0.8s;
+  --ds-ease-default: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --ds-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ds-ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Z-Index Scale ─────────────────────────────────────── */
+  --ds-z-base: 0;
+  --ds-z-raised: 1;
+  --ds-z-overlay: 10;
+  --ds-z-panel: 20;
+  --ds-z-modal: 30;
+  --ds-z-tooltip: 40;
+  --ds-z-cursor: 9999;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   TAILWIND v4 THEME EXTENSION
+   ═══════════════════════════════════════════════════════════════ */
+
 @theme inline {
+  /* ── Existing tokens (preserved) ───────────────────────── */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-green: var(--green);
   --color-green-dim: var(--green-dim);
+
+  /* ── Extended Palette ──────────────────────────────────── */
+  --color-bg-primary: #050A05;
+  --color-bg-secondary: #0A1410;
+  --color-accent: #39FF14;
+  --color-accent-dim: #1a3a1a;
+  --color-fg: #C8F5C8;
+  --color-danger: #E24B4A;
+  --color-warning: #F59E0B;
+  --color-success: #10B981;
+  --color-info: #3B82F6;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════ */
 
 * {
   cursor: none;
@@ -29,7 +166,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Scrollbar Styling */
+/* ── Scrollbar ───────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -47,13 +184,13 @@ body {
   background: var(--green);
 }
 
-/* Selection */
+/* ── Selection ───────────────────────────────────────────── */
 ::selection {
   background: rgba(57, 255, 20, 0.2);
   color: var(--green);
 }
 
-/* Link defaults */
+/* ── Link defaults ───────────────────────────────────────── */
 a {
   color: inherit;
   text-decoration: none;
@@ -74,41 +211,221 @@ a {
   }
 }
 
-/* ── Mobile Responsive (< 768px) ─────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   SHARED KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes ds-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ds-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes ds-card-reveal {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ds-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50%      { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes ds-pulse-glow {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 8px var(--ds-accent); }
+  50%      { opacity: 0.4; box-shadow: 0 0 2px var(--ds-accent); }
+}
+
+@keyframes ds-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes ds-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(6px); }
+}
+
+@keyframes ds-glow {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.8; }
+}
+
+@keyframes ds-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes ds-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes ds-pulse-dot {
+  0%, 100% { transform: scale(0.8); opacity: 0.3; }
+  50%      { transform: scale(1.3); opacity: 1; }
+}
+
+@keyframes ds-scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Glass card base ─────────────────────────────────────── */
+.ds-glass {
+  background: var(--ds-glass-bg);
+  border: 1px solid var(--ds-glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.ds-glass-heavy {
+  background: var(--ds-glass-bg-heavy);
+  border: 1px solid var(--ds-glass-border);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* ── Animate classes ─────────────────────────────────────── */
+.ds-animate-fade-up {
+  animation: ds-fade-up 0.7s ease-out both;
+}
+
+.ds-animate-card-reveal {
+  animation: ds-card-reveal 0.7s ease both;
+}
+
+.ds-animate-pulse {
+  animation: ds-pulse 2s ease-in-out infinite;
+}
+
+.ds-animate-pulse-glow {
+  animation: ds-pulse-glow 2s ease-in-out infinite;
+}
+
+.ds-animate-float {
+  animation: ds-float 3s ease-in-out infinite;
+}
+
+.ds-animate-bounce {
+  animation: ds-bounce 2s ease-in-out infinite;
+}
+
+.ds-animate-shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(57, 255, 20, 0.04) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: ds-shimmer 1.5s ease-in-out infinite;
+}
+
+.ds-animate-spin {
+  animation: ds-spin 1s linear infinite;
+}
+
+.ds-animate-scale-in {
+  animation: ds-scale-in 0.3s ease-out both;
+}
+
+/* ── Transition presets ──────────────────────────────────── */
+.ds-transition {
+  transition: all var(--ds-duration-normal) var(--ds-ease-default);
+}
+
+.ds-transition-fast {
+  transition: all var(--ds-duration-fast) ease;
+}
+
+.ds-transition-slow {
+  transition: all var(--ds-duration-slow) var(--ds-ease-default);
+}
+
+/* ── Glow effects ────────────────────────────────────────── */
+.ds-glow-sm {
+  box-shadow: var(--ds-glow-sm);
+}
+
+.ds-glow-md {
+  box-shadow: var(--ds-glow-md);
+}
+
+.ds-glow-lg {
+  box-shadow: var(--ds-glow-lg);
+}
+
+/* ── Section label ───────────────────────────────────────── */
+.ds-label {
+  font-size: var(--ds-text-xs);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ds-fg-subtle);
+}
+
+/* ── Card hover pattern ──────────────────────────────────── */
+.ds-card-hover {
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.ds-card-hover:hover {
+  transform: translateY(-4px);
+  border-color: var(--ds-glass-border-hover);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3), var(--ds-glow-sm);
+}
+
+/* ── Scale hover ─────────────────────────────────────────── */
+.ds-scale-hover {
+  transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.ds-scale-hover:hover {
+  transform: scale(1.05);
+}
+
+/* ── Text clamp ──────────────────────────────────────────── */
+.ds-line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ds-line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE OVERRIDES (preserved from original)
+   ═══════════════════════════════════════════════════════════════ */
+
 @media (max-width: 768px) {
-  /* Reduce particle count via CSS custom property */
   .particle-system { --count: 500; }
-
-  /* Stack navigation */
   nav { flex-direction: column; }
-
-  /* Full-width panels */
   .info-panel { width: 100vw !important; }
-
-  /* Smaller 3D canvas */
   canvas { height: 60vh !important; }
-
-  /* Larger tap targets for touch */
   button, a { min-height: 44px; }
-
-  /* Readable text */
   body { font-size: 16px; }
   h1 { font-size: 2rem; }
   h2 { font-size: 1.5rem; }
   h3 { font-size: 1.2rem; }
-
-  /* Reduce heavy box-shadows */
   .feature-card,
   .organism-card {
     box-shadow: 0 0 20px rgba(57, 255, 20, 0.05) !important;
   }
 }
 
-/* ── Small screens (< 480px) ─────────────────────────── */
 @media (max-width: 480px) {
   .feature-grid { grid-template-columns: 1fr !important; }
   .organism-grid { grid-template-columns: 1fr !important; }
-
   h1 { font-size: 1.6rem; }
   h2 { font-size: 1.25rem; }
 }

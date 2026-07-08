@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BackLink } from '@/components/ds'
 
 interface DiseaseData {
   id: string
@@ -200,10 +201,7 @@ export default function DiseaseExplorer() {
       {/* HEADER */}
       <header className="disease-header">
         <div className="header-left">
-          <Link href="/" className="back-btn">
-            ← Main Hub
-          </Link>
-          <div className="divider-line" />
+          <BackLink href="/" label="Home" />
           <div>
             <h1 className="header-title">DISEASE PATHOLOGY EXPLORER</h1>
             <p className="header-subtitle">DIAGNOSTIC MECHANISMS & ANATOMY MAP</p>
@@ -578,13 +576,13 @@ export default function DiseaseExplorer() {
 
       <style jsx global>{`
         .disease-root {
-          background: #050A05;
+          background: var(--ds-bg-primary);
           min-height: calc(100vh - 64px);
-          color: #C8F5C8;
+          color: var(--ds-fg);
           position: relative;
           overflow-x: hidden;
           box-sizing: border-box;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          font-family: inherit;
         }
 
         .disease-grid-bg {
@@ -616,7 +614,7 @@ export default function DiseaseExplorer() {
           align-items: center;
           justify-content: space-between;
           padding: 1.25rem 2rem 0.5rem;
-          border-bottom: 1px solid rgba(57, 255, 20, 0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           position: relative;
           z-index: 2;
         }
@@ -628,27 +626,27 @@ export default function DiseaseExplorer() {
         }
 
         .back-btn {
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: none;
           font-size: 0.82rem;
           font-weight: 700;
           letter-spacing: 0.05em;
           padding: 6px 14px;
           border-radius: 8px;
-          background: rgba(57, 255, 20, 0.05);
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           transition: all 0.2s ease;
         }
 
         .back-btn:hover {
           background: rgba(57, 255, 20, 0.12);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .divider-line {
           width: 1px;
           height: 32px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
         }
 
         .header-title {
@@ -661,7 +659,7 @@ export default function DiseaseExplorer() {
 
         .header-subtitle {
           font-size: 0.6rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           margin: 0;
           letter-spacing: 0.25em;
           font-weight: 700;
@@ -689,7 +687,7 @@ export default function DiseaseExplorer() {
         }
 
         .selection-header p {
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
           font-size: 0.9rem;
         }
 
@@ -705,13 +703,13 @@ export default function DiseaseExplorer() {
           flex-direction: column;
           align-items: flex-start;
           transition: all 0.25s ease;
-          border-color: rgba(255, 255, 255, 0.05);
+          border-color: var(--ds-border-muted);
         }
 
         .sim-select-card:hover {
-          border-color: rgba(57, 255, 20, 0.25);
+          border-color: var(--ds-accent);
           transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(57, 255, 20, 0.05);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .card-emoji {
@@ -720,8 +718,8 @@ export default function DiseaseExplorer() {
         }
 
         .card-category {
-          background: rgba(255,255,255,0.04);
-          color: #00D4AA;
+          background: var(--ds-surface-subtle);
+          color: var(--ds-accent);
           font-size: 0.58rem;
           font-weight: 800;
           padding: 2px 8px;
@@ -740,15 +738,15 @@ export default function DiseaseExplorer() {
         .card-desc {
           font-size: 0.78rem;
           line-height: 1.5;
-          color: rgba(200, 245, 200, 0.6);
+          color: var(--ds-fg-muted);
           margin-bottom: 1.5rem;
           flex: 1;
         }
 
         .launch-sim-btn {
-          background: rgba(57, 255, 20, 0.08);
-          border: 1px solid rgba(57, 255, 20, 0.25);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-size: 0.78rem;
           font-weight: 700;
           padding: 8px 16px;
@@ -759,7 +757,7 @@ export default function DiseaseExplorer() {
 
         .launch-sim-btn:hover {
           background: rgba(57, 255, 20, 0.15);
-          box-shadow: 0 0 12px rgba(57, 255, 20, 0.25);
+          box-shadow: var(--ds-glow-sm);
         }
 
         /* DISEASE MAIN WORKSPACE */
@@ -785,8 +783,8 @@ export default function DiseaseExplorer() {
 
         .panel-card {
           border-radius: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          background: rgba(10, 20, 10, 0.35);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(12px);
           box-sizing: border-box;
         }
@@ -809,7 +807,7 @@ export default function DiseaseExplorer() {
 
         .search-icon {
           font-size: 0.95rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
         }
 
         .search-input {
@@ -817,19 +815,19 @@ export default function DiseaseExplorer() {
           background: transparent;
           border: none;
           outline: none;
-          color: #fff;
+          color: var(--ds-fg);
           font-size: 0.85rem;
           padding: 4px 0;
         }
 
         .search-input::placeholder {
-          color: rgba(200, 245, 200, 0.3);
+          color: var(--ds-fg-subtle);
         }
 
         .clear-search-btn {
           background: transparent;
           border: none;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-muted);
           cursor: pointer;
           font-size: 0.85rem;
           padding: 4px;
@@ -837,7 +835,7 @@ export default function DiseaseExplorer() {
         }
 
         .clear-search-btn:hover {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .category-scroll-wrap {
@@ -856,9 +854,9 @@ export default function DiseaseExplorer() {
 
         .category-pill-btn {
           flex-shrink: 0;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          color: rgba(200, 245, 200, 0.6);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-muted);
           padding: 6px 12px;
           border-radius: 20px;
           font-size: 0.65rem;
@@ -870,15 +868,15 @@ export default function DiseaseExplorer() {
 
         .category-pill-btn:hover {
           color: #fff;
-          background: rgba(57, 255, 20, 0.05);
-          border-color: rgba(57, 255, 20, 0.2);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent-muted);
         }
 
         .category-pill-btn.active {
-          color: #39FF14;
-          background: rgba(57, 255, 20, 0.08);
-          border-color: rgba(57, 255, 20, 0.3);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
+          color: var(--ds-accent);
+          background: var(--ds-accent-subtle);
+          border-color: var(--ds-border-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .disease-list-scroller {
@@ -893,7 +891,7 @@ export default function DiseaseExplorer() {
         }
 
         .disease-list-scroller::-webkit-scrollbar-thumb {
-          background: rgba(57, 255, 20, 0.15);
+          background: var(--ds-border-muted);
           border-radius: 2px;
         }
 
@@ -906,8 +904,8 @@ export default function DiseaseExplorer() {
         .disease-row-card {
           width: 100%;
           text-align: left;
-          background: rgba(255, 255, 255, 0.01);
-          border: 1px solid rgba(255, 255, 255, 0.03);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           padding: 0.85rem 1rem;
           cursor: pointer;
@@ -918,8 +916,8 @@ export default function DiseaseExplorer() {
         }
 
         .disease-row-card:hover {
-          background: rgba(57, 255, 20, 0.02);
-          border-color: rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent);
           transform: translateY(-1px);
         }
 
@@ -937,7 +935,7 @@ export default function DiseaseExplorer() {
 
         .disease-card-name {
           font-weight: 700;
-          color: #fff;
+          color: var(--ds-fg);
           font-size: 0.88rem;
         }
 
@@ -949,10 +947,10 @@ export default function DiseaseExplorer() {
         .disease-card-category {
           font-size: 0.58rem;
           text-transform: uppercase;
-          background: rgba(255, 255, 255, 0.04);
+          background: var(--ds-surface-raised);
           padding: 2px 6px;
           border-radius: 4px;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
           font-weight: 700;
           letter-spacing: 0.04em;
         }
@@ -960,7 +958,7 @@ export default function DiseaseExplorer() {
         .disease-card-cause {
           margin: 0;
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-subtle);
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
@@ -969,7 +967,7 @@ export default function DiseaseExplorer() {
         .no-results-card {
           text-align: center;
           padding: 2rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           font-size: 0.78rem;
         }
 
@@ -986,7 +984,7 @@ export default function DiseaseExplorer() {
         .panel-section-title {
           font-size: 0.65rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.1em;
           margin: 0 0 10px 0;
           text-transform: uppercase;
@@ -1002,8 +1000,8 @@ export default function DiseaseExplorer() {
         }
 
         .human-body-svg {
-          background: rgba(0,0,0,0.5);
-          border: 1px solid rgba(255,255,255,0.03);
+          background: var(--ds-surface-raised);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           filter: drop-shadow(0 0 15px rgba(57, 255, 20, 0.03));
         }
@@ -1027,7 +1025,7 @@ export default function DiseaseExplorer() {
         .legend-header {
           font-family: monospace;
           font-size: 0.58rem;
-          color: rgba(255,255,255,0.3);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.1em;
           margin-bottom: 4px;
         }
@@ -1061,7 +1059,7 @@ export default function DiseaseExplorer() {
 
         .legend-label-text {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.65);
+          color: var(--ds-fg-muted);
         }
 
         .legend-row.affected .legend-label-text {
@@ -1080,8 +1078,8 @@ export default function DiseaseExplorer() {
 
         .diagram-viewport {
           flex: 1;
-          background: rgba(0,0,0,0.55);
-          border: 1px solid rgba(255,255,255,0.03);
+          background: var(--ds-surface-raised);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           display: flex;
           align-items: center;
@@ -1106,7 +1104,7 @@ export default function DiseaseExplorer() {
 
         .fallback-text {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-subtle);
           line-height: 1.5;
           margin: 0;
         }
@@ -1125,7 +1123,7 @@ export default function DiseaseExplorer() {
         }
 
         .diagnostic-details-card::-webkit-scrollbar-thumb {
-          background: rgba(239, 68, 68, 0.15);
+          background: var(--ds-border-muted);
           border-radius: 2px;
         }
 
@@ -1149,9 +1147,9 @@ export default function DiseaseExplorer() {
         }
 
         .audio-btn {
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: rgba(200, 245, 200, 0.6);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-muted);
           font-size: 0.68rem;
           font-weight: 700;
           padding: 4px 10px;
@@ -1162,7 +1160,7 @@ export default function DiseaseExplorer() {
 
         .audio-btn:hover {
           color: #fff;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-surface-raised);
         }
 
         .audio-btn.speaking {
@@ -1188,13 +1186,13 @@ export default function DiseaseExplorer() {
 
         .specimen-sub-cause {
           font-size: 0.78rem;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-subtle);
           line-height: 1.4;
         }
 
         .specimen-divider {
           height: 1px;
-          background: rgba(255, 255, 255, 0.06);
+          background: var(--ds-border-muted);
           margin: 1.25rem 0;
         }
 
@@ -1213,7 +1211,7 @@ export default function DiseaseExplorer() {
         .section-header-small {
           font-size: 0.58rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.12em;
           text-transform: uppercase;
         }
@@ -1222,7 +1220,7 @@ export default function DiseaseExplorer() {
           margin: 0;
           font-size: 0.78rem;
           line-height: 1.55;
-          color: rgba(200, 245, 200, 0.75);
+          color: var(--ds-fg-muted);
         }
 
         .tag-chips-row {

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BackLink } from '@/components/ds'
 
 interface BiomeConfig {
   id: string
@@ -268,10 +269,7 @@ export default function EcosystemSimulator() {
       {/* HEADER */}
       <header className="eco-header">
         <div className="header-left">
-          <Link href="/" className="back-btn">
-            ← Main Hub
-          </Link>
-          <div className="divider-line" />
+          <BackLink href="/" label="Home" />
           <div>
             <h1 className="header-title">ECOSYSTEM POPULATION SIMULATOR</h1>
             <p className="header-subtitle">LOTKA-VOLTERRA SPECIES INTERACTION BOARD</p>
@@ -463,12 +461,12 @@ export default function EcosystemSimulator() {
 
       <style jsx global>{`
         .eco-root {
-          background: #020502;
+          background: var(--ds-bg-primary);
           min-height: calc(100vh - 64px);
-          color: #C8F5C8;
+          color: var(--ds-fg);
           position: relative;
           overflow-x: hidden;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: inherit;
         }
 
         .eco-grid-bg {
@@ -500,7 +498,7 @@ export default function EcosystemSimulator() {
           align-items: center;
           justify-content: space-between;
           padding: 1.25rem 2rem 0.5rem;
-          border-bottom: 1px solid rgba(57, 255, 20, 0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           position: relative;
           z-index: 2;
         }
@@ -512,27 +510,27 @@ export default function EcosystemSimulator() {
         }
 
         .back-btn {
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: none;
           font-size: 0.82rem;
           font-weight: 700;
           letter-spacing: 0.05em;
           padding: 6px 14px;
           border-radius: 8px;
-          background: rgba(57, 255, 20, 0.05);
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           transition: all 0.2s ease;
         }
 
         .back-btn:hover {
           background: rgba(57, 255, 20, 0.12);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .divider-line {
           width: 1px;
           height: 32px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
         }
 
         .header-title {
@@ -545,7 +543,7 @@ export default function EcosystemSimulator() {
 
         .header-subtitle {
           font-size: 0.6rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           margin: 0;
           letter-spacing: 0.25em;
           font-weight: 700;
@@ -574,8 +572,8 @@ export default function EcosystemSimulator() {
 
         .panel-card {
           border-radius: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          background: rgba(10, 20, 10, 0.35);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(12px);
           box-sizing: border-box;
           padding: 1.25rem;
@@ -588,11 +586,11 @@ export default function EcosystemSimulator() {
         .panel-section-title {
           font-size: 0.68rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.12em;
           text-transform: uppercase;
           margin: 0 0 1rem 0;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           padding-bottom: 8px;
           flex-shrink: 0;
         }
@@ -612,9 +610,9 @@ export default function EcosystemSimulator() {
         .biome-pill-btn {
           width: 100%;
           text-align: left;
-          background: rgba(255,255,255,0.01);
-          border: 1px solid rgba(255,255,255,0.04);
-          color: rgba(200, 245, 200, 0.6);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-subtle);
           padding: 8px 12px;
           border-radius: 8px;
           font-size: 0.78rem;
@@ -625,15 +623,15 @@ export default function EcosystemSimulator() {
 
         .biome-pill-btn:hover {
           color: #fff;
-          background: rgba(57, 255, 20, 0.05);
-          border-color: rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent-muted);
         }
 
         .biome-pill-btn.active {
-          color: #39FF14;
-          background: rgba(57, 255, 20, 0.08);
-          border-color: rgba(57, 255, 20, 0.3);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          color: var(--ds-accent);
+          background: var(--ds-accent-subtle);
+          border-color: var(--ds-border-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .variables-card {
@@ -654,20 +652,20 @@ export default function EcosystemSimulator() {
           display: flex;
           justify-content: space-between;
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.75);
+          color: var(--ds-fg-subtle);
           font-weight: 600;
         }
 
         .slider-val {
           font-family: monospace;
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .variables-slider {
           -webkit-appearance: none;
           height: 4px;
           border-radius: 2px;
-          background: rgba(255,255,255,0.08);
+          background: var(--ds-surface-subtle);
           outline: none;
           cursor: pointer;
         }
@@ -678,8 +676,8 @@ export default function EcosystemSimulator() {
           width: 12px;
           height: 12px;
           border-radius: 50%;
-          background: #39FF14;
-          box-shadow: 0 0 6px rgba(57, 255, 20, 0.4);
+          background: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .disasters-card {
@@ -746,8 +744,8 @@ export default function EcosystemSimulator() {
 
         .specimen-board-viewport {
           flex: 1;
-          background: rgba(0,0,0,0.5);
-          border: 1px solid rgba(255,255,255,0.03);
+          background: var(--ds-surface-raised);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           display: flex;
           align-items: center;
@@ -793,9 +791,9 @@ export default function EcosystemSimulator() {
         .sim-play-btn {
           padding: 6px 14px;
           border-radius: 8px;
-          background: rgba(57, 255, 20, 0.08);
-          border: 1px solid rgba(57, 255, 20, 0.25);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-size: 0.72rem;
           font-weight: 700;
           cursor: pointer;
@@ -803,8 +801,8 @@ export default function EcosystemSimulator() {
         }
 
         .sim-play-btn:hover {
-          background: rgba(57, 255, 20, 0.15);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.25);
+          background: var(--ds-accent-subtle);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .sim-play-btn.playing {
@@ -821,9 +819,9 @@ export default function EcosystemSimulator() {
         .sim-reset-btn {
           padding: 6px 12px;
           border-radius: 8px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          color: rgba(200, 245, 200, 0.5);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-subtle);
           font-size: 0.72rem;
           font-weight: 700;
           cursor: pointer;
@@ -832,13 +830,13 @@ export default function EcosystemSimulator() {
 
         .sim-reset-btn:hover {
           color: #fff;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-surface-raised);
         }
 
         .graph-viewport-wrap {
           flex: 1;
-          background: rgba(0, 0, 0, 0.6);
-          border: 1px solid rgba(255, 255, 255, 0.03);
+          background: var(--ds-surface-raised);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           margin-bottom: 8px;
           overflow: hidden;
@@ -889,7 +887,7 @@ export default function EcosystemSimulator() {
         }
 
         .explanations-scroller::-webkit-scrollbar-thumb {
-          background: rgba(57, 255, 20, 0.15);
+          background: var(--ds-border-muted);
           border-radius: 2px;
         }
 
@@ -898,7 +896,7 @@ export default function EcosystemSimulator() {
           flex-direction: column;
           gap: 6px;
           margin-bottom: 1.25rem;
-          border-bottom: 1px solid rgba(255,255,255,0.03);
+          border-bottom: 1px solid var(--ds-border-muted);
           padding-bottom: 12px;
         }
 
@@ -913,16 +911,16 @@ export default function EcosystemSimulator() {
           margin: 0;
           font-size: 0.75rem;
           line-height: 1.5;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
         }
 
         .math-code {
-          background: rgba(0,0,0,0.5);
-          border: 1px solid rgba(255,255,255,0.04);
+          background: var(--ds-surface-raised);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 8px;
           padding: 10px;
           font-size: 0.65rem;
-          color: #00d4aa;
+          color: var(--ds-accent-muted);
           font-family: monospace;
           margin: 4px 0;
           overflow-x: auto;
@@ -930,7 +928,7 @@ export default function EcosystemSimulator() {
 
         .math-desc {
           font-size: 0.68rem !important;
-          color: rgba(200, 245, 200, 0.35) !important;
+          color: var(--ds-fg-subtle) !important;
         }
 
         /* LOADING ASSIST */
@@ -940,15 +938,15 @@ export default function EcosystemSimulator() {
           align-items: center;
           justify-content: center;
           min-height: 100vh;
-          background: #020502;
+          background: var(--ds-bg-primary);
         }
 
         .pulse-dot {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: #39FF14;
-          box-shadow: 0 0 15px #39FF14;
+          background: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
           animation: pulse-dot-key 1.5s infinite ease-in-out;
         }
 
@@ -958,7 +956,7 @@ export default function EcosystemSimulator() {
         }
 
         .loading-text {
-          color: rgba(200,245,200,0.5);
+          color: var(--ds-fg-subtle);
           font-size: 0.9rem;
           margin-top: 12px;
         }

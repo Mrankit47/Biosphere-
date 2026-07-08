@@ -4,8 +4,8 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Link from "next/link";
 import { ORGANISMS } from "./_data/organisms";
-import "./_styles/microorganisms.css";
 import dynamic from "next/dynamic";
+import { PageHeader, BackLink, GlowButton, GlassCard, GalleryGrid } from "@/components/ds";
 
 /* ── DYNAMICALLY IMPORT ORGANISM MODELS ── */
 const AmoebaMdl = dynamic(() => import("./_models/AmoebaMdl"), { ssr: false });
@@ -124,8 +124,6 @@ function HeroParticles() {
 /* ══════════════════════════════════════════════════════════════
    HERO ORGANISMS — Swimming in the background
    ══════════════════════════════════════════════════════════════ */
-
-/* Amoeba-like blob with vertex displacement */
 function HeroAmoeba() {
   const ref = useRef<THREE.Mesh>(null!);
   const orig = useRef<Float32Array | null>(null);
@@ -150,67 +148,9 @@ function HeroAmoeba() {
   });
   return (
     <mesh ref={ref}>
-      <icosahedronGeometry args={[2.2, 5]} />
-      <meshStandardMaterial color="#39FF14" transparent opacity={0.12} roughness={0.4} metalness={0.1} side={THREE.DoubleSide} />
+      <icosahedronGeometry args={[2.0, 4]} />
+      <meshStandardMaterial color="#39FF14" transparent opacity={0.05} roughness={0.5} metalness={0.1} side={THREE.DoubleSide} />
     </mesh>
-  );
-}
-
-/* Mini E.coli with rotating flagella */
-function HeroEcoli({ position }: { position: [number, number, number] }) {
-  const gRef = useRef<THREE.Group>(null!);
-  const flagRef = useRef<THREE.Group>(null!);
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    gRef.current.position.x = position[0] + Math.sin(t * 0.3) * 1.5;
-    gRef.current.position.y = position[1] + Math.cos(t * 0.25) * 0.8;
-    gRef.current.rotation.z = Math.sin(t * 0.4) * 0.3;
-    if (flagRef.current) flagRef.current.rotation.x = t * 6;
-  });
-  return (
-    <group ref={gRef}>
-      <mesh>
-        <capsuleGeometry args={[0.12, 0.35, 8, 12]} />
-        <meshStandardMaterial color="#EF9F27" emissive="#EF9F27" emissiveIntensity={0.3} transparent opacity={0.5} />
-      </mesh>
-      <group ref={flagRef} position={[-0.25, 0, 0]}>
-        {[0, 1, 2].map(i => (
-          <mesh key={i} rotation={[0, 0, (i - 1) * 0.4]}>
-            <cylinderGeometry args={[0.005, 0.005, 0.5, 4]} />
-            <meshBasicMaterial color="#F0E68C" transparent opacity={0.4} />
-          </mesh>
-        ))}
-      </group>
-    </group>
-  );
-}
-
-/* Mini Volvox sphere */
-function HeroVolvox({ position }: { position: [number, number, number] }) {
-  const ref = useRef<THREE.Group>(null!);
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    ref.current.rotation.y = t * 0.4;
-    ref.current.rotation.x = t * 0.15;
-    ref.current.position.x = position[0] + Math.sin(t * 0.2) * 0.5;
-    ref.current.position.y = position[1] + Math.cos(t * 0.15) * 0.3;
-  });
-  return (
-    <group ref={ref} position={position}>
-      <mesh>
-        <icosahedronGeometry args={[0.5, 2]} />
-        <meshStandardMaterial color="#1D9E75" wireframe transparent opacity={0.2} />
-      </mesh>
-      <mesh>
-        <icosahedronGeometry args={[0.48, 1]} />
-        <meshStandardMaterial color="#2ECC71" transparent opacity={0.1} />
-      </mesh>
-      {/* Daughter colony */}
-      <mesh position={[0.1, 0.05, 0]}>
-        <sphereGeometry args={[0.12, 8, 8]} />
-        <meshStandardMaterial color="#27AE60" transparent opacity={0.25} />
-      </mesh>
-    </group>
   );
 }
 
@@ -218,62 +158,53 @@ function HeroScene() {
   return (
     <>
       <color attach="background" args={["#050A05"]} />
-      <ambientLight intensity={0.25} />
+      <ambientLight intensity={0.2} />
       <pointLight position={[5, 5, 5]} intensity={0.8} color="#39FF14" />
-      <pointLight position={[-4, -3, 3]} intensity={0.4} color="#1D9E75" />
-      <spotLight position={[0, 8, 0]} angle={0.5} penumbra={1} intensity={0.6} color="#ffffff" />
+      <pointLight position={[-4, -3, 3]} intensity={0.4} color="#00D4AA" />
       <HeroParticles />
       <HeroAmoeba />
-      <HeroEcoli position={[3, 1.5, -1]} />
-      <HeroEcoli position={[-4, -1, 0.5]} />
-      <HeroVolvox position={[-2.5, 2, -2]} />
-      <HeroVolvox position={[3, -2, -1.5]} />
     </>
   );
 }
 
 /* ══════════════════════════════════════════════════════════════
-   MINI 3D CARD ORGANISM
+   MINI ORGANISM PREVIEW
    ══════════════════════════════════════════════════════════════ */
-function MiniOrg({ color, accentColor }: { color: string; accentColor: string }) {
+function MiniOrganism({ color }: { color: string }) {
   const ref = useRef<THREE.Mesh>(null!);
   useFrame(({ clock }) => {
-    ref.current.rotation.y = clock.getElapsedTime() * 0.3;
-    const p = 1 + Math.sin(clock.getElapsedTime() * 2) * 0.03;
-    ref.current.scale.setScalar(p);
+    ref.current.rotation.y = clock.getElapsedTime() * 0.35;
+    ref.current.position.y = Math.sin(clock.getElapsedTime() * 1.5) * 0.05;
   });
   return (
     <>
-      <ambientLight intensity={0.3} />
+      <ambientLight intensity={0.35} />
       <pointLight position={[2, 2, 2]} intensity={0.8} color={color} />
       <mesh ref={ref}>
-        <icosahedronGeometry args={[0.9, 3]} />
-        <meshStandardMaterial color={color} emissive={accentColor} emissiveIntensity={0.3} transparent opacity={0.6} roughness={0.4} />
-      </mesh>
-      <mesh>
-        <icosahedronGeometry args={[0.92, 2]} />
-        <meshBasicMaterial color={color} wireframe transparent opacity={0.08} />
+        <sphereGeometry args={[0.75, 16, 16]} />
+        <meshStandardMaterial color={color} transparent opacity={0.65} roughness={0.3} metalness={0.1} />
       </mesh>
     </>
   );
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ACTUAL CARD ORGANISM RENDERER WITH PERFORMANCE SWITCH
-   ══════════════════════════════════════════════════════════════ */
+/* ── ACTUAL CARD ORGANISM RENDERER ── */
 function CardOrganism({ org }: { org: any }) {
   const ModelComponent = MODEL_MAP[org.id];
   const groupRef = useRef<THREE.Group>(null!);
 
   useFrame(({ clock }) => {
     if (groupRef.current) {
-      groupRef.current.rotation.y = clock.getElapsedTime() * 0.22;
-      const p = 0.96 + Math.sin(clock.getElapsedTime() * 1.5) * 0.025;
-      groupRef.current.scale.setScalar(p);
+      groupRef.current.rotation.y = clock.getElapsedTime() * 0.25;
+      const scaleVal = 0.95 + Math.sin(clock.getElapsedTime() * 1.4) * 0.03;
+      groupRef.current.scale.setScalar(scaleVal);
     }
   });
 
-  const scale = org.id === "volvox" ? 0.65 : org.id === "dna-helix" ? 0.45 : 0.85;
+  let scale = 0.9;
+  if (org.id === "tardigrade") scale = 0.7;
+  else if (org.id === "hydra") scale = 0.55;
+  else if (org.id === " volvox") scale = 0.85;
 
   return (
     <>
@@ -288,7 +219,7 @@ function CardOrganism({ org }: { org: any }) {
             </group>
           </Suspense>
         ) : (
-          <MiniOrg color={org.color} accentColor={org.accentColor} />
+          <MiniOrganism color={org.color} />
         )}
       </group>
     </>
@@ -315,9 +246,9 @@ function useInView(rootMargin = "100px") {
 function LazyMicroCanvas({ org }: { org: any }) {
   const [ref, inView] = useInView("150px");
   return (
-    <div ref={ref} className="micro-card-canvas">
+    <div ref={ref} className="w-full h-[220px] relative bg-[rgba(5,10,5,0.5)] md:h-[180px]">
       {inView ? (
-        <Suspense fallback={<div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: org.color, fontSize: "2rem" }}>{org.emoji}</div>}>
+        <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-[2rem]" style={{ color: org.color }}>{org.emoji}</div>}>
           {typeof window !== 'undefined' && (
             <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: false, alpha: true }} style={{ background: "transparent" }}>
               <CardOrganism org={org} />
@@ -325,7 +256,7 @@ function LazyMicroCanvas({ org }: { org: any }) {
           )}
         </Suspense>
       ) : (
-        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: org.color, fontSize: "2rem" }}>{org.emoji}</div>
+        <div className="w-full h-full flex items-center justify-center text-[2rem]" style={{ color: org.color }}>{org.emoji}</div>
       )}
     </div>
   );
@@ -349,57 +280,81 @@ export default function MicroorganismsPage() {
   const filtered = filter === "All" ? ORGANISMS : ORGANISMS.filter(o => o.type === filter || o.type.includes(filter));
 
   return (
-    <div style={{ background: "#050A05", minHeight: "100vh" }}>
+    <div className="bg-[#050A05] min-h-screen text-[var(--ds-fg)]">
+      <BackLink href="/" label="Home" />
+
       {/* ── HERO ────────────────────────────────────────────── */}
-      <section className="micro-hero">
-        <div className="micro-hero-canvas">
+      <section className="relative w-full h-[100vh] overflow-hidden flex items-center justify-center" aria-label="Hero">
+        <div className="absolute inset-0 z-0">
           {mounted && (
             <Canvas camera={{ position: [0, 0, 8], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: false }}>
               <HeroScene />
             </Canvas>
           )}
         </div>
-        <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(5,10,5,0) 0%, rgba(5,10,5,0.3) 60%, rgba(5,10,5,1) 100%)", pointerEvents: "none" }} />
-        <div className="micro-hero-overlay">
-          <h1 className="micro-hero-title">MICRO ZOO</h1>
-          <p className="micro-hero-sub">A Cinematic Journey Through the Microscopic Universe</p>
-          <a href="#gallery" className="micro-hero-cta">Explore Organisms ↓</a>
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-transparent via-[rgba(5,10,5,0.3)] to-[#050A05] pointer-events-none" />
+        <div className="relative z-[2] text-center pointer-events-none flex flex-col items-center gap-4 px-6">
+          <h1 className="text-[clamp(2.5rem,7vw,5.5rem)] font-black tracking-[0.15em] text-white m-0 drop-shadow-[0_0_60px_rgba(57,255,20,0.2)]">
+            MICRO ZOO
+          </h1>
+          <p className="text-[clamp(0.85rem,2vw,1.2rem)] text-[var(--ds-accent-muted)] tracking-[0.2em] uppercase m-0">
+            A Cinematic Journey Through the Microscopic Universe
+          </p>
+          <div className="mt-4 pointer-events-auto">
+            <GlowButton href="#gallery">
+              Explore Organisms ↓
+            </GlowButton>
+          </div>
         </div>
       </section>
 
-      {/* ── FILTER BAR ──────────────────────────────────────── */}
-      <section id="gallery" className="micro-gallery">
-        <div className="micro-gallery-header">
-          <p className="micro-gallery-label">Interactive 3D Collection</p>
-          <h2 className="micro-gallery-title">Choose an Organism</h2>
+      {/* ── GALLERY ─────────────────────────────────────────── */}
+      <section id="gallery" className="relative p-[80px_24px_100px] max-w-[1400px] mx-auto md:p-[48px_16px_60px]">
+        <div className="text-center mb-[60px]">
+          <p className="text-[0.7rem] tracking-[0.25em] uppercase text-[var(--ds-accent-muted)] mb-2">
+            Interactive 3D Collection
+          </p>
+          <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-bold text-white m-0 tracking-[0.04em]">
+            Choose an Organism
+          </h2>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap", marginBottom: 32, padding: "0 16px" }}>
+        {/* Filter Bar */}
+        <div className="flex justify-center gap-2 flex-wrap mb-8 px-4">
           {FILTER_TYPES.map(t => (
-            <button key={t} onClick={() => setFilter(t)} style={{
-              padding: "6px 16px", borderRadius: 999,
-              border: filter === t ? "1px solid rgba(57,255,20,0.5)" : "1px solid rgba(255,255,255,0.08)",
-              background: filter === t ? "rgba(57,255,20,0.12)" : "rgba(5,10,5,0.6)",
-              color: filter === t ? "#39FF14" : "rgba(200,245,200,0.5)",
-              fontSize: "0.78rem", fontWeight: 600, cursor: "pointer",
-              backdropFilter: "blur(4px)", transition: "all 0.2s", fontFamily: "inherit",
-            }}>{t}</button>
+            <button
+              key={t}
+              onClick={() => setFilter(t)}
+              className={`
+                px-4 py-1.5 rounded-full border text-[0.78rem] font-semibold cursor-none backdrop-blur-md transition-all duration-200 font-[inherit]
+                ${filter === t
+                  ? "border-[rgba(57,255,20,0.5)] bg-[rgba(57,255,20,0.12)] text-[#39FF14]"
+                  : "border-[rgba(255,255,255,0.08)] bg-[rgba(5,10,5,0.6)] text-[var(--ds-fg-muted)] hover:text-white hover:border-[rgba(57,255,20,0.3)]"
+                }
+              `}
+            >
+              {t}
+            </button>
           ))}
-          <button onClick={() => setCompareMode(!compareMode)} style={{
-            padding: "6px 16px", borderRadius: 999,
-            border: compareMode ? "1px solid #F59E0B50" : "1px solid rgba(255,255,255,0.08)",
-            background: compareMode ? "rgba(245,158,11,0.12)" : "rgba(5,10,5,0.6)",
-            color: compareMode ? "#F59E0B" : "rgba(200,245,200,0.5)",
-            fontSize: "0.78rem", fontWeight: 600, cursor: "pointer",
-            backdropFilter: "blur(4px)", transition: "all 0.2s", fontFamily: "inherit",
-          }}>📏 Compare Sizes</button>
+          <button
+            onClick={() => setCompareMode(!compareMode)}
+            className={`
+              px-4 py-1.5 rounded-full border text-[0.78rem] font-semibold cursor-none backdrop-blur-md transition-all duration-200 font-[inherit]
+              ${compareMode
+                ? "border-[rgba(245,158,11,0.5)] bg-[rgba(245,158,11,0.12)] text-[#F59E0B]"
+                : "border-[rgba(255,255,255,0.08)] bg-[rgba(5,10,5,0.6)] text-[var(--ds-fg-muted)] hover:text-white hover:border-[rgba(245,158,11,0.3)]"
+              }
+            `}
+          >
+            📏 Compare Sizes
+          </button>
         </div>
 
         {/* Compare View */}
         {compareMode && (
-          <div style={{ maxWidth: 900, margin: "0 auto 40px", padding: "24px", borderRadius: 16, background: "rgba(57,255,20,0.04)", border: "1px solid rgba(57,255,20,0.1)" }}>
-            <h3 style={{ color: "#39FF14", fontSize: "1.1rem", margin: "0 0 16px", fontWeight: 700 }}>Size Comparison</h3>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 16, overflowX: "auto", paddingBottom: 12 }}>
+          <div className="max-w-[900px] mx-auto mb-10 p-6 rounded-2xl bg-[rgba(57,255,20,0.04)] border border-[rgba(57,255,20,0.1)]">
+            <h3 className="text-[#39FF14] text-[1.1rem] m-0 mb-4 font-bold">Size Comparison</h3>
+            <div className="flex items-end gap-4 overflow-x-auto pb-3">
               {[
                 { name: "E. coli", size: 2, color: "#EF9F27" },
                 { name: "Chlorella", size: 6, color: "#2ECC71" },
@@ -410,55 +365,58 @@ export default function MicroorganismsPage() {
               ].map(o => {
                 const h = Math.max(8, (o.size / 500) * 120);
                 return (
-                  <div key={o.name} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, minWidth: 60 }}>
-                    <div style={{ width: Math.max(12, h * 0.6), height: h, borderRadius: "50%", background: `${o.color}30`, border: `2px solid ${o.color}`, transition: "all 0.3s" }} />
-                    <span style={{ fontSize: "0.65rem", color: o.color, fontWeight: 700, whiteSpace: "nowrap" }}>{o.name}</span>
-                    <span style={{ fontSize: "0.6rem", color: "rgba(200,245,200,0.4)", fontFamily: "monospace" }}>{o.size} μm</span>
+                  <div key={o.name} className="flex flex-col items-center gap-1.5 min-w-[60px]">
+                    <div className="rounded-full border-2 transition-all duration-300" style={{ width: Math.max(12, h * 0.6), height: h, backgroundColor: `${o.color}30`, borderColor: o.color }} />
+                    <span className="text-[0.65rem] font-bold white-space-nowrap" style={{ color: o.color }}>{o.name}</span>
+                    <span className="text-[0.6rem] text-[var(--ds-fg-subtle)] font-mono">{o.size} μm</span>
                   </div>
                 );
               })}
             </div>
-            <div style={{ marginTop: 12, height: 2, background: "rgba(57,255,20,0.2)", position: "relative" }}>
-              <span style={{ position: "absolute", right: 0, top: -16, fontSize: "0.6rem", color: "rgba(200,245,200,0.4)", fontFamily: "monospace" }}>scale bar: 10 μm = ▬</span>
+            <div className="mt-3 h-[2px] bg-[rgba(57,255,20,0.2)] relative">
+              <span className="absolute right-0 top-[-16px] text-[0.6rem] text-[var(--ds-fg-subtle)] font-mono">scale bar: 10 μm = ▬</span>
             </div>
           </div>
         )}
 
-        <div className="micro-gallery-grid">
+        <GalleryGrid minItemWidth="300px" gap="24px" className="max-w-[1400px] w-full md:grid-cols-1">
           {filtered.map((org) => (
-            <Link key={org.id} href={`/microorganisms/${org.id}`} className="micro-card">
+            <GlassCard
+              key={org.id}
+              href={`/microorganisms/${org.id}`}
+              className="group/card overflow-hidden bg-[rgba(10,20,10,0.6)] border-[rgba(57,255,20,0.08)] hover:border-[rgba(57,255,20,0.2)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.4),0_0_40px_rgba(57,255,20,0.06)]"
+            >
               <LazyMicroCanvas org={org} />
-              <div className="micro-card-info">
-                <p className="micro-card-type">{org.type}</p>
-                <h3 className="micro-card-name" style={{ color: org.color }}>{org.emoji} {org.name}</h3>
-                <p className="micro-card-sci">{org.scientificName}</p>
-                <p className="micro-card-desc">{org.description}</p>
-                {/* Extra info badges */}
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 8 }}>
-                  <span style={{ padding: "2px 8px", borderRadius: 6, background: `${org.color}12`, border: `1px solid ${org.color}25`, fontSize: "0.65rem", color: `${org.color}CC` }}>{org.size}</span>
-                  <span style={{ padding: "2px 8px", borderRadius: 6, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", fontSize: "0.65rem", color: "rgba(200,245,200,0.5)" }}>{org.reproduction}</span>
+              <div className="p-5 flex flex-col gap-1 relative">
+                <p className="text-[0.6rem] tracking-[0.15em] uppercase text-[var(--ds-fg-subtle)] m-0">{org.type}</p>
+                <h3 className="text-[1.15rem] font-bold m-0 tracking-wide" style={{ color: org.color }}>{org.emoji} {org.name}</h3>
+                <p className="text-[0.75rem] font-style-italic text-[var(--ds-fg-subtle)] italic m-0">{org.scientificName}</p>
+                <p className="text-[0.78rem] text-[var(--ds-fg-muted)] leading-relaxed m-0 line-clamp-2 mt-1">{org.description}</p>
+                <div className="flex gap-1.5 flex-wrap mt-3">
+                  <span className="px-2 py-0.5 rounded-md border text-[0.65rem] font-medium" style={{ background: `${org.color}12`, borderColor: `${org.color}25`, color: `${org.color}CC` }}>{org.size}</span>
+                  <span className="px-2 py-0.5 rounded-md border border-[rgba(255,255,255,0.08)] bg-[rgba(255,255,255,0.04)] text-[0.65rem] text-[var(--ds-fg-muted)]">{org.reproduction}</span>
                 </div>
-                <div className="micro-card-arrow">
+                <div className="absolute bottom-5 right-5 w-8 h-8 rounded-full border border-[rgba(57,255,20,0.15)] text-[rgba(57,255,20,0.5)] flex items-center justify-center transition-all duration-300 group-hover/card:border-[rgba(57,255,20,0.4)] group-hover/card:text-[#39FF14] group-hover/card:bg-[rgba(57,255,20,0.08)]">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </div>
               </div>
-            </Link>
+            </GlassCard>
           ))}
-        </div>
+        </GalleryGrid>
       </section>
 
       {/* ── BOTTOM STATS ────────────────────────────────────── */}
-      <section style={{ padding: "60px 24px 80px", textAlign: "center", borderTop: "1px solid rgba(57,255,20,0.06)" }}>
-        <div style={{ display: "flex", justifyContent: "center", gap: "48px", flexWrap: "wrap" }}>
+      <section className="py-[60px] px-6 text-center border-t border-[rgba(57,255,20,0.06)]">
+        <div className="flex justify-center gap-[48px] flex-wrap">
           {[
             { val: "35", label: "3D Organisms" },
             { val: "70+", label: "Interactive Parts" },
             { val: "360°", label: "Full Rotation" },
             { val: "∞", label: "Zoom Levels" },
           ].map((s, i) => (
-            <div key={i} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "2rem", fontWeight: 800, color: "#39FF14", letterSpacing: "0.05em" }}>{s.val}</div>
-              <div style={{ fontSize: "0.7rem", color: "rgba(200,245,200,0.4)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "4px" }}>{s.label}</div>
+            <div key={i} className="text-center">
+              <div className="text-[2rem] font-extrabold text-[#39FF14] tracking-wider">{s.val}</div>
+              <div className="text-[0.7rem] text-[var(--ds-fg-subtle)] tracking-[0.12em] uppercase mt-1">{s.label}</div>
             </div>
           ))}
         </div>

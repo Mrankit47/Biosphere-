@@ -2,6 +2,7 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
+import { BackLink } from "@/components/ds";
 import { getJourneyById } from "@/data/learningPaths";
 import { getUserProgress, getOrCreateUserId, UserProgressData } from "@/utils/supabase";
 
@@ -69,10 +70,7 @@ export default function JourneyPage({ params }: JourneyPageProps) {
       <div style={{ ...S.glowBg, background: `radial-gradient(circle, ${journey.color}07 0%, transparent 70%)` }} />
 
       <div style={S.container}>
-        {/* Navigation Breadcrumb */}
-        <Link href="/learning-paths" style={S.breadcrumb}>
-          ← Back to Journeys
-        </Link>
+        <BackLink href="/learning-paths" label="Journeys" />
 
         {/* Journey Hero Header */}
         <header style={{ ...S.header, borderColor: `${journey.color}15` }}>
@@ -181,9 +179,9 @@ export default function JourneyPage({ params }: JourneyPageProps) {
 
 const S: Record<string, React.CSSProperties> = {
   root: {
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
     minHeight: "100vh",
-    color: "#C8F5C8",
+    color: "var(--ds-fg)",
     paddingTop: 80,
     position: "relative",
     overflow: "hidden",
@@ -207,7 +205,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   breadcrumb: {
     display: "inline-block",
-    color: "rgba(200,245,200,0.5)",
+    color: "var(--ds-fg-subtle)",
     fontSize: "0.85rem",
     marginBottom: 28,
     transition: "color 0.2s",
@@ -216,7 +214,7 @@ const S: Record<string, React.CSSProperties> = {
     display: "flex",
     gap: 28,
     alignItems: "flex-start",
-    borderBottom: "1px solid",
+    borderBottom: "1px solid var(--ds-border-muted)",
     paddingBottom: 32,
     marginBottom: 32,
     flexWrap: "wrap",
@@ -244,7 +242,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   desc: {
     fontSize: "0.95rem",
-    color: "rgba(200,245,200,0.6)",
+    color: "var(--ds-fg-muted)",
     margin: "10px 0 20px",
     lineHeight: 1.6,
   },
@@ -255,12 +253,12 @@ const S: Record<string, React.CSSProperties> = {
     flexWrap: "wrap",
   },
   metaPill: {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.06)",
+    background: "var(--ds-surface-subtle)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 999,
     padding: "6px 14px",
     fontSize: "0.78rem",
-    color: "rgba(200,245,200,0.6)",
+    color: "var(--ds-fg-muted)",
   },
   exploreLink: {
     borderRadius: 999,
@@ -272,8 +270,8 @@ const S: Record<string, React.CSSProperties> = {
     textDecoration: "none",
   },
   progressBox: {
-    background: "rgba(10, 20, 10, 0.45)",
-    border: "1px solid rgba(255,255,255,0.03)",
+    background: "var(--ds-surface-overlay)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 16,
     padding: 24,
     backdropFilter: "blur(8px)",
@@ -287,7 +285,7 @@ const S: Record<string, React.CSSProperties> = {
   progressLabel: {
     fontSize: "0.65rem",
     letterSpacing: "0.15em",
-    color: "rgba(200,245,200,0.4)",
+    color: "var(--ds-fg-subtle)",
     display: "block",
     marginBottom: 2,
     fontWeight: 600,
@@ -306,7 +304,7 @@ const S: Record<string, React.CSSProperties> = {
   progressBarTrack: {
     height: 6,
     borderRadius: 3,
-    background: "rgba(255,255,255,0.04)",
+    background: "var(--ds-surface-subtle)",
     width: "100%",
     overflow: "hidden",
   },
@@ -323,12 +321,12 @@ const S: Record<string, React.CSSProperties> = {
   },
   subSectionTitle: {
     fontSize: "0.95rem",
-    color: "rgba(200,245,200,0.4)",
+    color: "var(--ds-fg-subtle)",
     textTransform: "uppercase",
     letterSpacing: "0.15em",
     fontWeight: 700,
     marginBottom: 16,
-    borderBottom: "1px solid rgba(255,255,255,0.04)",
+    borderBottom: "1px solid var(--ds-border-muted)",
     paddingBottom: 8,
   },
   moduleList: {
@@ -340,8 +338,8 @@ const S: Record<string, React.CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    background: "rgba(10, 20, 10, 0.3)",
-    border: "1px solid",
+    background: "var(--ds-surface-subtle)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 16,
     padding: "20px 24px",
     flexWrap: "wrap",
@@ -374,13 +372,13 @@ const S: Record<string, React.CSSProperties> = {
   },
   moduleSummary: {
     fontSize: "0.82rem",
-    color: "rgba(200,245,200,0.5)",
+    color: "var(--ds-fg-muted)",
     margin: "0 0 6px",
     lineHeight: 1.4,
   },
   moduleMeta: {
     fontSize: "0.72rem",
-    color: "rgba(200,245,200,0.4)",
+    color: "var(--ds-fg-subtle)",
   },
   actionBtn: {
     padding: "10px 18px",
@@ -393,7 +391,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   scoreDisplay: {
     fontSize: "0.82rem",
-    color: "rgba(200,245,200,0.5)",
+    color: "var(--ds-fg-muted)",
   },
   loadingContainer: {
     display: "flex",
@@ -401,7 +399,7 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
   },
   errorContainer: {
     display: "flex",
@@ -409,7 +407,7 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
     padding: 24,
     textAlign: "center",
   },
@@ -417,7 +415,7 @@ const S: Record<string, React.CSSProperties> = {
     marginTop: 20,
     padding: "10px 20px",
     borderRadius: 8,
-    background: "#39FF14",
+    background: "var(--ds-accent)",
     color: "#000",
     fontWeight: 600,
     fontSize: "0.85rem",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { BackLink } from "@/components/ds";
 
 /* ── Tree Data ─────────────────────────────────────────────── */
 interface TreeNode {
@@ -228,14 +229,15 @@ export default function TreeOfLifePage() {
 
   return (
     <div style={S.root} suppressHydrationWarning>
+      <BackLink href="/" label="Home" />
       {/* Header */}
       <div style={S.header}>
         <h1 style={S.title}>Tree of Life</h1>
         <p style={S.subtitle}>Click any node to trace its evolutionary path</p>
         <div style={{ marginTop: 12, display: "flex", justifyContent: "center" }}>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search organism..." style={{ padding: "8px 16px", borderRadius: 10, border: "1px solid rgba(57,255,20,0.15)", background: "rgba(5,10,5,0.6)", color: "rgba(200,245,200,0.85)", fontSize: "0.8rem", width: "min(280px, 70vw)", outline: "none", fontFamily: "inherit", backdropFilter: "blur(8px)" }} />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search organism..." style={{ padding: "8px 16px", borderRadius: 10, border: "1px solid var(--ds-border-muted)", background: "var(--ds-surface-subtle)", color: "var(--ds-fg)", fontSize: "0.8rem", width: "min(280px, 70vw)", outline: "none", fontFamily: "inherit", backdropFilter: "blur(8px)" }} />
         </div>
-        {matchedIds.length > 0 && <p style={{ fontSize: "0.7rem", color: "#39FF14", marginTop: 6 }}>{matchedIds.length} match{matchedIds.length > 1 ? "es" : ""} found</p>}
+        {matchedIds.length > 0 && <p style={{ fontSize: "0.7rem", color: "var(--ds-accent)", marginTop: 6 }}>{matchedIds.length} match{matchedIds.length > 1 ? "es" : ""} found</p>}
       </div>
 
       {/* SVG Tree */}
@@ -352,7 +354,7 @@ export default function TreeOfLifePage() {
                   {treeNode.facts.map((f, i) => (
                     <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", marginTop: 6 }}>
                       <span style={{ color: selected.color, fontWeight: 700, flexShrink: 0 }}>•</span>
-                      <span style={{ fontSize: "0.82rem", color: "rgba(200,245,200,0.75)", lineHeight: 1.5 }}>{f}</span>
+                      <span style={{ fontSize: "0.82rem", color: "var(--ds-fg-muted)", lineHeight: 1.5 }}>{f}</span>
                     </div>
                   ))}
                 </div>
@@ -367,7 +369,7 @@ export default function TreeOfLifePage() {
                       return (
                         <span key={id} style={{ display: "flex", alignItems: "center", gap: 4 }}>
                           <span style={{ padding: "3px 8px", borderRadius: 6, background: `${ln?.color || selected.color}15`, border: `1px solid ${ln?.color || selected.color}30`, fontSize: "0.7rem", color: ln?.color || selected.color, fontWeight: 600 }}>{ln?.label || id}</span>
-                          {i < highlightPath.length - 1 && <span style={{ color: "rgba(200,245,200,0.3)", fontSize: "0.7rem" }}>→</span>}
+                          {i < highlightPath.length - 1 && <span style={{ color: "var(--ds-fg-subtle)", fontSize: "0.7rem" }}>→</span>}
                         </span>
                       );
                     })}
@@ -421,28 +423,28 @@ export default function TreeOfLifePage() {
 
 /* ── Styles ─────────────────────────────────────────────────── */
 const S: Record<string, React.CSSProperties> = {
-  root: { position: "relative", width: "100%", minHeight: "calc(100vh - 64px)", background: "#050A05", overflow: "hidden", display: "flex", flexDirection: "column" },
+  root: { position: "relative", width: "100%", minHeight: "calc(100vh - 64px)", background: "var(--ds-bg-primary)", overflow: "hidden", display: "flex", flexDirection: "column" },
 
   header: { textAlign: "center", padding: "24px 20px 0", zIndex: 10 },
-  title: { fontSize: "1.4rem", fontWeight: 700, color: "#39FF14", letterSpacing: "0.06em", margin: 0, textShadow: "0 0 20px rgba(57,255,20,0.3)" },
-  subtitle: { fontSize: "0.75rem", color: "rgba(200,245,200,0.45)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
+  title: { fontSize: "1.4rem", fontWeight: 700, color: "var(--ds-accent)", letterSpacing: "0.06em", margin: 0, textShadow: "var(--ds-glow-sm)" },
+  subtitle: { fontSize: "0.75rem", color: "var(--ds-fg-muted)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
 
   treeWrap: { flex: 1, padding: "10px 20px 40px", overflowX: "auto", display: "flex", justifyContent: "center", alignItems: "flex-start" },
   svg: { width: "100%", maxWidth: 1600, height: "auto", minHeight: 500 },
 
   panel: {
     position: "fixed", top: 64, right: 0, width: "min(320px, 80vw)", height: "calc(100vh - 64px)", zIndex: 30,
-    background: "rgba(5,10,5,0.92)", backdropFilter: "blur(20px)", borderLeft: "1px solid rgba(57,255,20,0.1)",
+    background: "var(--ds-surface-overlay)", backdropFilter: "blur(20px)", borderLeft: "1px solid var(--ds-border-muted)",
     padding: "48px 24px", boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px",
     transition: "transform 0.5s cubic-bezier(0.25,0.8,0.25,1), opacity 0.4s ease", overflowY: "auto",
   },
-  panelClose: { position: "absolute", top: 14, right: 14, background: "none", border: "none", color: "rgba(200,245,200,0.4)", fontSize: "1rem", cursor: "none", fontFamily: "inherit" },
+  panelClose: { position: "absolute", top: 14, right: 14, background: "none", border: "none", color: "var(--ds-fg-subtle)", fontSize: "1rem", cursor: "none", fontFamily: "inherit" },
   panelBadge: { width: 56, height: 56, borderRadius: 16, border: "1.5px solid", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.5rem" },
   panelName: { fontSize: "1.3rem", fontWeight: 700, margin: 0, textAlign: "center" },
-  panelCard: { width: "100%", padding: "14px 16px", borderRadius: 12, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" },
-  panelLabel: { fontSize: "0.6rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "rgba(200,245,200,0.4)" },
-  panelText: { fontSize: "0.88rem", color: "rgba(200,245,200,0.8)", lineHeight: 1.6, margin: "6px 0 0" },
+  panelCard: { width: "100%", padding: "14px 16px", borderRadius: 12, background: "var(--ds-surface-subtle)", border: "1px solid var(--ds-border-muted)" },
+  panelLabel: { fontSize: "0.6rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "var(--ds-fg-subtle)" },
+  panelText: { fontSize: "0.88rem", color: "var(--ds-fg-muted)", lineHeight: 1.6, margin: "6px 0 0" },
 
-  legend: { position: "fixed", bottom: 20, left: 20, zIndex: 10, display: "flex", flexDirection: "column", gap: 3, padding: "10px 14px", borderRadius: 10, background: "rgba(5,10,5,0.7)", border: "1px solid rgba(57,255,20,0.08)", backdropFilter: "blur(8px)" },
+  legend: { position: "fixed", bottom: 20, left: 20, zIndex: 10, display: "flex", flexDirection: "column", gap: 3, padding: "10px 14px", borderRadius: 10, background: "var(--ds-surface-subtle)", border: "1px solid var(--ds-border-muted)", backdropFilter: "blur(8px)" },
   legendItem: { display: "flex", alignItems: "center", gap: 6 },
 };

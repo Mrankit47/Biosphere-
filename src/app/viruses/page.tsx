@@ -4,8 +4,8 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Link from "next/link";
 import { VIRUSES } from "./_data/viruses";
-import "./_styles/viruses.css";
 import dynamic from "next/dynamic";
+import { PageHeader, BackLink, GlowButton, GlassCard, GalleryGrid } from "@/components/ds";
 
 /* ── DYNAMICALLY IMPORT VIRUS MODELS ── */
 const CoronavirusMdl = dynamic(() => import("./_models/CoronavirusMdl"), { ssr: false });
@@ -206,7 +206,6 @@ function CardVirus({ v }: { v: any }) {
     }
   });
 
-  // Calculate customized scale to fit within card bounds
   let scale = 0.85;
   if (v.id === "ebola") scale = 0.45;
   else if (v.id === "bacteriophage" || v.id === "lambda-phage") scale = 0.7;
@@ -252,15 +251,15 @@ function useInView(rootMargin = "100px") {
 function LazyVirusCanvas({ v }: { v: any }) {
   const [ref, inView] = useInView("150px");
   return (
-    <div ref={ref} className="virus-card-canvas">
+    <div ref={ref} className="w-full h-[180px] relative bg-[rgba(5,10,5,0.5)]">
       {inView ? (
-        <Suspense fallback={<div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: v.color, fontSize: "2rem" }}>{v.emoji}</div>}>
+        <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-[2rem]" style={{ color: v.color }}>{v.emoji}</div>}>
           <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 3], fov: 45 }} gl={{ antialias: false, alpha: true }} style={{ background: "transparent" }}>
             <CardVirus v={v} />
           </Canvas>
         </Suspense>
       ) : (
-        <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: v.color, fontSize: "2rem" }}>{v.emoji}</div>
+        <div className="w-full h-full flex items-center justify-center text-[2rem]" style={{ color: v.color }}>{v.emoji}</div>
       )}
     </div>
   );
@@ -274,96 +273,131 @@ export default function VirusesPage() {
   useEffect(() => { setMounted(true); }, []);
 
   return (
-    <div style={{ background: "#050A05", minHeight: "100vh" }}>
+    <div className="bg-[#050A05] min-h-screen text-[var(--ds-fg)]">
+      <BackLink href="/" label="Home" />
+      
       {/* ── HERO ────────────────────────────────────────────── */}
-      <section className="virus-hero">
-        <div className="virus-hero-canvas">
+      <section className="relative w-full h-[80vh] min-h-[500px] overflow-hidden" aria-label="Hero">
+        <div className="absolute inset-0 z-0">
           {mounted && (
             <Canvas camera={{ position: [0, 0, 8], fov: 55 }} dpr={[1, 1.5]} gl={{ antialias: false }}>
               <HeroScene />
             </Canvas>
           )}
         </div>
-        <div style={{ position: "absolute", inset: 0, zIndex: 1, background: "linear-gradient(180deg, rgba(5,10,5,0) 0%, rgba(5,10,5,0.3) 60%, rgba(5,10,5,1) 100%)", pointerEvents: "none" }} />
-        <div className="virus-hero-overlay">
-          <h1 className="virus-hero-title">VIRUSES</h1>
-          <p className="virus-hero-sub">A Comprehensive 3D Encyclopedia of the Worlds Most Impactful Viruses</p>
-          <a href="#gallery" className="virus-hero-cta">Explore Viruses ↓</a>
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-transparent via-[rgba(5,10,5,0.3)] to-[#050A05] pointer-events-none" />
+        <div className="relative z-[2] flex flex-col items-center justify-center h-full text-center px-6 gap-4">
+          <h1 className="text-[clamp(2.5rem,8vw,5rem)] font-black text-white tracking-[0.2em] m-0 drop-shadow-[0_0_60px_rgba(226,75,74,0.3)]">
+            VIRUSES
+          </h1>
+          <p className="text-[clamp(0.75rem,2vw,1rem)] text-[var(--ds-fg-muted)] tracking-[0.15em] uppercase m-0 max-w-[500px]">
+            A Comprehensive 3D Encyclopedia of the World&apos;s Most Impactful Viruses
+          </p>
+          <div className="mt-2">
+            <GlowButton accentColor="#E24B4A" href="#gallery">
+              Explore Viruses ↓
+            </GlowButton>
+          </div>
         </div>
       </section>
 
       {/* ── GALLERY ─────────────────────────────────────────── */}
-      <section id="gallery" className="virus-gallery">
-        <div className="virus-gallery-header">
-          <p className="virus-gallery-label">Interactive 3D Collection</p>
-          <h2 className="virus-gallery-title">Choose a Virus</h2>
+      <section id="gallery" className="p-[60px_clamp(20px,5vw,60px)_40px]">
+        <div className="text-center mb-10">
+          <p className="text-[0.65rem] font-semibold tracking-[0.15em] uppercase text-[rgba(226,75,74,0.6)] mb-1.5">
+            Interactive 3D Collection
+          </p>
+          <h2 className="text-2xl font-bold text-[#E24B4A] m-0 tracking-[0.04em] drop-shadow-[0_0_20px_rgba(226,75,74,0.2)]">
+            Choose a Virus
+          </h2>
         </div>
-        <div className="virus-gallery-grid">
+
+        <GalleryGrid minItemWidth="280px" gap="20px" className="max-w-[1200px] w-full">
           {VIRUSES.map((v) => (
-            <Link key={v.id} href={`/viruses/${v.id}`} className="virus-card">
+            <GlassCard
+              key={v.id}
+              href={`/viruses/${v.id}`}
+              className="group/card overflow-hidden bg-[rgba(255,255,255,0.02)] border-[rgba(255,255,255,0.06)] hover:border-[rgba(226,75,74,0.2)] hover:bg-[rgba(226,75,74,0.04)] hover:shadow-[0_12px_40px_rgba(226,75,74,0.1)] transition-all duration-350"
+            >
               <LazyVirusCanvas v={v} />
-              <div className="virus-card-info">
-                <p className="virus-card-type">{v.type}</p>
-                <h3 className="virus-card-name" style={{ color: v.color }}>{v.emoji} {v.name}</h3>
-                <p className="virus-card-sci">{v.scientificName}</p>
-                <p className="virus-card-desc">{v.description}</p>
-                <div className="virus-card-meta">
-                  <span className="virus-card-badge">📅 {v.discoveredYear}</span>
-                  <span className="virus-card-badge">☠️ {v.mortality}</span>
+              <div className="p-[16px_18px_20px] flex flex-col gap-1 relative">
+                <p className="text-[0.6rem] font-semibold tracking-[0.12em] uppercase text-[var(--ds-fg-subtle)] m-0">
+                  {v.type}
+                </p>
+                <h3 className="text-[1.1rem] font-bold m-0 tracking-wide" style={{ color: v.color }}>
+                  {v.emoji} {v.name}
+                </h3>
+                <p className="text-[0.7rem] text-[var(--ds-fg-subtle)] italic m-0">
+                  {v.scientificName}
+                </p>
+                <p className="text-[0.78rem] text-[var(--ds-fg-muted)] leading-relaxed m-0 mt-1.5 line-clamp-2">
+                  {v.description}
+                </p>
+                <div className="flex gap-3 mt-3 flex-wrap">
+                  <span className="text-[0.6rem] px-2 py-0.5 rounded-[20px] bg-[rgba(226,75,74,0.08)] border border-[rgba(226,75,74,0.15)] text-[var(--ds-fg-muted)] font-medium">
+                    📅 {v.discoveredYear}
+                  </span>
+                  <span className="text-[0.6rem] px-2 py-0.5 rounded-[20px] bg-[rgba(226,75,74,0.08)] border border-[rgba(226,75,74,0.15)] text-[var(--ds-fg-muted)] font-medium">
+                    ☠️ {v.mortality}
+                  </span>
                 </div>
-                <div className="virus-card-arrow">
+                <div className="absolute right-4 bottom-[18px] text-[var(--ds-fg-subtle)] group-hover/card:text-[rgba(226,75,74,0.7)] group-hover/card:translate-x-1 transition-all duration-300">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </div>
               </div>
-            </Link>
+            </GlassCard>
           ))}
-        </div>
+        </GalleryGrid>
       </section>
 
       {/* ── STATS ────────────────────────────────────────────── */}
-      <section style={{ padding: "60px 24px 40px", textAlign: "center", borderTop: "1px solid rgba(226,75,74,0.06)" }}>
-        <div style={{ display: "flex", justifyContent: "center", gap: "48px", flexWrap: "wrap" }}>
+      <section className="py-[60px] px-6 text-center border-t border-[rgba(226,75,74,0.06)]">
+        <div className="flex justify-center gap-[48px] flex-wrap">
           {[
             { val: "25+", label: "3D Viruses" },
             { val: "100+", label: "Structural Parts" },
             { val: "360°", label: "Full Rotation" },
             { val: "∞", label: "Zoom Levels" },
           ].map((s, i) => (
-            <div key={i} style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "2rem", fontWeight: 800, color: "#E24B4A", letterSpacing: "0.05em" }}>{s.val}</div>
-              <div style={{ fontSize: "0.7rem", color: "rgba(200,245,200,0.4)", letterSpacing: "0.12em", textTransform: "uppercase", marginTop: "4px" }}>{s.label}</div>
+            <div key={i} className="text-center">
+              <div className="text-[2rem] font-extrabold text-[#E24B4A] tracking-wider">{s.val}</div>
+              <div className="text-[0.7rem] text-[var(--ds-fg-subtle)] tracking-[0.12em] uppercase mt-1">{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── SIZE VISUALIZATION ─────────────────────────────── */}
-      <section style={{ padding: "40px clamp(16px,4vw,60px) 60px", borderTop: "1px solid rgba(226,75,74,0.06)" }}>
-        <h2 style={{ textAlign: "center", color: "#E24B4A", fontSize: "1.4rem", fontWeight: 700, marginBottom: 8, letterSpacing: "0.04em" }}>How Small Are Viruses?</h2>
-        <p style={{ textAlign: "center", color: "rgba(200,245,200,0.45)", fontSize: "0.8rem", marginBottom: 32, maxWidth: 500, margin: "0 auto 32px" }}>Viruses are far smaller than cells or bacteria. Here&apos;s a proportional size comparison.</p>
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: "clamp(20px,4vw,48px)", flexWrap: "wrap" }}>
+      <section className="p-[40px_clamp(16px,4vw,60px)_60px] border-t border-[rgba(226,75,74,0.06)]">
+        <h2 className="text-center text-[#E24B4A] text-[1.4rem] font-bold mb-2 tracking-[0.04em]">How Small Are Viruses?</h2>
+        <p className="text-center text-[var(--ds-fg-subtle)] text-[0.8rem] mb-8 max-w-[500px] mx-auto">
+          Viruses are far smaller than cells or bacteria. Here&apos;s a proportional size comparison.
+        </p>
+        <div className="flex items-end justify-center gap-[clamp(20px,4vw,48px)] flex-wrap">
           {[
             { label: "Human Cell", size: "10 μm", w: 120, color: "#378ADD" },
             { label: "Bacterium", size: "1 μm", w: 50, color: "#39FF14" },
             { label: "Virus", size: "100 nm", w: 14, color: "#E24B4A" },
             { label: "Protein", size: "5 nm", w: 4, color: "#F59E0B" },
           ].map((item, i) => (
-            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-              <div style={{ width: item.w, height: item.w, borderRadius: "50%", border: `2px solid ${item.color}`, background: `${item.color}15`, boxShadow: `0 0 20px ${item.color}20`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                {item.w >= 14 && <span style={{ fontSize: item.w > 40 ? "0.6rem" : "0.4rem", color: item.color, fontWeight: 700 }}>{item.size}</span>}
+            <div key={i} className="flex flex-col items-center gap-2">
+              <div className="rounded-full border-2 flex items-center justify-center transition-all duration-300" style={{ width: item.w, height: item.w, borderColor: item.color, background: `${item.color}15`, boxShadow: `0 0 20px ${item.color}20` }}>
+                {item.w >= 14 && <span className="font-bold" style={{ fontSize: item.w > 40 ? "0.6rem" : "0.4rem", color: item.color }}>{item.size}</span>}
               </div>
-              <span style={{ fontSize: "0.75rem", color: item.color, fontWeight: 600 }}>{item.label}</span>
-              <span style={{ fontSize: "0.65rem", color: "rgba(200,245,200,0.4)" }}>{item.size}</span>
+              <span className="text-[0.75rem] font-semibold" style={{ color: item.color }}>{item.label}</span>
+              <span className="text-[0.65rem] text-[var(--ds-fg-subtle)]">{item.size}</span>
             </div>
           ))}
         </div>
-        <p style={{ textAlign: "center", color: "rgba(200,245,200,0.35)", fontSize: "0.72rem", marginTop: 20, fontStyle: "italic" }}>~100 viruses fit across one bacterium • ~10,000 viruses fit across one human cell</p>
+        <p className="text-center text-[var(--ds-fg-subtle)] text-[0.72rem] mt-6 italic">
+          ~100 viruses fit across one bacterium • ~10,000 viruses fit across one human cell
+        </p>
       </section>
 
       {/* ── VIRUS vs BACTERIA ──────────────────────────────── */}
-      <section style={{ padding: "40px clamp(16px,4vw,60px) 60px", borderTop: "1px solid rgba(226,75,74,0.06)" }}>
-        <h2 style={{ textAlign: "center", color: "#E24B4A", fontSize: "1.4rem", fontWeight: 700, marginBottom: 32 }}>Virus vs Bacteria</h2>
-        <div style={{ maxWidth: 700, margin: "0 auto", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(226,75,74,0.1)" }}>
+      <section className="p-[40px_clamp(16px,4vw,60px)_60px] border-t border-[rgba(226,75,74,0.06)]">
+        <h2 className="text-center text-[#E24B4A] text-[1.4rem] font-bold mb-8">Virus vs Bacteria</h2>
+        <div className="max-w-[700px] mx-auto rounded-2xl overflow-hidden border border-[rgba(226,75,74,0.1)]">
           {[
             { feature: "Living?", virus: "No — not alive", bacteria: "Yes — living cells" },
             { feature: "Size", virus: "20-300 nm", bacteria: "0.2-10 μm" },
@@ -374,40 +408,40 @@ export default function VirusesPage() {
             { feature: "Treatment", virus: "Antivirals", bacteria: "Antibiotics" },
             { feature: "Examples", virus: "COVID, HIV, Flu", bacteria: "E. coli, Strep" },
           ].map((row, i) => (
-            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderBottom: i < 7 ? "1px solid rgba(255,255,255,0.04)" : "none", background: i % 2 === 0 ? "rgba(255,255,255,0.02)" : "transparent" }}>
-              <div style={{ padding: "12px 16px", fontSize: "0.8rem", color: "rgba(200,245,200,0.7)", fontWeight: 600 }}>{row.feature}</div>
-              <div style={{ padding: "12px 16px", fontSize: "0.78rem", color: "#E24B4A", borderLeft: "1px solid rgba(255,255,255,0.04)" }}>{row.virus}</div>
-              <div style={{ padding: "12px 16px", fontSize: "0.78rem", color: "#39FF14", borderLeft: "1px solid rgba(255,255,255,0.04)" }}>{row.bacteria}</div>
+            <div key={i} className={`grid grid-columns-3 grid-flow-col auto-cols-fr ${i < 7 ? "border-b border-[rgba(255,255,255,0.04)]" : ""} ${i % 2 === 0 ? "bg-[rgba(255,255,255,0.02)]" : "bg-transparent"}`} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+              <div className="p-3 text-[0.8rem] text-[var(--ds-fg-muted)] font-semibold">{row.feature}</div>
+              <div className="p-3 text-[0.78rem] text-[#E24B4A] border-l border-[rgba(255,255,255,0.04)]">{row.virus}</div>
+              <div className="p-3 text-[0.78rem] text-[#39FF14] border-l border-[rgba(255,255,255,0.04)]">{row.bacteria}</div>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── VACCINE & ANTIVIRAL ────────────────────────────── */}
-      <section style={{ padding: "40px clamp(16px,4vw,60px) 60px", borderTop: "1px solid rgba(226,75,74,0.06)" }}>
-        <h2 style={{ textAlign: "center", color: "#E24B4A", fontSize: "1.4rem", fontWeight: 700, marginBottom: 32 }}>How We Fight Viruses</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 20, maxWidth: 900, margin: "0 auto" }}>
+      <section className="p-[40px_clamp(16px,4vw,60px)_60px] border-t border-[rgba(226,75,74,0.06)]">
+        <h2 className="text-center text-[#E24B4A] text-[1.4rem] font-bold mb-8">How We Fight Viruses</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-[900px] mx-auto">
           {[
             { title: "mRNA Vaccines", emoji: "💉", color: "#39FF14", desc: "Deliver genetic instructions for spike protein. Your cells make the protein, immune system learns to fight it. Used for COVID-19 (Pfizer, Moderna)." },
             { title: "Weakened Virus", emoji: "🦠", color: "#378ADD", desc: "Contains weakened/killed virus. Trains immune memory without causing disease. Used for flu, measles, polio. Annual reformulation needed for flu." },
             { title: "Antiviral Drugs", emoji: "💊", color: "#9B59B6", desc: "Block viral replication inside cells. Examples: Tamiflu (flu), Paxlovid (COVID), ART (HIV). Different from antibiotics — don't work on bacteria." },
             { title: "Immune Response", emoji: "🛡️", color: "#F59E0B", desc: "White blood cells (T-cells, B-cells) detect and destroy infected cells. Memory cells provide long-term immunity. Antibodies neutralize free virus." },
           ].map((card, i) => (
-            <div key={i} style={{ padding: 24, borderRadius: 16, background: "rgba(255,255,255,0.02)", border: `1px solid ${card.color}20` }}>
-              <div style={{ fontSize: "1.5rem", marginBottom: 8 }}>{card.emoji}</div>
-              <h3 style={{ color: card.color, fontSize: "1rem", fontWeight: 700, margin: "0 0 8px" }}>{card.title}</h3>
-              <p style={{ fontSize: "0.82rem", color: "rgba(200,245,200,0.65)", lineHeight: 1.6, margin: 0 }}>{card.desc}</p>
+            <div key={i} className="p-6 rounded-2xl bg-[rgba(255,255,255,0.02)] border" style={{ borderColor: `${card.color}20` }}>
+              <div className="text-[1.5rem] mb-2">{card.emoji}</div>
+              <h3 className="text-base font-bold mb-2" style={{ color: card.color }}>{card.title}</h3>
+              <p className="text-[0.82rem] text-[var(--ds-fg-muted)] leading-relaxed m-0">{card.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* ── PANDEMIC TIMELINE ─────────────────────────────── */}
-      <section style={{ padding: "40px clamp(16px,4vw,60px) 80px", borderTop: "1px solid rgba(226,75,74,0.06)" }}>
-        <h2 style={{ textAlign: "center", color: "#E24B4A", fontSize: "1.4rem", fontWeight: 700, marginBottom: 32 }}>Famous Pandemics Timeline</h2>
-        <div style={{ maxWidth: 700, margin: "0 auto", position: "relative" }}>
+      <section className="p-[40px_clamp(16px,4vw,60px)_80px] border-t border-[rgba(226,75,74,0.06)]">
+        <h2 className="text-center text-[#E24B4A] text-[1.4rem] font-bold mb-8">Famous Pandemics Timeline</h2>
+        <div className="max-w-[700px] mx-auto relative">
           {/* Vertical line */}
-          <div style={{ position: "absolute", left: 20, top: 0, bottom: 0, width: 2, background: "rgba(226,75,74,0.15)", borderRadius: 1 }} />
+          <div className="absolute left-5 top-0 bottom-0 w-[2px] bg-[rgba(226,75,74,0.15)] rounded-[1px]" />
           {[
             { year: "1346", name: "Black Death", deaths: "75-200 million", pathogen: "Yersinia pestis (bacterium)", color: "#4B5563" },
             { year: "1918", name: "Spanish Flu", deaths: "50-100 million", pathogen: "H1N1 Influenza", color: "#378ADD" },
@@ -418,17 +452,17 @@ export default function VirusesPage() {
             { year: "2014", name: "Ebola", deaths: "11,325", pathogen: "Zaire Ebolavirus", color: "#E67E22" },
             { year: "2020", name: "COVID-19", deaths: "7+ million", pathogen: "SARS-CoV-2", color: "#E24B4A" },
           ].map((event, i) => (
-            <div key={i} style={{ display: "flex", gap: 20, marginBottom: 24, position: "relative" }}>
+            <div key={i} className="flex gap-5 mb-6 relative">
               {/* Dot */}
-              <div style={{ width: 12, height: 12, borderRadius: "50%", background: event.color, border: `2px solid ${event.color}`, boxShadow: `0 0 8px ${event.color}40`, flexShrink: 0, marginTop: 4, marginLeft: 15, zIndex: 1 }} />
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 4 }}>
-                  <span style={{ fontSize: "1.1rem", fontWeight: 800, color: event.color, fontFamily: "monospace" }}>{event.year}</span>
-                  <span style={{ fontSize: "0.95rem", fontWeight: 700, color: "rgba(200,245,200,0.85)" }}>{event.name}</span>
+              <div className="w-3 h-3 rounded-full flex-shrink-0 mt-1.5 ml-[14px] z-10" style={{ background: event.color, border: `2px solid ${event.color}`, boxShadow: `0 0 8px ${event.color}40` }} />
+              <div className="flex-1">
+                <div className="flex items-baseline gap-2.5 mb-1">
+                  <span className="text-[1.1rem] font-bold font-mono" style={{ color: event.color }}>{event.year}</span>
+                  <span className="text-[0.95rem] font-bold text-[rgba(200,245,200,0.85)]">{event.name}</span>
                 </div>
-                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                  <span style={{ fontSize: "0.72rem", padding: "3px 10px", borderRadius: 6, background: `${event.color}12`, border: `1px solid ${event.color}25`, color: event.color }}>☠️ {event.deaths}</span>
-                  <span style={{ fontSize: "0.72rem", color: "rgba(200,245,200,0.45)", fontStyle: "italic" }}>{event.pathogen}</span>
+                <div className="flex gap-3 flex-wrap">
+                  <span className="text-[0.72rem] px-2.5 py-0.5 rounded-md border text-medium" style={{ background: `${event.color}12`, borderColor: `${event.color}25`, color: event.color }}>☠️ {event.deaths}</span>
+                  <span className="text-[0.72rem] text-[var(--ds-fg-subtle)] italic self-center">{event.pathogen}</span>
                 </div>
               </div>
             </div>

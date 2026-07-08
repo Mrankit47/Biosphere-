@@ -2514,9 +2514,9 @@ export default function EcosystemsPage() {
         .eco-root {
           width: 100%;
           min-height: calc(100vh - 64px);
-          background: #020502;
-          color: #C8F5C8;
-          font-family: system-ui, -apple-system, sans-serif;
+          background: var(--ds-bg-primary);
+          color: var(--ds-fg);
+          font-family: inherit;
           overflow-x: hidden;
         }
 
@@ -2542,7 +2542,7 @@ export default function EcosystemsPage() {
           inset: 0;
           z-index: 1;
           pointer-events: none;
-          background: radial-gradient(ellipse at center, transparent 30%, rgba(2,5,2,0.85) 100%);
+          background: radial-gradient(ellipse at center, transparent 30%, var(--ds-bg-primary) 100%);
         }
 
         /* Overlay Controls */
@@ -2560,19 +2560,19 @@ export default function EcosystemsPage() {
         .eco-selector-title {
           font-size: 1.5rem;
           font-weight: 850;
-          color: #39FF14;
+          color: var(--ds-accent);
           letter-spacing: 0.05em;
           text-transform: uppercase;
           margin-bottom: 12px;
-          text-shadow: 0 0 20px rgba(57,255,20,0.3);
+          text-shadow: var(--ds-glow-sm);
         }
 
         .eco-tab-bar {
           display: flex;
           justify-content: center;
           gap: 10px;
-          background: rgba(5,15,5,0.7);
-          border: 1px solid rgba(57,255,20,0.15);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           padding: 5px;
           border-radius: 12px;
           backdrop-filter: blur(12px);
@@ -2586,7 +2586,7 @@ export default function EcosystemsPage() {
           border-radius: 8px;
           border: 1px solid transparent;
           background: transparent;
-          color: rgba(200,245,200,0.6);
+          color: var(--ds-fg-muted);
           cursor: pointer;
           transition: all 0.3s ease;
           display: flex;
@@ -2596,15 +2596,15 @@ export default function EcosystemsPage() {
         }
 
         .eco-tab-btn:hover {
-          color: #39FF14;
-          background: rgba(57,255,20,0.05);
+          color: var(--ds-accent);
+          background: var(--ds-accent-faint);
         }
 
         .eco-tab-btn.active {
-          color: #020502;
-          background: #39FF14;
+          color: var(--ds-bg-primary);
+          background: var(--ds-accent);
           font-weight: 750;
-          box-shadow: 0 0 15px rgba(57,255,20,0.35);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .eco-instruction-pill {
@@ -2613,9 +2613,9 @@ export default function EcosystemsPage() {
           padding: 4px 14px;
           font-size: 0.68rem;
           border-radius: 20px;
-          background: rgba(0,0,0,0.5);
-          border: 1px solid rgba(255,255,255,0.06);
-          color: rgba(200,245,200,0.5);
+          background: var(--ds-surface-overlay);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-muted);
           backdrop-filter: blur(8px);
         }
 
@@ -2627,9 +2627,9 @@ export default function EcosystemsPage() {
           transform: translateY(-50%) translateX(120%);
           width: min(320px, 85vw);
           max-height: 80vh;
-          background: rgba(2,6,2,0.9);
-          border: 1px solid rgba(57,255,20,0.15);
-          border-radius: 16px;
+          background: var(--ds-surface-overlay);
+          border: 1px solid var(--ds-border-muted);
+          border-radius: var(--ds-radius-xl);
           padding: 24px;
           box-sizing: border-box;
           z-index: 15;
@@ -2650,7 +2650,7 @@ export default function EcosystemsPage() {
           right: 14px;
           background: transparent;
           border: none;
-          color: rgba(200,245,200,0.5);
+          color: var(--ds-fg-muted);
           font-size: 0.95rem;
           cursor: pointer;
         }
@@ -2666,14 +2666,14 @@ export default function EcosystemsPage() {
           font-size: 0.65rem;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          color: rgba(200,245,200,0.4);
+          color: var(--ds-fg-subtle);
           font-weight: 700;
         }
 
         .eco-panel-title {
           font-size: 1.15rem;
           font-weight: 800;
-          color: #ECEFF1;
+          color: var(--ds-fg);
           margin: 4px 0 10px 0;
         }
 
@@ -2681,18 +2681,18 @@ export default function EcosystemsPage() {
           display: inline-block;
           font-size: 0.72rem;
           font-family: monospace;
-          background: rgba(57,255,20,0.1);
-          color: #39FF14;
+          background: var(--ds-accent-subtle);
+          color: var(--ds-accent);
           padding: 2px 8px;
           border-radius: 4px;
           margin-bottom: 12px;
-          border: 1px solid rgba(57,255,20,0.2);
+          border: 1px solid var(--ds-border-accent);
         }
 
         .eco-panel-desc {
           font-size: 0.82rem;
           line-height: 1.5;
-          color: rgba(200,245,200,0.7);
+          color: var(--ds-fg-muted);
           margin: 0 0 16px 0;
         }
 
@@ -2704,7 +2704,7 @@ export default function EcosystemsPage() {
         .eco-roles-heading {
           font-size: 0.76rem;
           font-weight: 700;
-          color: #39FF14;
+          color: var(--ds-accent);
           margin-bottom: 8px;
           text-transform: uppercase;
           letter-spacing: 0.04em;
@@ -2715,13 +2715,13 @@ export default function EcosystemsPage() {
           align-items: flex-start;
           gap: 6px;
           font-size: 0.8rem;
-          color: rgba(200,245,200,0.7);
+          color: var(--ds-fg-muted);
           line-height: 1.4;
           margin-bottom: 8px;
         }
 
         .eco-role-bullet {
-          color: #39FF14;
+          color: var(--ds-accent);
           font-weight: 800;
         }
 
@@ -2737,7 +2737,7 @@ export default function EcosystemsPage() {
           align-items: center;
           gap: 4px;
           font-size: 0.7rem;
-          color: rgba(200,245,200,0.4);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.05em;
           pointer-events: none;
         }
@@ -2759,20 +2759,20 @@ export default function EcosystemsPage() {
           max-width: 1000px;
           margin: 0 auto;
           padding: 24px clamp(16px, 4vw, 40px);
-          background: #020502;
+          background: var(--ds-bg-primary);
         }
 
         .eco-section-title {
           font-size: 1.35rem;
           font-weight: 800;
-          color: #39FF14;
+          color: var(--ds-accent);
           margin: 0 0 16px 0;
           letter-spacing: 0.02em;
         }
 
         /* Biome picker grid */
         .eco-biome-picker {
-          border-top: 1px solid rgba(57,255,20,0.08);
+          border-top: 1px solid var(--ds-border-muted);
           padding-top: 48px;
         }
 
@@ -2789,8 +2789,8 @@ export default function EcosystemsPage() {
           gap: 8px;
           padding: 24px 12px;
           border-radius: 16px;
-          border: 1.5px solid rgba(255,255,255,0.06);
-          background: rgba(2,6,2,0.85);
+          border: 1.5px solid var(--ds-border-muted);
+          background: var(--ds-surface-subtle);
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
           color: inherit;
@@ -2799,28 +2799,28 @@ export default function EcosystemsPage() {
         .eco-biome-card:hover {
           transform: translateY(-4px);
           border-color: var(--bc);
-          background: rgba(5,15,5,0.85);
+          background: var(--ds-surface-raised);
         }
 
         .eco-biome-card.active {
           border-color: var(--bc);
-          background: color-mix(in srgb, var(--bc) 8%, #020502);
+          background: color-mix(in srgb, var(--bc) 8%, var(--ds-bg-primary));
           box-shadow: 0 0 25px color-mix(in srgb, var(--bc) 20%, transparent);
         }
 
         .eco-biome-emoji { font-size: 2.2rem; }
         .eco-biome-name { font-weight: 750; font-size: 0.95rem; }
-        .eco-biome-climate { font-size: 0.72rem; color: rgba(200,245,200,0.45); text-align: center; line-height: 1.35; }
+        .eco-biome-climate { font-size: 0.72rem; color: var(--ds-fg-muted); text-align: center; line-height: 1.35; }
 
         /* Biome Details Panel */
         .eco-details-panel {
           border: 1px solid;
-          border-radius: 18px;
+          border-radius: var(--ds-radius-2xl);
           padding: 28px;
         }
 
         .eco-details-header {
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           padding-bottom: 16px;
           margin-bottom: 20px;
         }
@@ -2833,7 +2833,7 @@ export default function EcosystemsPage() {
 
         .eco-details-meta {
           font-size: 0.85rem;
-          color: rgba(200,245,200,0.6);
+          color: var(--ds-fg-muted);
         }
 
         .eco-detail-split {
@@ -2845,7 +2845,7 @@ export default function EcosystemsPage() {
         .eco-detail-subtitle {
           font-size: 0.95rem;
           font-weight: 800;
-          color: #ECEFF1;
+          color: var(--ds-fg);
           margin: 0 0 14px 0;
           text-transform: uppercase;
           letter-spacing: 0.04em;

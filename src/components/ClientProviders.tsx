@@ -16,7 +16,7 @@ export default function ClientProviders({
       <CustomCursor />
       <Navbar />
       <ErrorBoundary>
-        <main style={{ paddingTop: "64px", flex: 1 }}>
+        <main className="pt-16 flex-1 flex flex-col">
           <PageTransition>{children}</PageTransition>
         </main>
       </ErrorBoundary>

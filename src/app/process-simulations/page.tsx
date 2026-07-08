@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BackLink } from '@/components/ds'
 
 interface SimStep {
   title: string
@@ -175,10 +176,7 @@ export default function ProcessSimulations() {
       {/* HEADER SECTION */}
       <header className="sim-header">
         <div className="header-left">
-          <Link href="/" className="back-btn">
-            ← Main Hub
-          </Link>
-          <div className="divider-line" />
+          <BackLink href="/" label="Home" />
           <div>
             <h1 className="header-title">BIOLOGY PROCESS SIMULATOR</h1>
             <p className="header-subtitle">TIMELINE SCRUBBER & ANIMATION ENGINE</p>
@@ -601,13 +599,13 @@ export default function ProcessSimulations() {
 
       <style jsx global>{`
         .sim-root {
-          background: #050A05;
+          background: var(--ds-bg-primary);
           min-height: calc(100vh - 64px);
-          color: #C8F5C8;
+          color: var(--ds-fg);
           position: relative;
           overflow-x: hidden;
           box-sizing: border-box;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          font-family: inherit;
         }
 
         .sim-grid-bg {
@@ -639,7 +637,7 @@ export default function ProcessSimulations() {
           align-items: center;
           justify-content: space-between;
           padding: 1.25rem 2rem 0.5rem;
-          border-bottom: 1px solid rgba(57, 255, 20, 0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           position: relative;
           z-index: 2;
         }
@@ -651,27 +649,27 @@ export default function ProcessSimulations() {
         }
 
         .back-btn {
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: none;
           font-size: 0.82rem;
           font-weight: 700;
           letter-spacing: 0.05em;
           padding: 6px 14px;
           border-radius: 8px;
-          background: rgba(57, 255, 20, 0.05);
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           transition: all 0.2s ease;
         }
 
         .back-btn:hover {
           background: rgba(57, 255, 20, 0.12);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .divider-line {
           width: 1px;
           height: 32px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
         }
 
         .header-title {
@@ -684,7 +682,7 @@ export default function ProcessSimulations() {
 
         .header-subtitle {
           font-size: 0.6rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           margin: 0;
           letter-spacing: 0.25em;
           font-weight: 700;
@@ -713,7 +711,7 @@ export default function ProcessSimulations() {
         }
 
         .selection-header p {
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
           font-size: 0.9rem;
         }
 
@@ -729,13 +727,13 @@ export default function ProcessSimulations() {
           flex-direction: column;
           align-items: flex-start;
           transition: all 0.25s ease;
-          border-color: rgba(255, 255, 255, 0.05);
+          border-color: var(--ds-border-muted);
         }
 
         .sim-select-card:hover {
-          border-color: rgba(57, 255, 20, 0.25);
+          border-color: var(--ds-accent);
           transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(57, 255, 20, 0.05);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .card-top {
@@ -751,9 +749,9 @@ export default function ProcessSimulations() {
         }
 
         .card-category {
-          background: rgba(255, 255, 255, 0.04);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: #00D4AA;
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-accent);
           font-size: 0.58rem;
           font-weight: 800;
           padding: 2px 8px;
@@ -771,15 +769,15 @@ export default function ProcessSimulations() {
         .card-desc {
           font-size: 0.78rem;
           line-height: 1.5;
-          color: rgba(200, 245, 200, 0.6);
+          color: var(--ds-fg-muted);
           margin-bottom: 1.5rem;
           flex: 1;
         }
 
         .launch-sim-btn {
-          background: rgba(57, 255, 20, 0.08);
-          border: 1px solid rgba(57, 255, 20, 0.25);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-size: 0.78rem;
           font-weight: 700;
           padding: 8px 16px;
@@ -789,8 +787,8 @@ export default function ProcessSimulations() {
         }
 
         .launch-sim-btn:hover {
-          background: rgba(57, 255, 20, 0.15);
-          box-shadow: 0 0 12px rgba(57, 255, 20, 0.25);
+          background: var(--ds-accent-subtle);
+          box-shadow: var(--ds-glow-sm);
         }
 
         /* WORKSPACE */
@@ -815,8 +813,8 @@ export default function ProcessSimulations() {
 
         .panel-card {
           border-radius: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          background: rgba(10, 20, 10, 0.35);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(12px);
           box-sizing: border-box;
         }
@@ -828,7 +826,7 @@ export default function ProcessSimulations() {
         .panel-section-title {
           font-size: 0.62rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.15em;
           margin: 0 0 12px 0;
           text-transform: uppercase;
@@ -836,7 +834,7 @@ export default function ProcessSimulations() {
 
         .exit-sim-btn {
           align-self: flex-start;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-subtle);
           background: transparent;
           border: none;
           cursor: pointer;
@@ -848,7 +846,7 @@ export default function ProcessSimulations() {
         }
 
         .exit-sim-btn:hover {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .steps-panel-card {
@@ -889,27 +887,27 @@ export default function ProcessSimulations() {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid var(--ds-border-muted);
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 0.62rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--ds-fg-subtle);
           transition: all 0.2s;
         }
 
         .step-bullet-row.active .bullet-indicator {
-          border-color: #39FF14;
-          background: rgba(57, 255, 20, 0.08);
-          color: #39FF14;
-          box-shadow: 0 0 8px rgba(57, 255, 20, 0.2);
+          border-color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          color: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .step-bullet-row.completed .bullet-indicator {
-          border-color: #00D4AA;
-          background: rgba(0, 212, 170, 0.08);
-          color: #00D4AA;
+          border-color: var(--ds-accent-muted);
+          background: var(--ds-accent-faint);
+          color: var(--ds-accent-muted);
         }
 
         .bullet-title {
@@ -932,10 +930,10 @@ export default function ProcessSimulations() {
         .enzyme-focus-tag {
           font-size: 0.55rem;
           font-weight: 800;
-          color: #00D4AA;
+          color: var(--ds-accent-muted);
           letter-spacing: 0.1em;
-          border: 1px solid rgba(0, 212, 170, 0.2);
-          background: rgba(0, 212, 170, 0.05);
+          border: 1px solid var(--ds-border-accent);
+          background: var(--ds-accent-faint);
           padding: 2px 8px;
           border-radius: 4px;
           align-self: flex-start;
@@ -953,13 +951,13 @@ export default function ProcessSimulations() {
         .active-step-summary {
           font-size: 0.78rem;
           line-height: 1.4;
-          color: rgba(200, 245, 200, 0.7);
+          color: var(--ds-fg-muted);
           margin: 0;
         }
 
         .divider-sub {
           height: 1px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
           margin: 12px 0;
         }
 
@@ -967,7 +965,7 @@ export default function ProcessSimulations() {
           margin: 0;
           font-size: 0.75rem;
           line-height: 1.6;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-subtle);
         }
 
         /* VISUAL CANVAS MAIN */
@@ -982,9 +980,9 @@ export default function ProcessSimulations() {
 
         .sim-canvas-viewport {
           flex: 1;
-          background: rgba(0, 0, 0, 0.45);
+          background: var(--ds-surface-raised);
           border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.03);
+          border: 1px solid var(--ds-border-muted);
           margin-bottom: 1rem;
           position: relative;
           overflow: hidden;
@@ -1001,8 +999,8 @@ export default function ProcessSimulations() {
           display: flex;
           flex-direction: column;
           gap: 12px;
-          background: rgba(5, 10, 5, 0.6);
-          border-color: rgba(57, 255, 20, 0.05);
+          background: var(--ds-surface-overlay);
+          border-color: var(--ds-border-muted);
         }
 
         .timeline-slider-row {
@@ -1014,7 +1012,7 @@ export default function ProcessSimulations() {
         .time-val {
           font-family: monospace;
           font-size: 0.7rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--ds-fg-subtle);
           width: 32px;
           text-align: center;
         }
@@ -1024,7 +1022,7 @@ export default function ProcessSimulations() {
           -webkit-appearance: none;
           height: 4px;
           border-radius: 2px;
-          background: rgba(255, 255, 255, 0.1);
+          background: var(--ds-surface-subtle);
           outline: none;
           cursor: pointer;
         }
@@ -1035,8 +1033,8 @@ export default function ProcessSimulations() {
           width: 14px;
           height: 14px;
           border-radius: 50%;
-          background: #39FF14;
-          box-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+          background: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
           transition: transform 0.15s;
         }
 
@@ -1054,9 +1052,9 @@ export default function ProcessSimulations() {
           width: 34px;
           height: 34px;
           border-radius: 8px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          color: rgba(255, 255, 255, 0.6);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-subtle);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1067,26 +1065,26 @@ export default function ProcessSimulations() {
 
         .deck-btn:hover {
           color: #fff;
-          background: rgba(255, 255, 255, 0.08);
-          border-color: rgba(255, 255, 255, 0.15);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent-muted);
         }
 
         .play-pause-btn {
-          border-color: rgba(57, 255, 20, 0.25);
-          color: #39FF14;
-          background: rgba(57, 255, 20, 0.05);
+          border-color: var(--ds-border-accent);
+          color: var(--ds-accent);
+          background: var(--ds-accent-faint);
         }
 
         .play-pause-btn.playing {
-          border-color: rgba(0, 212, 170, 0.25);
-          color: #00D4AA;
-          background: rgba(0, 212, 170, 0.05);
+          border-color: var(--ds-border-accent);
+          color: var(--ds-accent);
+          background: var(--ds-accent-faint);
         }
 
         .vertical-deck-divider {
           width: 1px;
           height: 24px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
         }
 
         .speed-pills-row {
@@ -1095,9 +1093,9 @@ export default function ProcessSimulations() {
         }
 
         .speed-pill {
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.06);
-          color: rgba(200, 245, 200, 0.5);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-subtle);
           font-size: 0.65rem;
           font-weight: 700;
           padding: 4px 10px;
@@ -1108,13 +1106,13 @@ export default function ProcessSimulations() {
 
         .speed-pill:hover {
           color: #fff;
-          background: rgba(255,255,255,0.05);
+          background: var(--ds-accent-faint);
         }
 
         .speed-pill.active {
-          color: #00D4AA;
-          background: rgba(0, 212, 170, 0.08);
-          border-color: rgba(0, 212, 170, 0.25);
+          color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-border-accent);
         }
 
         /* RESPONSIVE DESIGN */
