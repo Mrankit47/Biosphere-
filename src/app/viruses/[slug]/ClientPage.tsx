@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import Link from "next/link";
+import { BackLink } from "@/components/ds";
 import { getVirusById } from "../_data/viruses";
 import dynamic from "next/dynamic";
 
@@ -108,7 +109,7 @@ export default function ClientPage({ slug }: { slug: string }) {
     return (
       <div style={{ height: "calc(100vh - 64px)", display: "flex", alignItems: "center", justifyContent: "center", background: "#050A05", flexDirection: "column", gap: "16px" }}>
         <h1 style={{ color: "#E24B4A", fontSize: "1.5rem" }}>Virus not found</h1>
-        <Link href="/viruses" style={{ color: "rgba(200,245,200,0.7)", fontSize: "0.85rem", textDecoration: "none", padding: "8px 20px", borderRadius: "10px", border: "1px solid rgba(226,75,74,0.2)", background: "rgba(5,10,5,0.5)" }}>← Back to Gallery</Link>
+        <BackLink href="/viruses" label="Gallery" />
       </div>
     );
   }
@@ -132,10 +133,9 @@ export default function ClientPage({ slug }: { slug: string }) {
       </div>
 
       {/* Back */}
-      <Link href="/viruses" style={S.backLink}>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5" /><path d="M12 19l-7-7 7-7" /></svg>
-        <span>Gallery</span>
-      </Link>
+      <div style={{ position: "absolute", top: 20, left: 24, zIndex: 10 }}>
+        <BackLink href="/viruses" label="Gallery" />
+      </div>
 
       {/* Header */}
       <div style={S.header}>
@@ -250,18 +250,18 @@ export default function ClientPage({ slug }: { slug: string }) {
 }
 
 const S: Record<string, React.CSSProperties> = {
-  root: { position: "relative", width: "100%", height: "calc(100vh - 64px)", background: "#050A05", overflow: "hidden" },
+  root: { position: "relative", width: "100%", height: "calc(100vh - 64px)", background: "var(--ds-bg-primary)", overflow: "hidden" },
   canvasWrap: { position: "absolute", inset: 0, zIndex: 0 },
-  backLink: { position: "absolute", top: 20, left: 24, zIndex: 10, display: "flex", alignItems: "center", gap: "8px", color: "rgba(200,245,200,0.7)", fontSize: "0.85rem", textDecoration: "none", cursor: "none", padding: "8px 14px", borderRadius: "10px", background: "rgba(5,10,5,0.5)", border: "1px solid rgba(226,75,74,0.1)", backdropFilter: "blur(8px)", transition: "all 0.25s ease" },
+  backLink: { position: "absolute", top: 20, left: 24, zIndex: 10, display: "flex", alignItems: "center", gap: "8px", color: "var(--ds-accent)", fontSize: "0.85rem", textDecoration: "none", cursor: "none", padding: "8px 14px", borderRadius: "10px", background: "var(--ds-accent-faint)", border: "1px solid var(--ds-border-accent)", backdropFilter: "blur(8px)", transition: "all 0.25s ease" },
   header: { position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 10, textAlign: "center", pointerEvents: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" },
   headerTitle: { fontSize: "1.4rem", fontWeight: 700, letterSpacing: "0.08em", margin: 0 },
-  headerSub: { fontSize: "0.7rem", color: "rgba(200,245,200,0.5)", margin: 0, letterSpacing: "0.12em", fontStyle: "italic" },
-  infoBar: { position: "absolute", bottom: 32, left: "50%", transform: "translateX(-50%)", zIndex: 10, display: "flex", alignItems: "center", gap: "10px", padding: "10px 20px", borderRadius: "14px", background: "rgba(5,10,5,0.7)", border: "1px solid rgba(226,75,74,0.1)", backdropFilter: "blur(12px)", whiteSpace: "nowrap", maxWidth: "90vw", overflowX: "auto" },
-  hint: { position: "absolute", bottom: 80, left: "50%", transform: "translateX(-50%)", zIndex: 10, color: "rgba(226,75,74,0.35)", fontSize: "0.72rem", letterSpacing: "0.1em", pointerEvents: "none" },
-  panel: { position: "absolute", top: 80, right: 20, zIndex: 10, width: "min(320px, 80vw)", display: "flex", flexDirection: "column", gap: "10px", padding: "18px", borderRadius: "16px", background: "rgba(5,10,5,0.85)", backdropFilter: "blur(20px)", border: "1px solid rgba(226,75,74,0.08)", maxHeight: "calc(100vh - 200px)", overflowY: "auto" },
-  panelSection: { padding: "10px 12px", borderRadius: "10px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" },
-  panelLabel: { fontSize: "0.58rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "rgba(200,245,200,0.4)" },
-  panelText: { fontSize: "0.78rem", lineHeight: 1.55, color: "rgba(200,245,200,0.8)", margin: "4px 0 0" },
-  stat: { padding: "8px 10px", borderRadius: "8px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)", display: "flex", flexDirection: "column", gap: "2px" },
-  funFact: { display: "flex", gap: "10px", alignItems: "flex-start", padding: "10px 12px", borderRadius: "10px", background: "rgba(226,75,74,0.03)", border: "1px solid rgba(226,75,74,0.06)" },
+  headerSub: { fontSize: "0.7rem", color: "var(--ds-fg-subtle)", margin: 0, letterSpacing: "0.12em", fontStyle: "italic" },
+  infoBar: { position: "absolute", bottom: 32, left: "50%", transform: "translateX(-50%)", zIndex: 10, display: "flex", alignItems: "center", gap: "10px", padding: "10px 20px", borderRadius: "14px", background: "var(--ds-surface-overlay)", border: "1px solid var(--ds-border-muted)", backdropFilter: "blur(12px)", whiteSpace: "nowrap", maxWidth: "90vw", overflowX: "auto" },
+  hint: { position: "absolute", bottom: 80, left: "50%", transform: "translateX(-50%)", zIndex: 10, color: "var(--ds-fg-subtle)", fontSize: "0.72rem", letterSpacing: "0.1em", pointerEvents: "none" },
+  panel: { position: "absolute", top: 80, right: 20, zIndex: 10, width: "min(320px, 80vw)", display: "flex", flexDirection: "column", gap: "10px", padding: "18px", borderRadius: "16px", background: "var(--ds-surface-overlay)", backdropFilter: "blur(20px)", border: "1px solid var(--ds-border-muted)", maxHeight: "calc(100vh - 200px)", overflowY: "auto" },
+  panelSection: { padding: "10px 12px", borderRadius: "10px", background: "var(--ds-surface-subtle)", border: "1px solid var(--ds-border-muted)" },
+  panelLabel: { fontSize: "0.58rem", fontWeight: 600, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "var(--ds-fg-subtle)" },
+  panelText: { fontSize: "0.78rem", lineHeight: 1.55, color: "var(--ds-fg-muted)", margin: "4px 0 0" },
+  stat: { padding: "8px 10px", borderRadius: "8px", background: "var(--ds-surface-subtle)", border: "1px solid var(--ds-border-muted)", display: "flex", flexDirection: "column", gap: "2px" },
+  funFact: { display: "flex", gap: "10px", alignItems: "flex-start", padding: "10px 12px", borderRadius: "10px", background: "var(--ds-accent-faint)", border: "1px solid var(--ds-border-accent)" },
 };

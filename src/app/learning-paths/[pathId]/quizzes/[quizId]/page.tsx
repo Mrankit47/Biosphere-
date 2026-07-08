@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { BackLink } from "@/components/ds";
 import { getJourneyById, getQuizById } from "@/data/learningPaths";
 import { getUserProgress, saveUserProgress, getOrCreateUserId, UserProgressData } from "@/utils/supabase";
 
@@ -177,9 +178,7 @@ export default function QuizPage({ params }: QuizPageProps) {
       <div style={{ ...S.glowBg, background: `radial-gradient(circle, ${journey.color}05 0%, transparent 70%)` }} />
 
       <div style={S.container}>
-        <Link href={`/learning-paths/${journey.id}`} style={S.breadcrumb}>
-          ← Quit Quiz
-        </Link>
+        <BackLink href={`/learning-paths/${journey.id}`} label={`Back to ${journey.title}`} />
 
         {/* Progress Tracker */}
         <div style={S.progressTracker}>
@@ -308,9 +307,9 @@ export default function QuizPage({ params }: QuizPageProps) {
 
 const S: Record<string, React.CSSProperties> = {
   root: {
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
     minHeight: "100vh",
-    color: "#C8F5C8",
+    color: "var(--ds-fg)",
     paddingTop: 80,
     position: "relative",
     overflow: "hidden",
@@ -334,7 +333,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   breadcrumb: {
     display: "inline-block",
-    color: "rgba(200,245,200,0.5)",
+    color: "var(--ds-fg-subtle)",
     fontSize: "0.85rem",
     marginBottom: 24,
   },
@@ -343,14 +342,14 @@ const S: Record<string, React.CSSProperties> = {
   },
   trackerText: {
     fontSize: "0.78rem",
-    color: "rgba(200,245,200,0.5)",
+    color: "var(--ds-fg-muted)",
     display: "block",
     marginBottom: 8,
   },
   trackerBarTrack: {
     height: 4,
     borderRadius: 2,
-    background: "rgba(255,255,255,0.05)",
+    background: "var(--ds-surface-subtle)",
     width: "100%",
   },
   trackerBarFill: {
@@ -359,8 +358,8 @@ const S: Record<string, React.CSSProperties> = {
     transition: "width 0.3s ease",
   },
   quizCard: {
-    background: "rgba(10, 20, 10, 0.45)",
-    border: "1px solid rgba(255,255,255,0.03)",
+    background: "var(--ds-surface-overlay)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 20,
     padding: "36px 32px",
     backdropFilter: "blur(12px)",
@@ -388,7 +387,7 @@ const S: Record<string, React.CSSProperties> = {
     padding: "16px 20px",
     borderRadius: 12,
     fontSize: "0.9rem",
-    color: "#C8F5C8",
+    color: "var(--ds-fg)",
     fontFamily: "inherit",
     textAlign: "left",
     transition: "all 0.2s ease",
@@ -400,11 +399,11 @@ const S: Record<string, React.CSSProperties> = {
   },
   optionLetter: {
     fontWeight: 700,
-    color: "rgba(200,245,200,0.4)",
+    color: "var(--ds-fg-subtle)",
   },
   explanationCard: {
-    background: "rgba(255,255,255,0.02)",
-    border: "1px solid rgba(255,255,255,0.04)",
+    background: "var(--ds-surface-subtle)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 12,
     padding: 20,
     textAlign: "left",
@@ -418,7 +417,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   explanationText: {
     fontSize: "0.82rem",
-    color: "rgba(200,245,200,0.6)",
+    color: "var(--ds-fg-muted)",
     lineHeight: 1.55,
     margin: 0,
   },
@@ -450,7 +449,7 @@ const S: Record<string, React.CSSProperties> = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    background: "rgba(255,255,255,0.01)",
+    background: "var(--ds-surface-subtle)",
     boxShadow: "0 0 30px rgba(0,0,0,0.3)",
   },
   scoreNum: {
@@ -462,7 +461,7 @@ const S: Record<string, React.CSSProperties> = {
     fontSize: "0.58rem",
     textTransform: "uppercase",
     letterSpacing: "0.1em",
-    color: "rgba(200,245,200,0.4)",
+    color: "var(--ds-fg-subtle)",
     marginTop: 4,
   },
   btnRow: {
@@ -474,9 +473,9 @@ const S: Record<string, React.CSSProperties> = {
   resetBtn: {
     padding: "12px 24px",
     borderRadius: 10,
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    color: "rgba(200,245,200,0.7)",
+    background: "var(--ds-surface-subtle)",
+    border: "1px solid var(--ds-border-muted)",
+    color: "var(--ds-fg-muted)",
     fontSize: "0.82rem",
     fontWeight: 600,
     cursor: "pointer",
@@ -496,7 +495,7 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
   },
   errorContainer: {
     display: "flex",
@@ -504,7 +503,7 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
     padding: 24,
     textAlign: "center",
   },
@@ -512,7 +511,7 @@ const S: Record<string, React.CSSProperties> = {
     marginTop: 20,
     padding: "10px 20px",
     borderRadius: 8,
-    background: "#39FF14",
+    background: "var(--ds-accent)",
     color: "#000",
     fontWeight: 600,
     fontSize: "0.85rem",

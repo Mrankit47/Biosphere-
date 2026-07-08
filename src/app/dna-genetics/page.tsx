@@ -9,6 +9,7 @@ import {
   Float,
 } from "@react-three/drei";
 import * as THREE from "three";
+import { BackLink } from "@/components/ds";
 
 /* ── Base pair data ────────────────────────────────────────── */
 const BASE_SEQ = [
@@ -567,6 +568,7 @@ export default function DnaGeneticsPage() {
 
   return (
     <div ref={containerRef} style={S.root}>
+      <BackLink href="/" label="Home" />
       {/* 3D Canvas — sticky hero */}
       <div style={S.canvasSection}>
         <div style={S.canvasWrap}>
@@ -698,31 +700,31 @@ export default function DnaGeneticsPage() {
         </div>
 
         {/* Gene Structure Diagram */}
-        <div style={{ maxWidth: 1000, margin: "40px auto 0", padding: "24px", borderRadius: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(57,255,20,0.08)" }}>
-          <h3 style={{ color: "#39FF14", fontSize: "1.1rem", fontWeight: 700, marginBottom: 16, margin: "0 0 16px" }}>Gene Structure</h3>
+        <div style={{ maxWidth: 1000, margin: "40px auto 0", padding: "24px", borderRadius: 16, background: "var(--ds-surface-subtle)", border: "1px solid var(--ds-border-muted)" }}>
+          <h3 style={{ color: "var(--ds-accent)", fontSize: "1.1rem", fontWeight: 700, marginBottom: 16, margin: "0 0 16px" }}>Gene Structure</h3>
           <div style={{ display: "flex", borderRadius: 8, overflow: "hidden", height: 40 }}>
             {[
               { label: "Promoter", color: "#F59E0B", flex: 1 },
-              { label: "Exon 1", color: "#39FF14", flex: 1.5 },
+              { label: "Exon 1", color: "var(--ds-accent)", flex: 1.5 },
               { label: "Intron", color: "#4B5563", flex: 2 },
-              { label: "Exon 2", color: "#39FF14", flex: 1.5 },
+              { label: "Exon 2", color: "var(--ds-accent)", flex: 1.5 },
               { label: "Intron", color: "#4B5563", flex: 1.5 },
-              { label: "Exon 3", color: "#39FF14", flex: 1 },
+              { label: "Exon 3", color: "var(--ds-accent)", flex: 1 },
               { label: "Terminator", color: "#EF4444", flex: 0.8 },
             ].map((seg, i) => (
-              <div key={i} style={{ flex: seg.flex, background: `${seg.color}25`, borderRight: "1px solid rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: seg.color, fontWeight: 700, letterSpacing: "0.05em" }}>{seg.label}</div>
+              <div key={i} style={{ flex: seg.flex, background: `${seg.color}25`, borderRight: "1px solid rgba(0,0,0,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem", color: seg.color === "var(--ds-accent)" ? "var(--ds-accent)" : seg.color, fontWeight: 700, letterSpacing: "0.05em" }}>{seg.label}</div>
             ))}
           </div>
           <div style={{ display: "flex", gap: 16, marginTop: 12, flexWrap: "wrap" }}>
             {[
               { color: "#F59E0B", label: "Promoter — RNA polymerase binding site" },
-              { color: "#39FF14", label: "Exons — Coding regions (become protein)" },
+              { color: "var(--ds-accent)", label: "Exons — Coding regions (become protein)" },
               { color: "#4B5563", label: "Introns — Non-coding (spliced out)" },
               { color: "#EF4444", label: "Terminator — Stop signal" },
             ].map((l, i) => (
               <div key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{ width: 8, height: 8, borderRadius: 2, background: l.color, flexShrink: 0 }} />
-                <span style={{ fontSize: "0.7rem", color: "rgba(200,245,200,0.6)" }}>{l.label}</span>
+                <span style={{ fontSize: "0.7rem", color: "var(--ds-fg-subtle)" }}>{l.label}</span>
               </div>
             ))}
           </div>
@@ -730,15 +732,15 @@ export default function DnaGeneticsPage() {
 
         {/* Full Codon Table */}
         <div style={S.codonSection}>
-          <h3 style={{ color: "#39FF14", fontSize: "1.1rem", fontWeight: 700, marginBottom: "12px", margin: "0 0 12px" }}>Genetic Code — Codon Table</h3>
+          <h3 style={{ color: "var(--ds-accent)", fontSize: "1.1rem", fontWeight: 700, marginBottom: "12px", margin: "0 0 12px" }}>Genetic Code — Codon Table</h3>
           <div style={S.codonGrid}>
             {Object.entries(CODONS).map(([codon, amino], i) => {
               const isStop = amino === "Stop";
               const isStart = codon === "ATG";
               return (
-                <div key={i} style={{ ...S.codonCard, borderColor: isStop ? "#EF444425" : isStart ? "#39FF1425" : "rgba(255,255,255,0.05)" }}>
-                  <span style={{ fontFamily: "monospace", fontSize: "1rem", fontWeight: 700, color: isStop ? "#EF4444" : isStart ? "#39FF14" : "#8B5CF6", letterSpacing: "0.15em" }}>{codon}</span>
-                  <span style={{ fontSize: "0.68rem", color: "rgba(200,245,200,0.6)" }}>{amino}</span>
+                <div key={i} style={{ ...S.codonCard, borderColor: isStop ? "#EF444425" : isStart ? "var(--ds-border-accent)" : "var(--ds-border-muted)" }}>
+                  <span style={{ fontFamily: "monospace", fontSize: "1rem", fontWeight: 700, color: isStop ? "#EF4444" : isStart ? "var(--ds-accent)" : "var(--ds-accent-muted)", letterSpacing: "0.15em" }}>{codon}</span>
+                  <span style={{ fontSize: "0.68rem", color: "var(--ds-fg-subtle)" }}>{amino}</span>
                 </div>
               );
             })}
@@ -746,13 +748,13 @@ export default function DnaGeneticsPage() {
         </div>
 
         {/* DNA Facts */}
-        <div style={{ maxWidth: 1000, margin: "40px auto 0", padding: "24px", borderRadius: 16, background: "rgba(57,255,20,0.03)", border: "1px solid rgba(57,255,20,0.08)" }}>
-          <h3 style={{ color: "#39FF14", fontSize: "1.1rem", fontWeight: 700, margin: "0 0 16px" }}>💡 Did You Know?</h3>
+        <div style={{ maxWidth: 1000, margin: "40px auto 0", padding: "24px", borderRadius: 16, background: "var(--ds-accent-faint)", border: "1px solid var(--ds-border-accent)" }}>
+          <h3 style={{ color: "var(--ds-accent)", fontSize: "1.1rem", fontWeight: 700, margin: "0 0 16px" }}>💡 Did You Know?</h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {DNA_FACTS.map((fact, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "8px 12px", borderRadius: 8, background: "rgba(57,255,20,0.04)" }}>
-                <span style={{ color: "#39FF14", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0 }}>•</span>
-                <span style={{ fontSize: "0.85rem", color: "rgba(200,245,200,0.75)", lineHeight: 1.5 }}>{fact}</span>
+              <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "8px 12px", borderRadius: 8, background: "var(--ds-surface-subtle)" }}>
+                <span style={{ color: "var(--ds-accent)", fontWeight: 700, fontSize: "0.85rem", flexShrink: 0 }}>•</span>
+                <span style={{ fontSize: "0.85rem", color: "var(--ds-fg-muted)", lineHeight: 1.5 }}>{fact}</span>
               </div>
             ))}
           </div>
@@ -768,42 +770,42 @@ export default function DnaGeneticsPage() {
 
 /* ── Styles ─────────────────────────────────────────────────── */
 const S: Record<string, React.CSSProperties> = {
-  root: { width: "100%", minHeight: "calc(100vh - 64px)", background: "#050A05", overflowX: "hidden" },
+  root: { width: "100%", minHeight: "calc(100vh - 64px)", background: "var(--ds-bg-primary)", overflowX: "hidden" },
 
   canvasSection: { position: "sticky", top: 0, width: "100%", height: "calc(100vh - 64px)", minHeight: "500px" },
   canvasWrap: { position: "absolute", inset: 0, zIndex: 0 },
 
   vignette: {
     position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
-    background: "radial-gradient(ellipse at center, transparent 40%, rgba(2,8,8,0.6) 100%)",
+    background: "radial-gradient(ellipse at center, transparent 40%, var(--ds-bg-primary) 100%)",
   },
 
   header: { position: "absolute", top: 20, left: "50%", transform: "translateX(-50%)", zIndex: 10, textAlign: "center", pointerEvents: "none" },
-  title: { fontSize: "1.4rem", fontWeight: 700, color: "#39FF14", letterSpacing: "0.06em", margin: 0, textShadow: "0 0 30px rgba(57,255,20,0.35), 0 0 60px rgba(57,255,20,0.1)" },
-  subtitle: { fontSize: "0.75rem", color: "rgba(200,245,200,0.45)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
+  title: { fontSize: "1.4rem", fontWeight: 700, color: "var(--ds-accent)", letterSpacing: "0.06em", margin: 0, textShadow: "var(--ds-glow-sm)" },
+  subtitle: { fontSize: "0.75rem", color: "var(--ds-fg-muted)", margin: "4px 0 0", letterSpacing: "0.12em", textTransform: "uppercase" as const },
 
-  scrollHint: { position: "absolute", bottom: 28, left: "50%", transform: "translateX(-50%)", zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", color: "rgba(57,255,20,0.4)", fontSize: "0.72rem", letterSpacing: "0.1em", pointerEvents: "none" },
+  scrollHint: { position: "absolute", bottom: 28, left: "50%", transform: "translateX(-50%)", zIndex: 10, display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", color: "var(--ds-accent-muted)", fontSize: "0.72rem", letterSpacing: "0.1em", pointerEvents: "none" },
   scrollArrow: { fontSize: "1rem", animation: "bounceDown 1.5s ease-in-out infinite" },
 
   // Sidebar
-  sidebar: { position: "absolute", top: 0, right: 0, width: "min(300px, 80vw)", height: "100%", zIndex: 20, background: "rgba(5,10,5,0.9)", backdropFilter: "blur(20px)", borderLeft: "1px solid rgba(57,255,20,0.1)", padding: "48px 24px", boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", transition: "transform 0.5s cubic-bezier(0.25,0.8,0.25,1), opacity 0.4s ease" },
-  sideClose: { position: "absolute", top: 14, right: 14, background: "none", border: "none", color: "rgba(200,245,200,0.4)", fontSize: "1rem", cursor: "pointer", fontFamily: "inherit" },
+  sidebar: { position: "absolute", top: 0, right: 0, width: "min(300px, 80vw)", height: "100%", zIndex: 20, background: "var(--ds-surface-overlay)", backdropFilter: "blur(20px)", borderLeft: "1px solid var(--ds-border-muted)", padding: "48px 24px", boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", transition: "transform 0.5s cubic-bezier(0.25,0.8,0.25,1), opacity 0.4s ease" },
+  sideClose: { position: "absolute", top: 14, right: 14, background: "none", border: "none", color: "var(--ds-fg-subtle)", fontSize: "1rem", cursor: "pointer", fontFamily: "inherit" },
   pairDot: { width: 48, height: 48, borderRadius: "50%" },
   pairTitle: { fontSize: "1.15rem", fontWeight: 700, margin: 0, textAlign: "center" },
-  pairDivider: { width: 30, height: 2, background: "rgba(57,255,20,0.15)", borderRadius: 1 },
-  pairDesc: { fontSize: "0.85rem", color: "rgba(200,245,200,0.75)", lineHeight: 1.6, textAlign: "center", margin: 0 },
-  pairBadge: { width: "100%", padding: "10px 14px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: 2, marginTop: 4 },
+  pairDivider: { width: 30, height: 2, background: "var(--ds-border-muted)", borderRadius: 1 },
+  pairDesc: { fontSize: "0.85rem", color: "var(--ds-fg-muted)", lineHeight: 1.6, textAlign: "center", margin: 0 },
+  pairBadge: { width: "100%", padding: "10px 14px", borderRadius: 10, background: "var(--ds-surface-subtle)", border: "1px solid var(--ds-border-muted)", display: "flex", flexDirection: "column", gap: 2, marginTop: 4 },
 
   // Info cards
-  cardsSection: { position: "relative", zIndex: 5, background: "#050A05", padding: "60px clamp(20px,5vw,60px) 80px", borderTop: "1px solid rgba(57,255,20,0.08)" },
-  cardsTitle: { fontSize: "1.5rem", fontWeight: 700, color: "#39FF14", textAlign: "center", marginBottom: 32, letterSpacing: "0.04em", textShadow: "0 0 20px rgba(57,255,20,0.2)" },
+  cardsSection: { position: "relative", zIndex: 5, background: "var(--ds-bg-primary)", padding: "60px clamp(20px,5vw,60px) 80px", borderTop: "1px solid var(--ds-border-muted)" },
+  cardsTitle: { fontSize: "1.5rem", fontWeight: 700, color: "var(--ds-accent)", textAlign: "center", marginBottom: 32, letterSpacing: "0.04em", textShadow: "var(--ds-glow-sm)" },
   cardsGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20, maxWidth: 1000, margin: "0 auto" },
-  card: { padding: "24px", borderRadius: 16, background: "rgba(255,255,255,0.02)", border: "1px solid", display: "flex", flexDirection: "column" },
+  card: { padding: "24px", borderRadius: 16, background: "var(--ds-surface-subtle)", border: "1px solid var(--ds-border-muted)", display: "flex", flexDirection: "column" },
   cardTitle: { fontSize: "1.1rem", fontWeight: 700, margin: "0 0 6px", letterSpacing: "0.03em" },
-  cardText: { fontSize: "0.85rem", color: "rgba(200,245,200,0.7)", lineHeight: 1.65, margin: 0 },
+  cardText: { fontSize: "0.85rem", color: "var(--ds-fg-muted)", lineHeight: 1.65, margin: 0 },
 
   // Codon table
-  codonSection: { maxWidth: 1000, margin: "40px auto 0", padding: "24px", borderRadius: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(57,255,20,0.08)" },
+  codonSection: { maxWidth: 1000, margin: "40px auto 0", padding: "24px", borderRadius: 16, background: "var(--ds-surface-subtle)", border: "1px solid var(--ds-border-muted)" },
   codonGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10 },
-  codonCard: { padding: "12px 14px", borderRadius: 10, background: "rgba(5,10,5,0.5)", border: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: 2 },
+  codonCard: { padding: "12px 14px", borderRadius: 10, background: "var(--ds-surface-raised)", border: "1px solid var(--ds-border-muted)", display: "flex", flexDirection: "column", gap: 2 },
 };

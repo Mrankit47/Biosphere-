@@ -6,6 +6,16 @@ import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
 import Link from "next/link";
 import gsap from "gsap";
+import {
+  BackLink,
+  PageHeader,
+  Legend,
+  ToggleButton,
+  TabBar,
+  InfoPanel,
+  GlowButton,
+  SlidePanel,
+} from "@/components/ds";
 
 /* ══════════════════════════════════════════════════════════════
    ORGANELLE DATA
@@ -422,7 +432,7 @@ function EndoplasmicReticulum({
   active,
   onClick,
   showLabel,
-}: {
+  }: {
   active: boolean;
   onClick: () => void;
   showLabel: boolean;
@@ -527,12 +537,46 @@ export default function CellExplorerPage() {
     [activeOrganelle]
   );
 
+  const handleLegendSelect = useCallback(
+    (id: string) => {
+      const posMap: Record<string, THREE.Vector3> = {
+        nucleus: new THREE.Vector3(0, 0, 0),
+        membrane: new THREE.Vector3(0, 2.5, 2.5),
+        mitochondria: new THREE.Vector3(1.5, 0.6, 0.8),
+        ribosome: new THREE.Vector3(0.5, 1.0, 1.0),
+        golgi: new THREE.Vector3(1.8, -0.2, 0.3),
+        er: new THREE.Vector3(-1.0, 0, 1.2),
+      };
+      handleSelect(id, posMap[id] || new THREE.Vector3(0, 0, 0));
+    },
+    [handleSelect]
+  );
+
   const info = activeOrganelle ? ORGANELLE_DATA[activeOrganelle] : null;
 
+  const legendItems = useMemo(
+    () =>
+      Object.entries(ORGANELLE_DATA).map(([id, data]) => ({
+        id,
+        name: data.name,
+        color: data.color,
+        emoji: data.emoji,
+      })),
+    []
+  );
+
+  const tabOptions = useMemo(
+    () => [
+      { id: "function" as const, label: "Function" },
+      { id: "structure" as const, label: "Structure" },
+    ],
+    []
+  );
+
   return (
-    <div style={styles.root}>
+    <div className="relative w-full h-[calc(100vh-64px)] bg-[#050A05] overflow-hidden">
       {/* ── 3D Canvas ──────────────────────────────────── */}
-      <div style={styles.canvasWrap}>
+      <div className="absolute inset-0 z-0">
         {mounted && (
           <Canvas
             camera={{ position: [0, 2, 7], fov: 50 }}
@@ -547,165 +591,124 @@ export default function CellExplorerPage() {
       </div>
 
       {/* ── Back Link ──────────────────────────────────── */}
-      <Link href="/" style={styles.backLink}>
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M19 12H5" />
-          <path d="M12 19l-7-7 7-7" />
-        </svg>
-        <span>Home</span>
-      </Link>
+      <BackLink href="/" label="Home" />
 
       {/* ── Page Title ─────────────────────────────────── */}
-      <div style={styles.pageTitle}>
-        <h1 style={styles.titleText}>Cell Explorer</h1>
-        <p style={styles.titleSub}>Interactive Animal Cell</p>
-      </div>
+      <PageHeader title="Cell Explorer" subtitle="Interactive Animal Cell" />
 
       {/* ── Labels Toggle ──────────────────────────────── */}
-      <button
-        style={{
-          position: "absolute", top: 20, right: 24, zIndex: 10,
-          padding: "8px 16px", borderRadius: 10,
-          background: showLabels ? "rgba(57,255,20,0.15)" : "rgba(5,10,5,0.5)",
-          border: showLabels ? "1px solid rgba(57,255,20,0.4)" : "1px solid rgba(57,255,20,0.1)",
-          color: showLabels ? "#39FF14" : "rgba(200,245,200,0.6)",
-          fontSize: "0.8rem", fontWeight: 600, cursor: "pointer",
-          backdropFilter: "blur(8px)", transition: "all 0.3s", fontFamily: "inherit",
-        }}
-        onClick={() => setShowLabels(!showLabels)}
-      >
-        {showLabels ? "Hide Labels" : "Show Labels"}
-      </button>
+      <div className="absolute top-5 right-6 z-10">
+        <ToggleButton
+          checked={showLabels}
+          onChange={setShowLabels}
+          label={showLabels ? "Hide Labels" : "Show Labels"}
+        />
+      </div>
 
       {/* ── Hint ───────────────────────────────────────── */}
       {!panelVisible && (
-        <div style={styles.hint} className="cell-hint">
-          <div style={styles.hintPulse} />
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-[rgba(57,255,20,0.6)] text-[length:var(--ds-text-md)] tracking-[0.08em] flex items-center gap-2.5 pointer-events-none whitespace-nowrap cell-hint">
+          <div className="w-2 h-2 rounded-full bg-[#39FF14] shadow-[0_0_8px_#39FF14] ds-animate-pulse" />
           Click any organelle to explore
         </div>
       )}
 
       {/* ── Organelle Legend (bottom-left) ─────────────── */}
-      <div style={styles.legend}>
-        {Object.entries(ORGANELLE_DATA).map(([id, data]) => (
-          <button
-            key={id}
-            style={{
-              ...styles.legendItem,
-              borderColor:
-                activeOrganelle === id
-                  ? data.color
-                  : "rgba(255,255,255,0.08)",
-              background:
-                activeOrganelle === id
-                  ? `${data.color}15`
-                  : "rgba(5,10,5,0.6)",
-            }}
-            onClick={() =>
-              handleSelect(
-                id,
-                id === "nucleus"
-                  ? new THREE.Vector3(0, 0, 0)
-                  : id === "membrane"
-                  ? new THREE.Vector3(0, 2.5, 2.5)
-                  : id === "mitochondria"
-                  ? new THREE.Vector3(1.5, 0.6, 0.8)
-                  : id === "ribosome"
-                  ? new THREE.Vector3(0.5, 1.0, 1.0)
-                  : id === "golgi"
-                  ? new THREE.Vector3(1.8, -0.2, 0.3)
-                  : new THREE.Vector3(-1.0, 0, 1.2)
-              )
-            }
-          >
-            <span
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: "50%",
-                background: data.color,
-                display: "inline-block",
-                boxShadow: `0 0 6px ${data.color}80`,
-                flexShrink: 0,
-              }}
-            />
-            <span style={{ fontSize: "0.72rem", opacity: 0.85 }}>
-              {data.name}
-            </span>
-          </button>
-        ))}
-      </div>
+      <Legend
+        items={legendItems}
+        activeId={activeOrganelle}
+        onSelect={handleLegendSelect}
+        className="absolute bottom-7 left-6 z-10"
+      />
 
       {/* ── Info Panel (right side) ────────────────────── */}
-      <div
-        style={{
-          ...styles.panel,
-          transform: panelVisible ? "translateX(0)" : "translateX(110%)",
-          opacity: panelVisible ? 1 : 0,
+      <SlidePanel
+        open={panelVisible}
+        onClose={() => {
+          setPanelVisible(false);
+          setActiveOrganelle(null);
+          setZoomTarget(new THREE.Vector3(0, 0, 0));
         }}
+        width="min(360px, 85vw)"
       >
         {info && (
-          <>
-            <button style={styles.panelClose} onClick={() => { setPanelVisible(false); setActiveOrganelle(null); setZoomTarget(new THREE.Vector3(0, 0, 0)); }}>✕</button>
+          <div className="flex flex-col items-center gap-4 w-full h-full">
+            {/* Header / Emoji */}
+            <div
+              className="w-16 h-16 rounded-[20px] border-[1.5px] flex items-center justify-center text-[1.8rem] mb-1"
+              style={{
+                background: `${info.color}18`,
+                borderColor: `${info.color}40`,
+              }}
+            >
+              {info.emoji}
+            </div>
 
-            <div style={{ ...styles.panelEmoji, background: `${info.color}18`, borderColor: `${info.color}40` }}>{info.emoji}</div>
-            <h2 style={{ ...styles.panelName, color: info.color }}>{info.name}</h2>
+            <h2
+              className="text-[length:var(--ds-text-2xl)] font-bold tracking-[0.04em] m-0 text-center"
+              style={{ color: info.color }}
+            >
+              {info.name}
+            </h2>
 
             {/* Size */}
-            <div style={{ fontFamily: "monospace", fontSize: "0.75rem", color: "rgba(200,245,200,0.5)", textAlign: "center" as const }}>{info.size}</div>
+            <div className="font-mono text-[length:var(--ds-text-sm)] text-[var(--ds-fg-muted)] text-center">
+              {info.size}
+            </div>
 
-            <div style={{ width: 40, height: 2, background: info.color, borderRadius: 1, margin: "0 auto 12px", boxShadow: `0 0 10px ${info.color}60` }} />
+            <div
+              className="w-10 h-0.5 rounded-[1px] mx-auto mb-3"
+              style={{
+                background: info.color,
+                boxShadow: `0 0 10px ${info.color}99`,
+              }}
+            />
 
             {/* Tabs */}
-            <div style={{ display: "flex", gap: 6, width: "100%" }}>
-              {(["function", "structure"] as const).map(tab => (
-                <button key={tab} onClick={() => setActiveTab(tab)} style={{
-                  flex: 1, padding: "8px 0", borderRadius: 8, border: "1px solid",
-                  borderColor: activeTab === tab ? `${info.color}60` : "rgba(255,255,255,0.08)",
-                  background: activeTab === tab ? `${info.color}15` : "rgba(5,10,5,0.5)",
-                  color: activeTab === tab ? info.color : "rgba(200,245,200,0.5)",
-                  fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase" as const,
-                  letterSpacing: "0.1em", cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
-                }}>{tab}</button>
-              ))}
-            </div>
+            <TabBar
+              options={tabOptions}
+              activeTab={activeTab}
+              onChange={setActiveTab}
+              accentColor={info.color}
+            />
 
-            {/* Tab Content */}
-            <div style={styles.panelSection}>
-              <span style={styles.panelLabel}>{activeTab === "function" ? "Function" : "Structure"}</span>
-              <p style={styles.panelText}>{activeTab === "function" ? info.description : info.structure}</p>
-            </div>
-
-            {/* Fun fact */}
-            <div style={styles.panelFact}>
-              <span style={styles.panelFactIcon}>💡</span>
-              <div>
-                <span style={styles.panelLabel}>Fun Fact</span>
-                <p style={{ ...styles.panelText, marginTop: 4 }}>{info.funFact}</p>
-              </div>
-            </div>
+            {/* Tab Content & Fun fact */}
+            <InfoPanel
+              label={activeTab === "function" ? "Function" : "Structure"}
+              text={activeTab === "function" ? info.description : info.structure}
+              fact={info.funFact}
+              accentColor={info.color}
+            />
 
             {/* Related Organelles */}
-            <div style={{ width: "100%" }}>
-              <span style={styles.panelLabel}>Related Organelles</span>
-              <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" as const }}>
-                {info.related.map(rid => {
+            <div className="w-full">
+              <span className="ds-label">Related Organelles</span>
+              <div className="flex gap-1.5 mt-2 flex-wrap">
+                {info.related.map((rid) => {
                   const r = ORGANELLE_DATA[rid];
                   return (
-                    <button key={rid} onClick={() => { const posMap: Record<string, THREE.Vector3> = { nucleus: new THREE.Vector3(0,0,0), membrane: new THREE.Vector3(0,2.5,2.5), mitochondria: new THREE.Vector3(1.5,0.6,0.8), ribosome: new THREE.Vector3(0.5,1,1), golgi: new THREE.Vector3(1.8,-0.2,0.3), er: new THREE.Vector3(-1,0,1.2) }; handleSelect(rid, posMap[rid]); }} style={{
-                      padding: "6px 12px", borderRadius: 8, border: `1px solid ${r.color}40`,
-                      background: `${r.color}10`, color: r.color, fontSize: "0.78rem", fontWeight: 600,
-                      cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s",
-                    }}>{r.emoji} {r.name}</button>
+                    <button
+                      key={rid}
+                      onClick={() => {
+                        const posMap: Record<string, THREE.Vector3> = {
+                          nucleus: new THREE.Vector3(0, 0, 0),
+                          membrane: new THREE.Vector3(0, 2.5, 2.5),
+                          mitochondria: new THREE.Vector3(1.5, 0.6, 0.8),
+                          ribosome: new THREE.Vector3(0.5, 1, 1),
+                          golgi: new THREE.Vector3(1.8, -0.2, 0.3),
+                          er: new THREE.Vector3(-1, 0, 1.2),
+                        };
+                        handleSelect(rid, posMap[rid] || new THREE.Vector3(0, 0, 0));
+                      }}
+                      className="px-3 py-1.5 rounded-[var(--ds-radius-md)] border text-[length:0.78rem] font-semibold cursor-none transition-all duration-200"
+                      style={{
+                        borderColor: `${r.color}40`,
+                        background: `${r.color}10`,
+                        color: r.color,
+                      }}
+                    >
+                      {r.emoji} {r.name}
+                    </button>
                   );
                 })}
               </div>
@@ -713,29 +716,52 @@ export default function CellExplorerPage() {
 
             {/* Zoom Inside */}
             {activeOrganelle && (() => {
-              const routes: Record<string, string> = { nucleus: "/cell-explorer/nucleus", mitochondria: "/cell-explorer/mitochondria", ribosome: "/cell-explorer/ribosome", golgi: "/cell-explorer/golgi", er: "/cell-explorer/er", membrane: "/cell-explorer/membrane" };
+              const routes: Record<string, string> = {
+                nucleus: "/cell-explorer/nucleus",
+                mitochondria: "/cell-explorer/mitochondria",
+                ribosome: "/cell-explorer/ribosome",
+                golgi: "/cell-explorer/golgi",
+                er: "/cell-explorer/er",
+                membrane: "/cell-explorer/membrane",
+              };
               const route = routes[activeOrganelle];
               if (!route) return null;
               return (
-                <Link href={route} style={{ ...styles.zoomBtn, borderColor: info.color, background: `${info.color}15`, color: info.color, boxShadow: `0 0 20px ${info.color}25` }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /><path d="M11 8v6" /><path d="M8 11h6" /></svg>
+                <GlowButton
+                  href={route}
+                  accentColor={info.color}
+                  fullWidth
+                  className="mt-1"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="mr-2"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                    <path d="M11 8v6" />
+                    <path d="M8 11h6" />
+                  </svg>
                   Zoom Inside
-                </Link>
+                </GlowButton>
               );
             })()}
-          </>
+          </div>
         )}
-      </div>
+      </SlidePanel>
 
       {/* ── Animations ─────────────────────────────────── */}
       <style>{`
-        @keyframes hintPulse {
-          0%, 100% { transform: scale(1); opacity: 0.6; }
-          50% { transform: scale(1.6); opacity: 0; }
-        }
         @keyframes hintFadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; transform: translate(-50%, 10px); }
+          to { opacity: 1; transform: translate(-50%, 0); }
         }
         .cell-hint {
           animation: hintFadeIn 0.8s ease-out both 1s;
@@ -756,241 +782,3 @@ export default function CellExplorerPage() {
     </div>
   );
 }
-
-/* ══════════════════════════════════════════════════════════════
-   STYLES
-   ══════════════════════════════════════════════════════════════ */
-
-const styles: Record<string, React.CSSProperties> = {
-  root: {
-    position: "relative",
-    width: "100%",
-    height: "calc(100vh - 64px)",
-    background: "#050A05",
-    overflow: "hidden",
-  },
-
-  canvasWrap: {
-    position: "absolute",
-    inset: 0,
-    zIndex: 0,
-  },
-
-  /* Back link */
-  backLink: {
-    position: "absolute",
-    top: "20px",
-    left: "24px",
-    zIndex: 10,
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    color: "rgba(200,245,200,0.7)",
-    fontSize: "0.85rem",
-    textDecoration: "none",
-    cursor: "none",
-    padding: "8px 14px",
-    borderRadius: "10px",
-    background: "rgba(5,10,5,0.5)",
-    border: "1px solid rgba(57,255,20,0.1)",
-    backdropFilter: "blur(8px)",
-    transition: "all 0.25s ease",
-  },
-
-  /* Page title */
-  pageTitle: {
-    position: "absolute",
-    top: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 10,
-    textAlign: "center",
-    pointerEvents: "none",
-  },
-
-  titleText: {
-    fontSize: "1.3rem",
-    fontWeight: 700,
-    color: "#39FF14",
-    letterSpacing: "0.08em",
-    margin: 0,
-    textShadow: "0 0 20px rgba(57,255,20,0.3)",
-  },
-
-  titleSub: {
-    fontSize: "0.75rem",
-    color: "rgba(200,245,200,0.5)",
-    margin: "2px 0 0",
-    letterSpacing: "0.15em",
-    textTransform: "uppercase" as const,
-  },
-
-  /* Hint */
-  hint: {
-    position: "absolute",
-    bottom: "32px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 10,
-    color: "rgba(57,255,20,0.6)",
-    fontSize: "0.85rem",
-    letterSpacing: "0.08em",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    pointerEvents: "none",
-    whiteSpace: "nowrap",
-  },
-
-  hintPulse: {
-    width: "8px",
-    height: "8px",
-    borderRadius: "50%",
-    background: "#39FF14",
-    boxShadow: "0 0 8px #39FF14",
-    animation: "hintPulse 2s ease-in-out infinite",
-  },
-
-  /* Legend */
-  legend: {
-    position: "absolute",
-    bottom: "28px",
-    left: "24px",
-    zIndex: 10,
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-  },
-
-  legendItem: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "6px 12px",
-    borderRadius: "8px",
-    border: "1px solid rgba(255,255,255,0.08)",
-    color: "#C8F5C8",
-    cursor: "none",
-    transition: "all 0.25s ease",
-    backdropFilter: "blur(6px)",
-    fontFamily: "inherit",
-  },
-
-  /* Right panel */
-  panel: {
-    position: "absolute",
-    top: "0",
-    right: "0",
-    width: "min(360px, 85vw)",
-    height: "100%",
-    zIndex: 20,
-    background: "rgba(5, 10, 5, 0.88)",
-    backdropFilter: "blur(24px)",
-    WebkitBackdropFilter: "blur(24px)",
-    borderLeft: "1px solid rgba(57,255,20,0.1)",
-    padding: "48px 28px 28px",
-    boxSizing: "border-box",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "8px",
-    transition: "transform 0.5s cubic-bezier(0.25,0.8,0.25,1), opacity 0.4s ease",
-    overflowY: "auto",
-  },
-
-  panelClose: {
-    position: "absolute",
-    top: "16px",
-    right: "16px",
-    background: "none",
-    border: "none",
-    color: "rgba(200,245,200,0.5)",
-    fontSize: "1.1rem",
-    cursor: "none",
-    padding: "6px 10px",
-    borderRadius: "6px",
-    transition: "color 0.2s ease",
-    fontFamily: "inherit",
-  },
-
-  panelEmoji: {
-    width: "64px",
-    height: "64px",
-    borderRadius: "20px",
-    border: "1.5px solid",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "1.8rem",
-    marginBottom: "4px",
-  },
-
-  panelName: {
-    fontSize: "1.5rem",
-    fontWeight: 700,
-    letterSpacing: "0.04em",
-    margin: 0,
-    textAlign: "center",
-  },
-
-  panelSection: {
-    width: "100%",
-    padding: "14px 16px",
-    borderRadius: "12px",
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.05)",
-  },
-
-  panelLabel: {
-    fontSize: "0.65rem",
-    fontWeight: 600,
-    letterSpacing: "0.12em",
-    textTransform: "uppercase" as const,
-    color: "rgba(200,245,200,0.45)",
-  },
-
-  panelText: {
-    fontSize: "0.88rem",
-    lineHeight: 1.6,
-    color: "rgba(200,245,200,0.85)",
-    margin: "6px 0 0",
-  },
-
-  panelFact: {
-    width: "100%",
-    padding: "14px 16px",
-    borderRadius: "12px",
-    background: "rgba(57,255,20,0.04)",
-    border: "1px solid rgba(57,255,20,0.08)",
-    display: "flex",
-    gap: "12px",
-    alignItems: "flex-start",
-  },
-
-  panelFactIcon: {
-    fontSize: "1.2rem",
-    flexShrink: 0,
-    marginTop: "2px",
-  },
-
-  zoomBtn: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "8px",
-    width: "100%",
-    padding: "14px 24px",
-    borderRadius: "12px",
-    border: "1.5px solid #1D9E75",
-    background: "rgba(29, 158, 117, 0.1)",
-    color: "#2FFFB0",
-    fontSize: "0.95rem",
-    fontWeight: 600,
-    letterSpacing: "0.04em",
-    cursor: "none",
-    textDecoration: "none",
-    boxShadow: "0 0 20px rgba(29,158,117,0.15), inset 0 0 20px rgba(29,158,117,0.05)",
-    transition: "all 0.3s ease",
-    marginTop: "4px",
-  },
-};

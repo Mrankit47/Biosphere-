@@ -4,7 +4,7 @@ import { useRef, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
-import Link from "next/link";
+import { BackLink, PageHeader } from "@/components/ds";
 
 /* ══════════════════════════════════════════════════════════════
    LABEL COMPONENT (floating HTML in 3D space)
@@ -41,37 +41,17 @@ function FloatingLabel({
           userSelect: "none",
         }}
       >
-        <div
-          style={{
-            background: "rgba(5, 10, 5, 0.85)",
-            backdropFilter: "blur(12px)",
-            border: `1px solid ${color}40`,
-            borderRadius: "12px",
-            padding: "12px 16px",
-            minWidth: "160px",
-            maxWidth: "200px",
-            textAlign: "center",
-          }}
-        >
+        <div className="bg-black/85 backdrop-blur-md border border-[rgba(255,255,255,0.06)] rounded-xl p-3 max-w-[200px] text-center" style={{ borderColor: `${color}40` }}>
           <div
+            className="text-[0.75rem] font-bold tracking-wider mb-1"
             style={{
-              fontSize: "0.75rem",
-              fontWeight: 700,
               color: color,
-              letterSpacing: "0.06em",
-              marginBottom: "4px",
               textShadow: `0 0 10px ${color}60`,
             }}
           >
             {title}
           </div>
-          <div
-            style={{
-              fontSize: "0.65rem",
-              color: "rgba(200,245,200,0.7)",
-              lineHeight: 1.5,
-            }}
-          >
+          <div className="text-[0.65rem] text-[var(--ds-fg-muted)] leading-relaxed">
             {description}
           </div>
         </div>
@@ -328,9 +308,9 @@ function MitoScene() {
 
 export default function MitochondriaPage() {
   return (
-    <div style={styles.root}>
+    <div className="relative w-full h-[calc(100vh-64px)] bg-[#050A05] overflow-hidden">
       {/* 3D Canvas */}
-      <div style={styles.canvasWrap}>
+      <div className="absolute inset-0 z-0">
         <Canvas
           camera={{ position: [0, 1.5, 5], fov: 45 }}
           dpr={[1, 2]}
@@ -342,185 +322,38 @@ export default function MitochondriaPage() {
       </div>
 
       {/* Back Button */}
-      <Link href="/cell-explorer" style={styles.backLink}>
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M19 12H5" />
-          <path d="M12 19l-7-7 7-7" />
-        </svg>
-        <span>Cell Explorer</span>
-      </Link>
+      <BackLink href="/cell-explorer" label="Cell Explorer" />
 
       {/* Page Header */}
-      <div style={styles.header}>
-        <span style={styles.headerEmoji}>⚡</span>
-        <h1 style={styles.headerTitle}>Mitochondria</h1>
-        <p style={styles.headerSub}>The Powerhouse of the Cell</p>
-      </div>
+      <PageHeader title="Mitochondria" subtitle="The Powerhouse of the Cell" accentColor="#2FFFB0" />
 
       {/* Bottom Info Bar */}
-      <div style={styles.infoBar}>
-        <div style={styles.infoPill}>
-          <span style={{ ...styles.infoDot, background: "#39FF14" }} />
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-3 p-[10px_20px] rounded-2xl bg-black/70 border border-[rgba(57,255,20,0.1)] backdrop-blur-md whitespace-nowrap">
+        <div className="flex items-center gap-1.5 text-[0.75rem] text-[var(--ds-fg-muted)] font-semibold select-none">
+          <span className="w-2 h-2 rounded-full inline-block shrink-0 bg-[#39FF14]" />
           Outer Membrane
         </div>
-        <div style={styles.infoDivider} />
-        <div style={styles.infoPill}>
-          <span style={{ ...styles.infoDot, background: "#2FFFB0" }} />
+        <div className="w-[1px] h-3.5 bg-[rgba(57,255,20,0.15)] ml-1.5" />
+        <div className="flex items-center gap-1.5 text-[0.75rem] text-[var(--ds-fg-muted)] font-semibold select-none">
+          <span className="w-2 h-2 rounded-full inline-block shrink-0 bg-[#2FFFB0]" />
           Cristae
         </div>
-        <div style={styles.infoDivider} />
-        <div style={styles.infoPill}>
-          <span style={{ ...styles.infoDot, background: "#5FFFCC" }} />
+        <div className="w-[1px] h-3.5 bg-[rgba(57,255,20,0.15)] ml-1.5" />
+        <div className="flex items-center gap-1.5 text-[0.75rem] text-[var(--ds-fg-muted)] font-semibold select-none">
+          <span className="w-2 h-2 rounded-full inline-block shrink-0 bg-[#5FFFCC]" />
           Matrix
         </div>
-        <div style={styles.infoDivider} />
-        <div style={styles.infoPill}>
-          <span style={{ ...styles.infoDot, background: "#FF6B6B" }} />
+        <div className="w-[1px] h-3.5 bg-[rgba(57,255,20,0.15)] ml-1.5" />
+        <div className="flex items-center gap-1.5 text-[0.75rem] text-[var(--ds-fg-muted)] font-semibold select-none">
+          <span className="w-2 h-2 rounded-full inline-block shrink-0 bg-[#FF6B6B]" />
           mtDNA
         </div>
       </div>
 
       {/* Hint */}
-      <div style={styles.hint}>
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 text-[var(--ds-accent-muted)] text-[0.72rem] tracking-wider pointer-events-none select-none">
         Drag to rotate · Scroll to zoom
       </div>
     </div>
   );
 }
-
-/* ══════════════════════════════════════════════════════════════
-   STYLES
-   ══════════════════════════════════════════════════════════════ */
-
-const styles: Record<string, React.CSSProperties> = {
-  root: {
-    position: "relative",
-    width: "100%",
-    height: "calc(100vh - 64px)",
-    background: "#050A05",
-    overflow: "hidden",
-  },
-
-  canvasWrap: {
-    position: "absolute",
-    inset: 0,
-    zIndex: 0,
-  },
-
-  backLink: {
-    position: "absolute",
-    top: "20px",
-    left: "24px",
-    zIndex: 10,
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-    color: "rgba(200,245,200,0.7)",
-    fontSize: "0.85rem",
-    textDecoration: "none",
-    cursor: "none",
-    padding: "8px 14px",
-    borderRadius: "10px",
-    background: "rgba(5,10,5,0.5)",
-    border: "1px solid rgba(57,255,20,0.1)",
-    backdropFilter: "blur(8px)",
-    transition: "all 0.25s ease",
-  },
-
-  header: {
-    position: "absolute",
-    top: "20px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 10,
-    textAlign: "center",
-    pointerEvents: "none",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "2px",
-  },
-
-  headerEmoji: {
-    fontSize: "1.6rem",
-    marginBottom: "2px",
-  },
-
-  headerTitle: {
-    fontSize: "1.4rem",
-    fontWeight: 700,
-    color: "#2FFFB0",
-    letterSpacing: "0.08em",
-    margin: 0,
-    textShadow: "0 0 20px rgba(47,255,176,0.3)",
-  },
-
-  headerSub: {
-    fontSize: "0.7rem",
-    color: "rgba(200,245,200,0.5)",
-    margin: 0,
-    letterSpacing: "0.15em",
-    textTransform: "uppercase" as const,
-  },
-
-  infoBar: {
-    position: "absolute",
-    bottom: "32px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 10,
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    padding: "10px 20px",
-    borderRadius: "14px",
-    background: "rgba(5, 10, 5, 0.7)",
-    border: "1px solid rgba(57,255,20,0.1)",
-    backdropFilter: "blur(12px)",
-    whiteSpace: "nowrap",
-  },
-
-  infoPill: {
-    display: "flex",
-    alignItems: "center",
-    gap: "6px",
-    fontSize: "0.75rem",
-    color: "rgba(200,245,200,0.75)",
-    fontWeight: 500,
-  },
-
-  infoDot: {
-    width: "8px",
-    height: "8px",
-    borderRadius: "50%",
-    display: "inline-block",
-    flexShrink: 0,
-  },
-
-  infoDivider: {
-    width: "1px",
-    height: "14px",
-    background: "rgba(57,255,20,0.15)",
-  },
-
-  hint: {
-    position: "absolute",
-    bottom: "80px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    zIndex: 10,
-    color: "rgba(57,255,20,0.35)",
-    fontSize: "0.72rem",
-    letterSpacing: "0.1em",
-    pointerEvents: "none",
-  },
-};

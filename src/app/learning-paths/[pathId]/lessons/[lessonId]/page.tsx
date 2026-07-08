@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { BackLink } from "@/components/ds";
 import { getJourneyById, getLessonById } from "@/data/learningPaths";
 import { getUserProgress, saveUserProgress, getOrCreateUserId, UserProgressData } from "@/utils/supabase";
 
@@ -108,9 +109,7 @@ export default function LessonPage({ params }: LessonPageProps) {
       <div style={S.container}>
         {/* Navigation header */}
         <div style={S.navRow}>
-          <Link href={`/learning-paths/${journey.id}`} style={S.breadcrumb}>
-            ← Back to {journey.title}
-          </Link>
+          <BackLink href={`/learning-paths/${journey.id}`} label={journey.title} />
           <span style={S.readingTime}>⏱️ {lesson.readingTime}</span>
         </div>
 
@@ -163,9 +162,9 @@ export default function LessonPage({ params }: LessonPageProps) {
 
 const S: Record<string, React.CSSProperties> = {
   root: {
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
     minHeight: "100vh",
-    color: "#C8F5C8",
+    color: "var(--ds-fg)",
     paddingTop: 80,
     position: "relative",
     overflow: "hidden",
@@ -194,14 +193,14 @@ const S: Record<string, React.CSSProperties> = {
     marginBottom: 32,
   },
   breadcrumb: {
-    color: "rgba(200,245,200,0.5)",
+    color: "var(--ds-fg-subtle)",
     fontSize: "0.85rem",
     transition: "color 0.2s",
   },
   readingTime: {
     fontSize: "0.8rem",
-    color: "rgba(200,245,200,0.4)",
-    background: "rgba(255,255,255,0.03)",
+    color: "var(--ds-fg-subtle)",
+    background: "var(--ds-surface-subtle)",
     padding: "4px 10px",
     borderRadius: 6,
   },
@@ -213,8 +212,8 @@ const S: Record<string, React.CSSProperties> = {
     flexWrap: "wrap",
   },
   article: {
-    background: "rgba(10, 20, 10, 0.4)",
-    border: "1px solid rgba(255,255,255,0.03)",
+    background: "var(--ds-surface-overlay)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 20,
     padding: "36px 40px",
     backdropFilter: "blur(12px)",
@@ -236,14 +235,14 @@ const S: Record<string, React.CSSProperties> = {
   },
   articleBody: {
     fontSize: "0.95rem",
-    color: "rgba(200,245,200,0.72)",
+    color: "var(--ds-fg-muted)",
     lineHeight: 1.75,
     fontFamily: "inherit",
   },
   footerRow: {
     marginTop: 40,
     paddingTop: 24,
-    borderTop: "1px solid rgba(255,255,255,0.05)",
+    borderTop: "1px solid var(--ds-border-muted)",
     display: "flex",
     justifyContent: "flex-end",
   },
@@ -262,8 +261,8 @@ const S: Record<string, React.CSSProperties> = {
     flexDirection: "column",
   },
   playgroundCard: {
-    background: "rgba(10, 20, 10, 0.65)",
-    border: "1px solid",
+    background: "var(--ds-surface-overlay)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 16,
     padding: 20,
     boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
@@ -283,7 +282,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   playgroundDesc: {
     fontSize: "0.78rem",
-    color: "rgba(200,245,200,0.5)",
+    color: "var(--ds-fg-muted)",
     lineHeight: 1.5,
     margin: "0 0 20px",
   },
@@ -305,7 +304,7 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
   },
   errorContainer: {
     display: "flex",
@@ -313,7 +312,7 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
     padding: 24,
     textAlign: "center",
   },
@@ -321,7 +320,7 @@ const S: Record<string, React.CSSProperties> = {
     marginTop: 20,
     padding: "10px 20px",
     borderRadius: 8,
-    background: "#39FF14",
+    background: "var(--ds-accent)",
     color: "#000",
     fontWeight: 600,
     fontSize: "0.85rem",

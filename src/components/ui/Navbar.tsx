@@ -112,9 +112,9 @@ export default function Navbar() {
           backdropFilter: "blur(14px)",
           WebkitBackdropFilter: "blur(14px)",
           background: scrolled
-            ? "rgba(5, 10, 5, 0.92)"
-            : "rgba(5, 10, 5, 0.65)",
-          borderBottom: "1px solid rgba(57, 255, 20, 0.08)",
+            ? "var(--ds-surface-overlay)"
+            : "var(--ds-glass-bg)",
+          borderBottom: "1px solid var(--ds-glass-border)",
           transition: "background 0.4s ease, transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1)",
           transform: navTransform,
         }}
@@ -125,7 +125,7 @@ export default function Navbar() {
             style={{
               fontSize: "1.35rem",
               fontWeight: 700,
-              color: "#39FF14",
+              color: "var(--ds-accent)",
               letterSpacing: "0.04em",
               textShadow: "0 0 14px rgba(57,255,20,0.45)",
               display: "flex",
@@ -311,7 +311,7 @@ export default function Navbar() {
           align-items: center;
           gap: 6px;
           outline: none;
-          color: rgba(200, 245, 200, 0.7);
+          color: var(--ds-fg-muted);
           font-family: inherit;
           cursor: none;
         }
@@ -319,12 +319,12 @@ export default function Navbar() {
         .dropdown-chevron {
           font-size: 0.55rem;
           transition: transform 0.3s;
-          color: rgba(57, 255, 20, 0.4);
+          color: var(--ds-accent-muted);
         }
 
         .nav-dropdown-wrapper:hover .dropdown-chevron {
           transform: rotate(180deg);
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .nav-dropdown-menu {
@@ -334,11 +334,11 @@ export default function Navbar() {
           transform: translateX(-50%) translateY(10px);
           opacity: 0;
           visibility: hidden;
-          background: rgba(5, 10, 5, 0.95);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(57, 255, 20, 0.12);
-          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 15px rgba(57, 255, 20, 0.05);
+          border: 1px solid var(--ds-glass-border);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), var(--ds-glow-sm);
           border-radius: 12px;
           padding: 8px;
           list-style: none;
@@ -366,7 +366,7 @@ export default function Navbar() {
           align-items: center;
           gap: 12px;
           padding: 10px 14px;
-          color: rgba(200, 245, 200, 0.7);
+          color: var(--ds-fg-muted);
           text-decoration: none;
           font-size: 0.82rem;
           font-weight: 500;
@@ -377,8 +377,8 @@ export default function Navbar() {
         }
 
         .dropdown-item:hover {
-          color: #39FF14;
-          background: rgba(57, 255, 20, 0.06);
+          color: var(--ds-accent);
+          background: var(--ds-accent-faint);
           box-shadow: inset 0 0 8px rgba(57, 255, 20, 0.04);
         }
 
@@ -403,7 +403,7 @@ export default function Navbar() {
           padding: 8px 16px;
           font-size: 0.88rem;
           font-weight: 500;
-          color: rgba(200, 245, 200, 0.7);
+          color: var(--ds-fg-muted);
           text-decoration: none;
           cursor: none;
           letter-spacing: 0.03em;
@@ -411,7 +411,7 @@ export default function Navbar() {
         }
 
         .nav-link:focus-visible {
-          outline: 2px solid #39FF14;
+          outline: 2px solid var(--ds-accent);
           outline-offset: 2px;
           border-radius: 4px;
         }
@@ -423,7 +423,7 @@ export default function Navbar() {
           left: 16px;
           right: 16px;
           height: 2px;
-          background: #39FF14;
+          background: var(--ds-accent);
           border-radius: 1px;
           transform: scaleX(0);
           transform-origin: center;
@@ -432,7 +432,7 @@ export default function Navbar() {
         }
 
         .nav-link:hover {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .nav-link:hover::after {
@@ -440,7 +440,7 @@ export default function Navbar() {
         }
 
         .nav-link--active {
-          color: #39FF14 !important;
+          color: var(--ds-accent) !important;
         }
 
         .nav-link--active::after {
@@ -469,7 +469,7 @@ export default function Navbar() {
           left: 4px;
           width: 24px;
           height: 2px;
-          background: #39FF14;
+          background: var(--ds-accent);
           border-radius: 2px;
           transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
@@ -527,7 +527,7 @@ export default function Navbar() {
           width: 100vw;
           height: 100vh;
           height: 100dvh;
-          background: rgba(2, 5, 2, 0.97);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(24px);
           -webkit-backdrop-filter: blur(24px);
           z-index: 1050;
@@ -562,9 +562,9 @@ export default function Navbar() {
           align-items: center;
           justify-content: center;
           background: none;
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          border: 1px solid var(--ds-border-accent-hover);
           border-radius: 10px;
-          color: #39FF14;
+          color: var(--ds-accent);
           font-size: 1.2rem;
           cursor: pointer;
           z-index: 1100;
@@ -572,8 +572,8 @@ export default function Navbar() {
         }
 
         .mobile-close-btn:hover {
-          background: rgba(57, 255, 20, 0.08);
-          border-color: rgba(57, 255, 20, 0.3);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-glass-border-hover);
         }
 
         /* ── Mobile Link Items ─────────────────────────── */
@@ -595,7 +595,7 @@ export default function Navbar() {
           padding: 16px 18px;
           font-size: 1.1rem;
           font-weight: 500;
-          color: rgba(200, 245, 200, 0.7);
+          color: var(--ds-fg-muted);
           text-decoration: none;
           border-radius: 12px;
           cursor: none;
@@ -606,20 +606,20 @@ export default function Navbar() {
         }
 
         .mobile-link:hover {
-          color: #39FF14;
-          background: rgba(57, 255, 20, 0.06);
-          border-color: rgba(57, 255, 20, 0.12);
+          color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-border-accent);
         }
 
         .mobile-link:focus-visible {
-          outline: 2px solid #39FF14;
+          outline: 2px solid var(--ds-accent);
           outline-offset: 2px;
         }
 
         .mobile-link--active {
-          color: #39FF14 !important;
-          background: rgba(57, 255, 20, 0.08);
-          border-color: rgba(57, 255, 20, 0.15);
+          color: var(--ds-accent) !important;
+          background: var(--ds-accent-subtle);
+          border-color: var(--ds-border-accent-hover);
         }
 
         .mobile-link-icon {

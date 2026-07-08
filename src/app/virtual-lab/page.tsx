@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BackLink } from '@/components/ds'
 
 // Define TS Interfaces
 interface QuizQuestion {
@@ -370,10 +371,7 @@ export default function VirtualLab() {
       {/* HEADER SECTION */}
       <header className="lab-header">
         <div className="header-left">
-          <Link href="/" className="back-btn">
-            ← Main Hub
-          </Link>
-          <div className="divider-line" />
+          <BackLink href="/" label="Home" />
           <div>
             <h1 className="header-title">VIRTUAL BIOLOGY LAB</h1>
             <p className="header-subtitle">INTERACTIVE EXPERIMENT SIMULATOR</p>
@@ -824,13 +822,13 @@ export default function VirtualLab() {
 
       <style jsx global>{`
         .lab-root {
-          background: #050A05;
+          background: var(--ds-bg-primary);
           min-height: calc(100vh - 64px);
-          color: #C8F5C8;
+          color: var(--ds-fg);
           position: relative;
           overflow-x: hidden;
           box-sizing: border-box;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          font-family: inherit;
         }
 
         .lab-grid-bg {
@@ -862,7 +860,7 @@ export default function VirtualLab() {
           align-items: center;
           justify-content: space-between;
           padding: 1.25rem 2rem 0.5rem;
-          border-bottom: 1px solid rgba(57, 255, 20, 0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           position: relative;
           z-index: 2;
         }
@@ -874,27 +872,27 @@ export default function VirtualLab() {
         }
 
         .back-btn {
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: none;
           font-size: 0.82rem;
           font-weight: 700;
           letter-spacing: 0.05em;
           padding: 6px 14px;
           border-radius: 8px;
-          background: rgba(57, 255, 20, 0.05);
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           transition: all 0.2s ease;
         }
 
         .back-btn:hover {
           background: rgba(57, 255, 20, 0.12);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .divider-line {
           width: 1px;
           height: 32px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
         }
 
         .header-title {
@@ -907,7 +905,7 @@ export default function VirtualLab() {
 
         .header-subtitle {
           font-size: 0.6rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           margin: 0;
           letter-spacing: 0.25em;
           font-weight: 700;
@@ -936,7 +934,7 @@ export default function VirtualLab() {
         }
 
         .selection-header p {
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
           font-size: 0.9rem;
         }
 
@@ -952,13 +950,13 @@ export default function VirtualLab() {
           flex-direction: column;
           align-items: flex-start;
           transition: all 0.25s ease;
-          border-color: rgba(255, 255, 255, 0.05);
+          border-color: var(--ds-border-muted);
         }
 
         .lab-select-card:hover {
-          border-color: rgba(57, 255, 20, 0.25);
+          border-color: var(--ds-accent);
           transform: translateY(-2px);
-          box-shadow: 0 10px 30px rgba(57, 255, 20, 0.05);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .card-top {
@@ -974,9 +972,9 @@ export default function VirtualLab() {
         }
 
         .completed-badge {
-          background: rgba(57, 255, 20, 0.08);
-          border: 1px solid rgba(57, 255, 20, 0.3);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-size: 0.58rem;
           font-weight: 800;
           padding: 2px 8px;
@@ -994,7 +992,7 @@ export default function VirtualLab() {
         .card-category {
           font-size: 0.6rem;
           text-transform: uppercase;
-          color: #00D4AA;
+          color: var(--ds-accent);
           font-weight: 700;
           letter-spacing: 0.1em;
           margin-bottom: 12px;
@@ -1003,15 +1001,15 @@ export default function VirtualLab() {
         .card-desc {
           font-size: 0.78rem;
           line-height: 1.5;
-          color: rgba(200, 245, 200, 0.6);
+          color: var(--ds-fg-muted);
           margin-bottom: 1.5rem;
           flex: 1;
         }
 
         .start-lab-btn {
-          background: rgba(57, 255, 20, 0.08);
-          border: 1px solid rgba(57, 255, 20, 0.25);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-size: 0.78rem;
           font-weight: 700;
           padding: 8px 16px;
@@ -1021,8 +1019,8 @@ export default function VirtualLab() {
         }
 
         .start-lab-btn:hover {
-          background: rgba(57, 255, 20, 0.15);
-          box-shadow: 0 0 12px rgba(57, 255, 20, 0.25);
+          background: var(--ds-accent-subtle);
+          box-shadow: var(--ds-glow-sm);
         }
 
         /* LAB WORKSPACE LAYOUT */
@@ -1048,8 +1046,8 @@ export default function VirtualLab() {
 
         .panel-card {
           border-radius: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          background: rgba(10, 20, 10, 0.35);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(12px);
           box-sizing: border-box;
         }
@@ -1061,7 +1059,7 @@ export default function VirtualLab() {
         .panel-section-title {
           font-size: 0.65rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.1em;
           margin: 0 0 14px 0;
           text-transform: uppercase;
@@ -1069,7 +1067,7 @@ export default function VirtualLab() {
 
         .exit-lab-btn {
           align-self: flex-start;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-subtle);
           background: transparent;
           border: none;
           cursor: pointer;
@@ -1081,7 +1079,7 @@ export default function VirtualLab() {
         }
 
         .exit-lab-btn:hover {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .checklist-card {
@@ -1116,28 +1114,28 @@ export default function VirtualLab() {
           width: 22px;
           height: 22px;
           border-radius: 50%;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-subtle);
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 0.65rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--ds-fg-subtle);
           flex-shrink: 0;
         }
 
         .step-item.checked .step-checkbox {
-          border-color: #39FF14;
-          background: rgba(57, 255, 20, 0.08);
-          color: #39FF14;
+          border-color: var(--ds-border-accent);
+          background: var(--ds-accent-faint);
+          color: var(--ds-accent);
         }
 
         .step-item.active-step .step-checkbox {
-          border-color: #00D4AA;
-          background: rgba(0, 212, 170, 0.08);
-          color: #00D4AA;
-          box-shadow: 0 0 8px rgba(0, 212, 170, 0.2);
+          border-color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          color: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .step-content {
@@ -1155,14 +1153,14 @@ export default function VirtualLab() {
         .step-item-instruction {
           margin: 0;
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-muted);
           line-height: 1.4;
         }
 
         .step-success-msg {
           margin: 2px 0 0 0;
           font-size: 0.65rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           font-weight: 600;
         }
 
@@ -1193,7 +1191,7 @@ export default function VirtualLab() {
         }
 
         .control-label {
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--ds-fg-subtle);
         }
 
         .control-val {
@@ -1207,8 +1205,8 @@ export default function VirtualLab() {
 
         .counter-btn {
           flex: 1;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           color: #fff;
           font-weight: 700;
           font-size: 0.85rem;
@@ -1219,8 +1217,8 @@ export default function VirtualLab() {
         }
 
         .counter-btn:hover:not(:disabled) {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: rgba(255, 255, 255, 0.2);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-border-accent);
         }
 
         .counter-btn:disabled {
@@ -1233,7 +1231,7 @@ export default function VirtualLab() {
           width: 100%;
           height: 4px;
           border-radius: 2px;
-          background: rgba(255, 255, 255, 0.1);
+          background: var(--ds-surface-subtle);
           outline: none;
         }
 
@@ -1243,9 +1241,9 @@ export default function VirtualLab() {
           width: 14px;
           height: 14px;
           border-radius: 50%;
-          background: #39FF14;
+          background: var(--ds-accent);
           cursor: pointer;
-          box-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+          box-shadow: var(--ds-glow-sm);
           transition: transform 0.2s;
         }
 
@@ -1254,8 +1252,8 @@ export default function VirtualLab() {
         }
 
         .lab-select {
-          background: rgba(10, 20, 10, 0.5);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 8px;
           color: #fff;
           font-size: 0.75rem;
@@ -1266,9 +1264,9 @@ export default function VirtualLab() {
 
         .run-reaction-btn {
           width: 100%;
-          background: rgba(0, 212, 170, 0.08);
-          border: 1px solid rgba(0, 212, 170, 0.3);
-          color: #00D4AA;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-weight: 700;
           font-size: 0.8rem;
           letter-spacing: 0.04em;
@@ -1279,8 +1277,8 @@ export default function VirtualLab() {
         }
 
         .run-reaction-btn:hover:not(:disabled) {
-          background: rgba(0, 212, 170, 0.15);
-          box-shadow: 0 0 12px rgba(0, 212, 170, 0.25);
+          background: var(--ds-accent-subtle);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .run-reaction-btn:disabled {
@@ -1299,9 +1297,9 @@ export default function VirtualLab() {
 
         .simulation-canvas-wrap {
           flex: 1;
-          background: rgba(0,0,0,0.5);
+          background: var(--ds-surface-raised);
           border-radius: 12px;
-          border: 1px solid rgba(255,255,255,0.03);
+          border: 1px solid var(--ds-border-muted);
           margin-bottom: 1rem;
           position: relative;
           display: flex;
@@ -1319,8 +1317,8 @@ export default function VirtualLab() {
           margin-top: 16px;
           font-size: 0.65rem;
           font-family: monospace;
-          background: rgba(255,255,255,0.05);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           color: #fff;
           padding: 4px 10px;
           border-radius: 4px;
@@ -1362,14 +1360,14 @@ export default function VirtualLab() {
         .reaction-console {
           padding: 0.85rem 1.25rem;
           flex-shrink: 0;
-          background: rgba(5, 10, 5, 0.5);
-          border-color: rgba(57, 255, 20, 0.05);
+          background: var(--ds-surface-subtle);
+          border-color: var(--ds-border-muted);
         }
 
         .console-label {
           font-family: monospace;
           font-size: 0.58rem;
-          color: rgba(255,255,255,0.3);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.1em;
           display: block;
           margin-bottom: 4px;
@@ -1396,7 +1394,7 @@ export default function VirtualLab() {
 
         .log-label {
           font-size: 0.58rem;
-          color: rgba(255,255,255,0.4);
+          color: var(--ds-fg-subtle);
           text-transform: uppercase;
         }
 
@@ -1406,8 +1404,8 @@ export default function VirtualLab() {
           font-weight: 700;
         }
 
-        .text-neon-green { color: #39FF14; text-shadow: 0 0 6px rgba(57, 255, 20, 0.2); }
-        .text-neon-blue { color: #00D4AA; text-shadow: 0 0 6px rgba(0, 212, 170, 0.2); }
+        .text-neon-green { color: var(--ds-accent); text-shadow: var(--ds-glow-sm); }
+        .text-neon-blue { color: var(--ds-accent-muted); text-shadow: var(--ds-glow-sm); }
 
         /* RIGHT PANEL: QUIZ / CERTIFICATION */
         .quiz-unlock-card,
@@ -1446,27 +1444,27 @@ export default function VirtualLab() {
         .quiz-unlock-unlocked p {
           font-size: 0.72rem;
           line-height: 1.5;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-subtle);
           margin: 0;
           text-align: center;
         }
 
         .launch-quiz-btn {
-          background: rgba(57, 255, 20, 0.08);
-          border: 1px solid rgba(57, 255, 20, 0.3);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-weight: 700;
           font-size: 0.8rem;
           padding: 10px 20px;
           border-radius: 8px;
           cursor: pointer;
           transition: all 0.2s;
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .launch-quiz-btn:hover {
-          background: rgba(57, 255, 20, 0.15);
-          box-shadow: 0 0 15px rgba(57, 255, 20, 0.35);
+          background: var(--ds-accent-subtle);
+          box-shadow: var(--ds-glow-sm);
         }
 
         /* ACTIVE QUIZ WIDGET */
@@ -1479,7 +1477,7 @@ export default function VirtualLab() {
         .quiz-q-indicator {
           font-size: 0.58rem;
           font-weight: 700;
-          color: #00D4AA;
+          color: var(--ds-accent);
           letter-spacing: 0.05em;
           text-transform: uppercase;
           margin-bottom: 6px;
@@ -1504,8 +1502,8 @@ export default function VirtualLab() {
         .quiz-option-row {
           width: 100%;
           text-align: left;
-          background: rgba(255, 255, 255, 0.01);
-          border: 1px solid rgba(255, 255, 255, 0.04);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           padding: 10px 12px;
           border-radius: 8px;
           cursor: pointer;
@@ -1516,39 +1514,39 @@ export default function VirtualLab() {
         }
 
         .quiz-option-row:hover {
-          background: rgba(255, 255, 255, 0.03);
-          border-color: rgba(255, 255, 255, 0.1);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent-muted);
         }
 
         .quiz-option-row.selected {
-          background: rgba(0, 212, 170, 0.05);
-          border-color: rgba(0, 212, 170, 0.25);
+          background: var(--ds-accent-subtle);
+          border-color: var(--ds-accent);
         }
 
         .option-indicator {
           width: 20px;
           height: 20px;
           border-radius: 4px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          background: var(--ds-surface-raised);
+          border: 1px solid var(--ds-border-muted);
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 0.65rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--ds-fg-subtle);
         }
 
         .quiz-option-row.selected .option-indicator {
-          background: rgba(0, 212, 170, 0.15);
-          border-color: rgba(0, 212, 170, 0.3);
-          color: #00D4AA;
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent);
+          color: var(--ds-accent);
         }
 
         .option-text {
           font-size: 0.72rem;
           line-height: 1.4;
-          color: rgba(200, 245, 200, 0.8);
+          color: var(--ds-fg-muted);
         }
 
         .quiz-nav-row {
@@ -1559,8 +1557,8 @@ export default function VirtualLab() {
 
         .quiz-nav-btn {
           flex: 1;
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           color: #fff;
           font-size: 0.72rem;
           padding: 8px 0;
@@ -1570,14 +1568,14 @@ export default function VirtualLab() {
         }
 
         .quiz-nav-btn:hover:not(:disabled) {
-          background: rgba(255,255,255,0.08);
+          background: var(--ds-accent-faint);
         }
 
         .quiz-submit-btn {
           flex: 1.5;
-          background: rgba(57, 255, 20, 0.08);
-          border: 1px solid rgba(57, 255, 20, 0.3);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-weight: 700;
           font-size: 0.72rem;
           padding: 8px 0;
@@ -1587,8 +1585,8 @@ export default function VirtualLab() {
         }
 
         .quiz-submit-btn:hover {
-          background: rgba(57, 255, 20, 0.15);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.2);
+          background: var(--ds-accent-subtle);
+          box-shadow: var(--ds-glow-sm);
         }
 
         /* REPORT SCREEN */
@@ -1605,8 +1603,8 @@ export default function VirtualLab() {
           padding: 2px 8px;
           border-radius: 4px;
           letter-spacing: 0.1em;
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-subtle);
         }
 
         .report-title {
@@ -1619,7 +1617,7 @@ export default function VirtualLab() {
         .report-desc {
           font-size: 0.72rem;
           line-height: 1.5;
-          color: rgba(200, 245, 200, 0.5);
+          color: var(--ds-fg-subtle);
           margin: 0;
         }
 
@@ -1635,8 +1633,8 @@ export default function VirtualLab() {
 
         .explanation-card {
           padding: 10px 12px;
-          background: rgba(255,255,255,0.01);
-          border: 1px solid rgba(255,255,255,0.04);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 8px;
           display: flex;
           flex-direction: column;
@@ -1658,20 +1656,20 @@ export default function VirtualLab() {
           border-radius: 3px;
         }
 
-        .exp-status.correct { color: #39FF14; background: rgba(57, 255, 20, 0.05); }
+        .exp-status.correct { color: var(--ds-accent); background: var(--ds-accent-faint); }
         .exp-status.incorrect { color: #ef4444; background: rgba(239, 68, 68, 0.05); }
 
         .exp-explanation-text {
           margin: 4px 0 0 0;
           font-size: 0.65rem;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-subtle);
           line-height: 1.4;
         }
 
         .quiz-retry-btn {
           width: 100%;
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           color: #fff;
           font-weight: 700;
           font-size: 0.75rem;
@@ -1682,7 +1680,7 @@ export default function VirtualLab() {
         }
 
         .quiz-retry-btn:hover {
-          background: rgba(255,255,255,0.08);
+          background: var(--ds-accent-faint);
         }
 
         /* RESPONSIVE DESIGN */

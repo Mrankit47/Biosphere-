@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { BackLink } from "@/components/ds";
 
 interface Message {
   role: "user" | "assistant";
@@ -383,9 +384,12 @@ export default function BiologyTutorPage() {
         <main style={S.chatArea}>
           {/* Header */}
           <header style={S.chatHeader}>
-            <div>
-              <h1 style={S.headerTitle}>BIOLOGY TUTOR 🔬</h1>
-              <p style={S.headerSub}>Ask questions, generate flowcharts, and test your knowledge interactively.</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <BackLink href="/" label="Home" />
+              <div>
+                <h1 style={S.headerTitle}>BIOLOGY TUTOR 🔬</h1>
+                <p style={S.headerSub}>Ask questions, generate flowcharts, and test your knowledge interactively.</p>
+              </div>
             </div>
             <Link href="/learning-paths" style={S.dashboardLink}>
               🎓 Learning Paths
@@ -876,9 +880,9 @@ function InteractiveQuizWidget({ quizData }: { quizData: QuizQuestion[] }) {
 
 const S: Record<string, React.CSSProperties> = {
   root: {
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
     height: "calc(100vh - 64px)",
-    color: "#C8F5C8",
+    color: "var(--ds-fg)",
     paddingTop: 0,
     position: "relative",
     overflow: "hidden",
@@ -892,7 +896,7 @@ const S: Record<string, React.CSSProperties> = {
     width: "min(900px, 90vw)",
     height: 500,
     borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(57,255,20,0.05) 0%, transparent 70%)",
+    background: "radial-gradient(circle, rgba(57,255,20,0.04) 0%, transparent 70%)",
     pointerEvents: "none",
   },
   mainLayout: {
@@ -906,8 +910,8 @@ const S: Record<string, React.CSSProperties> = {
     boxSizing: "border-box",
   },
   sidebar: {
-    borderRight: "1px solid rgba(57, 255, 20, 0.08)",
-    background: "rgba(10, 20, 10, 0.35)",
+    borderRight: "1px solid var(--ds-border-muted)",
+    background: "var(--ds-surface-overlay)",
     backdropFilter: "blur(12px)",
     padding: 20,
     display: "flex",
@@ -919,13 +923,13 @@ const S: Record<string, React.CSSProperties> = {
     width: "100%",
     padding: "12px",
     borderRadius: 10,
-    border: "1.5px solid rgba(57, 255, 20, 0.3)",
-    background: "rgba(57, 255, 20, 0.05)",
-    color: "#39FF14",
+    border: "1.5px solid var(--ds-border-accent)",
+    background: "var(--ds-accent-faint)",
+    color: "var(--ds-accent)",
     fontWeight: 700,
     fontSize: "0.82rem",
     cursor: "pointer",
-    boxShadow: "0 0 15px rgba(57, 255, 20, 0.05)",
+    boxShadow: "var(--ds-glow-sm)",
   },
   chatList: {
     display: "flex",
@@ -936,7 +940,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   emptyList: {
     textAlign: "center",
-    color: "rgba(200,245,200,0.3)",
+    color: "var(--ds-fg-subtle)",
     fontSize: "0.78rem",
     paddingTop: 40,
   },
@@ -947,7 +951,7 @@ const S: Record<string, React.CSSProperties> = {
     width: "100%",
     padding: "12px 14px",
     borderRadius: 10,
-    border: "1px solid",
+    border: "1px solid var(--ds-border-muted)",
     color: "#fff",
     textAlign: "left",
     cursor: "pointer",
@@ -964,7 +968,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   chatItemDelete: {
     fontSize: "0.8rem",
-    color: "rgba(255,255,255,0.25)",
+    color: "var(--ds-fg-subtle)",
     padding: "2px 6px",
     borderRadius: 4,
     transition: "color 0.2s",
@@ -980,7 +984,7 @@ const S: Record<string, React.CSSProperties> = {
     justifyContent: "space-between",
     alignItems: "center",
     padding: "18px 24px",
-    borderBottom: "1px solid rgba(255,255,255,0.04)",
+    borderBottom: "1px solid var(--ds-border-muted)",
   },
   headerTitle: {
     fontSize: "1.1rem",
@@ -990,7 +994,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   headerSub: {
     fontSize: "0.75rem",
-    color: "rgba(200,245,200,0.5)",
+    color: "var(--ds-fg-subtle)",
     margin: "2px 0 0",
   },
   dashboardLink: {
@@ -998,8 +1002,8 @@ const S: Record<string, React.CSSProperties> = {
     fontWeight: 700,
     padding: "6px 14px",
     borderRadius: 999,
-    border: "1.5px solid #00D4AA",
-    color: "#00D4AA",
+    border: "1.5px solid var(--ds-border-accent)",
+    color: "var(--ds-accent)",
     textDecoration: "none",
   },
   messageScrollWrap: {
@@ -1024,7 +1028,7 @@ const S: Record<string, React.CSSProperties> = {
   suggestedHeading: {
     fontSize: "0.68rem",
     letterSpacing: "0.15em",
-    color: "rgba(200,245,200,0.4)",
+    color: "var(--ds-fg-subtle)",
     fontWeight: 700,
     textTransform: "uppercase",
     marginBottom: 16,
@@ -1036,8 +1040,8 @@ const S: Record<string, React.CSSProperties> = {
     width: "100%",
   },
   suggestedCard: {
-    background: "rgba(10, 20, 10, 0.4)",
-    border: "1px solid rgba(255,255,255,0.03)",
+    background: "var(--ds-surface-subtle)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 12,
     padding: 16,
     textAlign: "left",
@@ -1046,7 +1050,7 @@ const S: Record<string, React.CSSProperties> = {
   },
   suggestedText: {
     fontSize: "0.78rem",
-    color: "rgba(200,245,200,0.7)",
+    color: "var(--ds-fg-muted)",
     lineHeight: 1.45,
     margin: 0,
   },
@@ -1073,7 +1077,7 @@ const S: Record<string, React.CSSProperties> = {
     width: 32,
     height: 32,
     borderRadius: 8,
-    border: "1px solid",
+    border: "1px solid var(--ds-border-muted)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -1094,18 +1098,18 @@ const S: Record<string, React.CSSProperties> = {
     fontSize: "0.62rem",
     letterSpacing: "0.15em",
     fontWeight: 700,
-    borderBottom: "1px solid rgba(255,255,255,0.04)",
+    borderBottom: "1px solid var(--ds-border-muted)",
     paddingBottom: 4,
     marginBottom: 2,
   },
   bubbleContent: {
     fontSize: "0.9rem",
-    color: "rgba(200,245,200,0.85)",
+    color: "var(--ds-fg-muted)",
   },
   inputArea: {
     padding: "16px 24px 24px",
-    borderTop: "1px solid rgba(255,255,255,0.04)",
-    background: "rgba(5, 10, 5, 0.8)",
+    borderTop: "1px solid var(--ds-border-muted)",
+    background: "var(--ds-surface-overlay)",
   },
   inputForm: {
     maxWidth: 800,
@@ -1116,8 +1120,8 @@ const S: Record<string, React.CSSProperties> = {
   },
   textInput: {
     flex: 1,
-    background: "rgba(255,255,255,0.02)",
-    border: "1px solid rgba(255,255,255,0.08)",
+    background: "var(--ds-surface-subtle)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 12,
     padding: "14px 18px",
     color: "#fff",
@@ -1134,8 +1138,8 @@ const S: Record<string, React.CSSProperties> = {
     whiteSpace: "nowrap",
   },
   codePre: {
-    background: "rgba(0,0,0,0.35)",
-    border: "1px solid rgba(255,255,255,0.05)",
+    background: "var(--ds-surface-raised)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 8,
     padding: 12,
     margin: "8px 0",
@@ -1144,17 +1148,17 @@ const S: Record<string, React.CSSProperties> = {
   codeBlock: {
     fontFamily: "monospace",
     fontSize: "0.78rem",
-    color: "rgba(200,245,200,0.6)",
+    color: "var(--ds-fg-subtle)",
   },
   renderingBadge: {
-    color: "rgba(200,245,200,0.4)",
+    color: "var(--ds-fg-subtle)",
     fontSize: "0.8rem",
     padding: "12px 0",
     fontStyle: "italic",
   },
   mermaidWrapper: {
-    background: "rgba(0,0,0,0.2)",
-    border: "1.5px solid rgba(57,255,20,0.1)",
+    background: "var(--ds-surface-subtle)",
+    border: "1.5px solid var(--ds-border-accent)",
     borderRadius: 12,
     padding: "20px 16px",
     overflowX: "auto",
@@ -1163,8 +1167,8 @@ const S: Record<string, React.CSSProperties> = {
     justifyContent: "center",
   },
   quizBox: {
-    background: "rgba(0, 0, 0, 0.3)",
-    border: "1px dashed rgba(57, 255, 20, 0.2)",
+    background: "var(--ds-surface-subtle)",
+    border: "1px dashed var(--ds-border-accent)",
     borderRadius: 14,
     padding: "20px 22px",
     margin: "14px 0",
@@ -1173,8 +1177,8 @@ const S: Record<string, React.CSSProperties> = {
     fontSize: "0.62rem",
     letterSpacing: "0.15em",
     fontWeight: 700,
-    color: "#00D4AA",
-    background: "rgba(0, 212, 170, 0.1)",
+    color: "var(--ds-accent)",
+    background: "var(--ds-accent-faint)",
     padding: "4px 8px",
     borderRadius: 4,
     display: "inline-block",
@@ -1199,14 +1203,14 @@ const S: Record<string, React.CSSProperties> = {
     width: "100%",
     padding: "12px 16px",
     borderRadius: 8,
-    color: "#C8F5C8",
+    color: "var(--ds-fg)",
     fontFamily: "inherit",
     fontSize: "0.82rem",
     transition: "all 0.15s ease",
   },
   quizExplanation: {
-    background: "rgba(255,255,255,0.02)",
-    border: "1px solid rgba(255,255,255,0.04)",
+    background: "var(--ds-surface-raised)",
+    border: "1px solid var(--ds-border-muted)",
     borderRadius: 8,
     padding: 12,
     textAlign: "left",
@@ -1227,9 +1231,9 @@ const S: Record<string, React.CSSProperties> = {
   quizResetBtn: {
     padding: "8px 16px",
     borderRadius: 6,
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    color: "rgba(200,245,200,0.7)",
+    background: "var(--ds-surface-subtle)",
+    border: "1px solid var(--ds-border-muted)",
+    color: "var(--ds-fg-subtle)",
     fontSize: "0.78rem",
     fontWeight: 600,
     cursor: "pointer",
@@ -1240,7 +1244,7 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    background: "#050A05",
+    background: "var(--ds-bg-primary)",
     padding: 24,
     textAlign: "center",
   },
@@ -1248,7 +1252,7 @@ const S: Record<string, React.CSSProperties> = {
     marginTop: 20,
     padding: "10px 20px",
     borderRadius: 8,
-    background: "#39FF14",
+    background: "var(--ds-accent)",
     color: "#000",
     fontWeight: 600,
     fontSize: "0.85rem",
@@ -1256,7 +1260,7 @@ const S: Record<string, React.CSSProperties> = {
   micBtn: {
     padding: "14px 18px",
     borderRadius: 12,
-    border: "1px solid rgba(255,255,255,0.08)",
+    border: "1px solid var(--ds-border-muted)",
     cursor: "pointer",
     fontSize: "0.9rem",
     display: "flex",
@@ -1267,13 +1271,13 @@ const S: Record<string, React.CSSProperties> = {
   speakBtn: {
     background: "transparent",
     border: "none",
-    color: "rgba(200,245,200,0.5)",
+    color: "var(--ds-fg-subtle)",
     cursor: "pointer",
     padding: "2px 8px",
     fontSize: "0.72rem",
     marginLeft: 12,
     transition: "color 0.2s",
-    borderLeft: "1px solid rgba(255,255,255,0.08)",
+    borderLeft: "1px solid var(--ds-border-muted)",
     height: 16,
     display: "inline-flex",
     alignItems: "center",

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
+import { BackLink } from '@/components/ds'
 
 interface Article {
   id: string
@@ -240,10 +241,7 @@ export default function ResearchHub() {
       {/* HEADER */}
       <header className="hub-header">
         <div className="header-left">
-          <Link href="/" className="back-btn">
-            ← Main Hub
-          </Link>
-          <div className="divider-line" />
+          <BackLink href="/" label="Home" />
           <div>
             <h1 className="header-title">ACADEMIC RESEARCH HUB</h1>
             <p className="header-subtitle">LITERATURE CATALOG & INTERACTIVE GLOSSARY</p>
@@ -455,12 +453,12 @@ export default function ResearchHub() {
 
       <style jsx global>{`
         .hub-root {
-          background: #020502;
+          background: var(--ds-bg-primary);
           min-height: calc(100vh - 64px);
-          color: #C8F5C8;
+          color: var(--ds-fg);
           position: relative;
           overflow-x: hidden;
-          font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+          font-family: inherit;
         }
 
         .hub-grid-bg {
@@ -492,10 +490,9 @@ export default function ResearchHub() {
           align-items: center;
           justify-content: space-between;
           padding: 1.25rem 2rem 0.5rem;
-          border-bottom: 1px solid rgba(57, 255, 20, 0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           position: relative;
           z-index: 2;
-          font-family: system-ui, -apple-system, sans-serif;
         }
 
         .header-left {
@@ -505,27 +502,27 @@ export default function ResearchHub() {
         }
 
         .back-btn {
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: none;
           font-size: 0.82rem;
           font-weight: 700;
           letter-spacing: 0.05em;
           padding: 6px 14px;
           border-radius: 8px;
-          background: rgba(57, 255, 20, 0.05);
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           transition: all 0.2s ease;
         }
 
         .back-btn:hover {
           background: rgba(57, 255, 20, 0.12);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.15);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .divider-line {
           width: 1px;
           height: 32px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
         }
 
         .header-title {
@@ -538,7 +535,7 @@ export default function ResearchHub() {
 
         .header-subtitle {
           font-size: 0.6rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           margin: 0;
           letter-spacing: 0.25em;
           font-weight: 700;
@@ -554,7 +551,6 @@ export default function ResearchHub() {
           box-sizing: border-box;
           position: relative;
           z-index: 2;
-          font-family: system-ui, -apple-system, sans-serif;
         }
 
         .hub-sidebar-left,
@@ -568,8 +564,8 @@ export default function ResearchHub() {
 
         .panel-card {
           border-radius: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          background: rgba(10, 20, 10, 0.35);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(12px);
           box-sizing: border-box;
           padding: 1.25rem;
@@ -582,11 +578,11 @@ export default function ResearchHub() {
         .panel-section-title {
           font-size: 0.68rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.12em;
           text-transform: uppercase;
           margin: 0 0 1rem 0;
-          border-bottom: 1px solid rgba(255,255,255,0.05);
+          border-bottom: 1px solid var(--ds-border-muted);
           padding-bottom: 8px;
           flex-shrink: 0;
         }
@@ -606,7 +602,7 @@ export default function ResearchHub() {
 
         .search-icon {
           font-size: 0.95rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
         }
 
         .search-input {
@@ -614,19 +610,19 @@ export default function ResearchHub() {
           background: transparent;
           border: none;
           outline: none;
-          color: #fff;
+          color: var(--ds-fg);
           font-size: 0.85rem;
           padding: 4px 0;
         }
 
         .search-input::placeholder {
-          color: rgba(200, 245, 200, 0.3);
+          color: var(--ds-fg-subtle);
         }
 
         .clear-search-btn {
           background: transparent;
           border: none;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-muted);
           cursor: pointer;
           font-size: 0.85rem;
           padding: 4px;
@@ -634,7 +630,7 @@ export default function ResearchHub() {
         }
 
         .clear-search-btn:hover {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .category-scroll-wrap {
@@ -653,9 +649,9 @@ export default function ResearchHub() {
 
         .category-pill-btn {
           flex-shrink: 0;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          color: rgba(200, 245, 200, 0.6);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-muted);
           padding: 6px 12px;
           border-radius: 20px;
           font-size: 0.65rem;
@@ -667,15 +663,15 @@ export default function ResearchHub() {
 
         .category-pill-btn:hover {
           color: #fff;
-          background: rgba(57, 255, 20, 0.05);
-          border-color: rgba(57, 255, 20, 0.2);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent-muted);
         }
 
         .category-pill-btn.active {
-          color: #39FF14;
-          background: rgba(57, 255, 20, 0.08);
-          border-color: rgba(57, 255, 20, 0.3);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
+          color: var(--ds-accent);
+          background: var(--ds-accent-subtle);
+          border-color: var(--ds-border-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .bookmarks-list-card {
@@ -696,7 +692,7 @@ export default function ResearchHub() {
         }
 
         .bookmarks-scroll-box::-webkit-scrollbar-thumb {
-          background: rgba(57, 255, 20, 0.12);
+          background: var(--ds-border-muted);
           border-radius: 2px;
         }
 
@@ -709,8 +705,8 @@ export default function ResearchHub() {
         .bookmark-row-btn {
           width: 100%;
           text-align: left;
-          background: rgba(255,255,255,0.01);
-          border: 1px solid rgba(255,255,255,0.04);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 8px;
           padding: 8px 10px;
           display: flex;
@@ -721,8 +717,8 @@ export default function ResearchHub() {
         }
 
         .bookmark-row-btn:hover {
-          background: rgba(57, 255, 20, 0.04);
-          border-color: rgba(57, 255, 20, 0.15);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent-muted);
         }
 
         .b-emoji {
@@ -738,7 +734,7 @@ export default function ResearchHub() {
         .b-title {
           font-size: 0.75rem;
           font-weight: 700;
-          color: #fff;
+          color: var(--ds-fg);
           display: block;
           white-space: nowrap;
           overflow: hidden;
@@ -747,13 +743,13 @@ export default function ResearchHub() {
 
         .b-author {
           font-size: 0.65rem;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-subtle);
           display: block;
         }
 
         .empty-bookmarks-text {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           text-align: center;
           padding: 1.5rem 1rem;
           line-height: 1.45;
@@ -771,7 +767,7 @@ export default function ResearchHub() {
 
         .catalog-count {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-subtle);
         }
 
         .catalog-scroller {
@@ -786,7 +782,7 @@ export default function ResearchHub() {
         }
 
         .catalog-scroller::-webkit-scrollbar-thumb {
-          background: rgba(57, 255, 20, 0.15);
+          background: var(--ds-border-muted);
           border-radius: 2px;
         }
 
@@ -802,7 +798,7 @@ export default function ResearchHub() {
           display: flex;
           flex-direction: column;
           gap: 10px;
-          border-color: rgba(255,255,255,0.05);
+          border-color: var(--ds-border-muted);
         }
 
         .card-top-bar {
@@ -814,7 +810,7 @@ export default function ResearchHub() {
         .card-journal {
           font-size: 0.68rem;
           font-weight: 700;
-          color: #00D4AA;
+          color: var(--ds-accent);
           letter-spacing: 0.02em;
           text-transform: uppercase;
         }
@@ -843,14 +839,14 @@ export default function ResearchHub() {
 
         .card-authors {
           font-size: 0.78rem;
-          color: rgba(200, 245, 200, 0.65);
+          color: var(--ds-fg-muted);
         }
 
         .card-abstract {
           margin: 0;
           font-size: 0.8rem;
           line-height: 1.5;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-muted);
         }
 
         .card-bottom-bar {
@@ -858,16 +854,16 @@ export default function ResearchHub() {
           justify-content: space-between;
           align-items: center;
           margin-top: 6px;
-          border-top: 1px solid rgba(255,255,255,0.04);
+          border-top: 1px solid var(--ds-border-muted);
           padding-top: 10px;
         }
 
         .card-tag {
           font-size: 0.62rem;
           font-weight: 800;
-          color: #39FF14;
-          background: rgba(57, 255, 20, 0.05);
-          border: 1px solid rgba(57, 255, 20, 0.15);
+          color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           padding: 2px 8px;
           border-radius: 4px;
           text-transform: uppercase;
@@ -875,13 +871,13 @@ export default function ResearchHub() {
 
         .card-time {
           font-size: 0.72rem;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
         }
 
         .read-abstract-btn {
-          background: rgba(57, 255, 20, 0.08);
-          border: 1px solid rgba(57, 255, 20, 0.2);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           font-size: 0.78rem;
           font-weight: 700;
           padding: 6px 14px;
@@ -891,8 +887,8 @@ export default function ResearchHub() {
         }
 
         .read-abstract-btn:hover {
-          background: rgba(57, 255, 20, 0.15);
-          box-shadow: 0 0 10px rgba(57, 255, 20, 0.25);
+          background: var(--ds-accent-subtle);
+          box-shadow: var(--ds-glow-sm);
         }
 
         /* DETAILED READER VIEW DRAWER */
@@ -902,9 +898,9 @@ export default function ResearchHub() {
           right: 0;
           width: 580px;
           height: 100%;
-          background: rgba(2, 6, 2, 0.96);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(24px);
-          border-left: 1px solid rgba(57, 255, 20, 0.15);
+          border-left: 1px solid var(--ds-border-muted);
           z-index: 100;
           display: flex;
           flex-direction: column;
@@ -921,7 +917,7 @@ export default function ResearchHub() {
         }
 
         .close-reader-btn {
-          color: rgba(200, 245, 200, 0.6);
+          color: var(--ds-fg-subtle);
           background: transparent;
           border: none;
           cursor: pointer;
@@ -931,13 +927,13 @@ export default function ResearchHub() {
         }
 
         .close-reader-btn:hover {
-          color: #39FF14;
+          color: var(--ds-accent);
         }
 
         .reader-bookmark-btn {
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          color: rgba(200, 245, 200, 0.6);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg-muted);
           font-size: 0.72rem;
           font-weight: 700;
           padding: 6px 14px;
@@ -947,9 +943,9 @@ export default function ResearchHub() {
         }
 
         .reader-bookmark-btn.saved {
-          background: rgba(57, 255, 20, 0.08);
-          border-color: rgba(57, 255, 20, 0.25);
-          color: #39FF14;
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-border-accent);
+          color: var(--ds-accent);
         }
 
         .reader-body-scroller {
@@ -964,7 +960,7 @@ export default function ResearchHub() {
         }
 
         .reader-body-scroller::-webkit-scrollbar-thumb {
-          background: rgba(57, 255, 20, 0.15);
+          background: var(--ds-border-muted);
           border-radius: 2px;
         }
 
@@ -976,9 +972,9 @@ export default function ResearchHub() {
         .reader-meta-tag {
           font-size: 0.62rem;
           font-weight: 800;
-          color: #00D4AA;
-          border: 1px solid rgba(0, 212, 170, 0.25);
-          background: rgba(0, 212, 170, 0.05);
+          color: var(--ds-accent);
+          border: 1px solid var(--ds-border-accent);
+          background: var(--ds-accent-faint);
           padding: 2px 8px;
           border-radius: 4px;
           align-self: flex-start;
@@ -997,30 +993,29 @@ export default function ResearchHub() {
 
         .reader-authors {
           font-size: 0.88rem;
-          color: rgba(200, 245, 200, 0.75);
+          color: var(--ds-fg-muted);
           font-style: italic;
         }
 
         .reader-journal-str {
           font-size: 0.7rem;
           font-family: monospace;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           margin-top: 2px;
         }
 
         .reader-divider {
           height: 1px;
-          background: rgba(255,255,255,0.06);
+          background: var(--ds-border-muted);
           margin: 1.25rem 0;
         }
 
         .reader-abstract-box {
-          background: rgba(255, 255, 255, 0.015);
-          border: 1px dashed rgba(255, 255, 255, 0.08);
+          background: var(--ds-surface-subtle);
+          border: 1px dashed var(--ds-border-muted);
           padding: 1rem;
           border-radius: 8px;
           margin-bottom: 1.25rem;
-          font-family: system-ui, -apple-system, sans-serif;
         }
 
         .reader-abstract-box strong {
@@ -1036,23 +1031,22 @@ export default function ResearchHub() {
           margin: 0;
           font-size: 0.78rem;
           line-height: 1.5;
-          color: rgba(200, 245, 200, 0.55);
+          color: var(--ds-fg-muted);
         }
 
         .highlight-hint-banner {
-          background: rgba(57, 255, 20, 0.03);
-          border: 1px solid rgba(57, 255, 20, 0.12);
+          background: var(--ds-accent-faint);
+          border: 1px solid var(--ds-border-accent);
           border-radius: 8px;
           padding: 8px 12px;
           font-size: 0.72rem;
           line-height: 1.4;
-          color: rgba(200, 245, 200, 0.6);
+          color: var(--ds-fg-muted);
           margin-bottom: 1.5rem;
-          font-family: system-ui, -apple-system, sans-serif;
         }
 
         .highlight-span-sample {
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: underline;
           text-decoration-style: dashed;
           font-weight: 600;
@@ -1061,7 +1055,7 @@ export default function ResearchHub() {
         .reader-html-content {
           font-size: 0.95rem;
           line-height: 1.7;
-          color: rgba(200, 245, 200, 0.85);
+          color: var(--ds-fg-muted);
           display: flex;
           flex-direction: column;
           gap: 1.25rem;
@@ -1070,7 +1064,6 @@ export default function ResearchHub() {
         .reader-html-content h3 {
           font-size: 1.15rem;
           color: #fff;
-          font-family: system-ui, -apple-system, sans-serif;
           margin: 1.5rem 0 0.5rem 0;
         }
 
@@ -1080,7 +1073,7 @@ export default function ResearchHub() {
 
         /* GLOSSARY SPAN INJECTS */
         .glossary-highlight {
-          color: #39FF14;
+          color: var(--ds-accent);
           text-decoration: underline;
           text-decoration-style: dashed;
           text-underline-offset: 3px;
@@ -1090,7 +1083,7 @@ export default function ResearchHub() {
         }
 
         .glossary-highlight:hover {
-          background: rgba(57, 255, 20, 0.08);
+          background: var(--ds-accent-faint);
         }
 
         .citations-list-box h4 {
@@ -1098,7 +1091,6 @@ export default function ResearchHub() {
           font-weight: 750;
           color: #fff;
           margin: 0 0 10px 0;
-          font-family: system-ui, -apple-system, sans-serif;
         }
 
         .citations-list {
@@ -1106,7 +1098,7 @@ export default function ResearchHub() {
           padding-left: 20px;
           font-size: 0.75rem;
           line-height: 1.6;
-          color: rgba(200, 245, 200, 0.45);
+          color: var(--ds-fg-muted);
         }
 
         /* GLOSSARY OVERLAY DEFINITION MODAL */
@@ -1115,8 +1107,8 @@ export default function ResearchHub() {
           bottom: 1.5rem;
           left: 1.5rem;
           right: 1.5rem;
-          background: rgba(5, 15, 5, 0.96);
-          border: 1px solid rgba(57, 255, 20, 0.25);
+          background: var(--ds-surface-overlay);
+          border: 1px solid var(--ds-border-accent);
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(57, 255, 20, 0.1);
           border-radius: 12px;
           padding: 1.25rem;
@@ -1135,7 +1127,7 @@ export default function ResearchHub() {
         .glossary-term-lbl {
           font-size: 0.58rem;
           font-weight: 800;
-          color: #39FF14;
+          color: var(--ds-accent);
           letter-spacing: 0.08em;
           text-transform: uppercase;
         }
@@ -1143,7 +1135,7 @@ export default function ResearchHub() {
         .close-glossary-btn {
           background: transparent;
           border: none;
-          color: rgba(200, 245, 200, 0.4);
+          color: var(--ds-fg-subtle);
           cursor: pointer;
           font-size: 0.85rem;
         }
@@ -1162,7 +1154,7 @@ export default function ResearchHub() {
           margin: 0;
           font-size: 0.78rem;
           line-height: 1.45;
-          color: rgba(200, 245, 200, 0.7);
+          color: var(--ds-fg-muted);
         }
 
         /* RESPONSIVE */

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import * as THREE from 'three'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
+import { BackLink } from '@/components/ds'
 import { RenderMode } from './_components/BodyModel'
 
 // Lazy-load the heavy 3D canvas and model components with a custom high-tech glowing loading state
@@ -515,10 +516,7 @@ export default function HumanBodyPage() {
       {/* TOP HEADER NAVIGATION */}
       <header className="anatomy-header">
         <div className="header-left">
-          <Link href="/" className="back-btn">
-            ← Main Hub
-          </Link>
-          <div className="divider-line" />
+          <BackLink href="/" label="Home" />
           <div>
             <h1 className="header-title">3D ANATOMY EXPLORER</h1>
             <p className="header-subtitle">MEDICAL VISUALIZER ENGINE</p>
@@ -982,11 +980,11 @@ export default function HumanBodyPage() {
         .anatomy-root {
           width: 100vw;
           height: 100vh;
-          background: #020402;
-          color: #f1f5f1;
+          background: var(--ds-bg-primary);
+          color: var(--ds-fg);
           position: relative;
           overflow: hidden;
-          font-family: system-ui, -apple-system, sans-serif;
+          font-family: inherit;
           display: flex;
           flex-direction: column;
         }
@@ -1017,8 +1015,8 @@ export default function HumanBodyPage() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background: linear-gradient(to bottom, rgba(2, 4, 2, 0.98), rgba(2, 4, 2, 0));
-          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          background: linear-gradient(to bottom, var(--ds-bg-primary) 98%, transparent 100%);
+          border-bottom: 1px solid var(--ds-border-muted);
           backdrop-filter: blur(12px);
         }
         .header-left {
@@ -1027,14 +1025,14 @@ export default function HumanBodyPage() {
           gap: 1.25rem;
         }
         .back-btn {
-          color: rgba(255, 255, 255, 0.7);
+          color: var(--ds-fg);
           text-decoration: none;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid var(--ds-border-muted);
           padding: 6px 14px;
           border-radius: 100px;
           font-size: 0.75rem;
           font-weight: 600;
-          background: rgba(255, 255, 255, 0.02);
+          background: var(--ds-surface-subtle);
           transition: all 0.25s ease;
         }
         .back-btn:hover {
@@ -1060,7 +1058,7 @@ export default function HumanBodyPage() {
         .header-subtitle {
           margin: 0;
           font-size: 0.6rem;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.2em;
           font-weight: 700;
         }
@@ -1068,15 +1066,15 @@ export default function HumanBodyPage() {
         .gender-btn-group {
           display: flex;
           padding: 3px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 100px;
           backdrop-filter: blur(8px);
         }
         .gender-btn {
           border: none;
           background: none;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--ds-fg-muted);
           font-size: 0.72rem;
           font-weight: 800;
           padding: 6px 16px;
@@ -1085,17 +1083,17 @@ export default function HumanBodyPage() {
           transition: all 0.25s;
         }
         .gender-btn.active {
-          background: #38bdf8;
-          color: #020402;
-          box-shadow: 0 4px 12px rgba(56, 189, 248, 0.25);
+          background: var(--ds-accent);
+          color: var(--ds-bg-primary);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .mode-toggle-btn {
           padding: 6px 14px;
           border-radius: 100px;
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          background: rgba(0, 0, 0, 0.4);
-          color: rgba(255, 255, 255, 0.5);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-subtle);
+          color: var(--ds-fg-muted);
           font-size: 0.72rem;
           font-weight: 700;
           cursor: pointer;
@@ -1111,10 +1109,10 @@ export default function HumanBodyPage() {
           border-color: rgba(255, 255, 255, 0.2);
         }
         .mode-toggle-btn.active {
-          border-color: #38bdf8;
-          background: rgba(56, 189, 248, 0.08);
-          color: #38bdf8;
-          box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+          border-color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          color: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
         }
 
         .anatomy-main-layout {
@@ -1129,9 +1127,9 @@ export default function HumanBodyPage() {
         }
 
         .glassmorphic {
-          background: rgba(5, 10, 5, 0.85);
+          background: var(--ds-surface-overlay);
           backdrop-filter: blur(24px) saturate(120%);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          border: 1px solid var(--ds-border-muted);
           box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
         }
         .panel-card {
@@ -1151,30 +1149,30 @@ export default function HumanBodyPage() {
           display: flex;
           align-items: center;
           gap: 8px;
-          background: rgba(255, 255, 255, 0.03);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 100px;
           padding: 6px 12px;
         }
         .search-icon {
           font-size: 0.88rem;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
         }
         .search-input {
           flex: 1;
           background: none;
           border: none;
-          color: #fff;
+          color: var(--ds-fg);
           font-size: 0.78rem;
           outline: none;
         }
         .search-input::placeholder {
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--ds-fg-subtle);
         }
         .clear-search-btn {
           background: none;
           border: none;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--ds-fg-muted);
           cursor: pointer;
           font-size: 0.7rem;
         }
@@ -1185,8 +1183,8 @@ export default function HumanBodyPage() {
           left: 0;
           right: 0;
           margin-top: 6px;
-          background: rgba(5, 10, 5, 0.98);
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: var(--ds-surface-overlay);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           max-height: 240px;
           overflow-y: auto;
@@ -1201,14 +1199,14 @@ export default function HumanBodyPage() {
           padding: 8px 14px;
           background: none;
           border: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-          color: #fff;
+          border-bottom: 1px solid var(--ds-border-muted);
+          color: var(--ds-fg);
           text-align: left;
           cursor: pointer;
           transition: all 0.2s;
         }
         .search-suggestion-row:hover {
-          background: rgba(56, 189, 248, 0.08);
+          background: var(--ds-accent-faint);
         }
         .suggestion-emoji {
           font-size: 1.15rem;
@@ -1223,12 +1221,12 @@ export default function HumanBodyPage() {
         }
         .suggestion-scientific {
           font-size: 0.6rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--ds-fg-subtle);
         }
         .no-suggestions {
           padding: 14px;
           font-size: 0.72rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--ds-fg-subtle);
           text-align: center;
         }
 
@@ -1261,21 +1259,21 @@ export default function HumanBodyPage() {
           justify-content: space-between;
           align-items: center;
           padding: 12px 16px;
-          background: rgba(255, 255, 255, 0.02);
+          background: var(--ds-surface-subtle);
           border: none;
-          color: #fff;
+          color: var(--ds-fg);
           font-size: 0.78rem;
           font-weight: 900;
           letter-spacing: 0.08em;
           cursor: pointer;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+          border-bottom: 1px solid var(--ds-border-muted);
         }
         .accordion-header:hover {
-          background: rgba(255, 255, 255, 0.04);
+          background: var(--ds-surface-raised);
         }
         .accordion-arrow {
           font-size: 0.6rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--ds-fg-subtle);
         }
         .accordion-content {
           max-height: 0;
@@ -1293,9 +1291,9 @@ export default function HumanBodyPage() {
           width: 100%;
           padding: 6px 12px;
           border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.06);
-          background: rgba(255,255,255,0.02);
-          color: rgba(255,255,255,0.5);
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-subtle);
+          color: var(--ds-fg-muted);
           font-size: 0.65rem;
           font-weight: 800;
           cursor: pointer;
@@ -1316,7 +1314,7 @@ export default function HumanBodyPage() {
           display: flex;
           flex-direction: column;
           gap: 4px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+          border-bottom: 1px solid var(--ds-border-muted);
           padding-bottom: 10px;
         }
         .system-row-group:last-child {
@@ -1336,7 +1334,7 @@ export default function HumanBodyPage() {
           align-items: center;
           background: none;
           border: none;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--ds-fg-muted);
           text-align: left;
           cursor: pointer;
           padding: 0;
@@ -1345,7 +1343,7 @@ export default function HumanBodyPage() {
           width: 14px;
           height: 14px;
           border-radius: 3px;
-          border: 1.5px solid rgba(255, 255, 255, 0.2);
+          border: 1.5px solid var(--ds-border-muted);
           margin-right: 10px;
           display: flex;
           align-items: center;
@@ -1356,8 +1354,8 @@ export default function HumanBodyPage() {
           width: 7px;
           height: 7px;
           border-radius: 1px;
-          background: #38bdf8;
-          box-shadow: 0 0 6px #38bdf8;
+          background: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
         }
         .system-row-icon {
           font-size: 1rem;
@@ -1370,19 +1368,19 @@ export default function HumanBodyPage() {
         .system-row-label {
           font-size: 0.75rem;
           font-weight: 800;
-          color: rgba(255, 255, 255, 0.65);
+          color: var(--ds-fg-muted);
         }
         .system-row-desc {
           font-size: 0.55rem;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           margin-top: 1px;
         }
 
         .system-check-row.active .checkbox-indicator {
-          border-color: #38bdf8;
+          border-color: var(--ds-accent);
         }
         .system-check-row.active .system-row-label {
-          color: #fff;
+          color: var(--ds-fg);
         }
 
         .system-actions {
@@ -1411,14 +1409,14 @@ export default function HumanBodyPage() {
         }
         .opacity-slider-label {
           font-size: 0.58rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--ds-fg-subtle);
         }
         .opacity-slider {
           width: 110px;
           height: 3px;
-          background: rgba(255,255,255,0.06);
+          background: var(--ds-border-muted);
           outline: none;
-          accent-color: #38bdf8;
+          accent-color: var(--ds-accent);
         }
 
         .favorites-list {
@@ -1433,16 +1431,16 @@ export default function HumanBodyPage() {
           gap: 8px;
           padding: 8px 12px;
           border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.04);
-          background: rgba(255, 255, 255, 0.01);
-          color: #fff;
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-subtle);
+          color: var(--ds-fg);
           cursor: pointer;
           text-align: left;
           transition: all 0.2s;
         }
         .favorite-item-btn:hover {
-          background: rgba(56, 189, 248, 0.06);
-          border-color: rgba(56, 189, 248, 0.25);
+          background: var(--ds-accent-faint);
+          border-color: var(--ds-accent);
         }
         .favorite-item-emoji {
           font-size: 1.1rem;
@@ -1457,11 +1455,11 @@ export default function HumanBodyPage() {
         }
         .favorite-item-scientific {
           font-size: 0.55rem;
-          color: rgba(255, 255, 255, 0.4);
+          color: var(--ds-fg-subtle);
         }
         .no-favorites-text {
           font-size: 0.65rem;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           text-align: center;
           padding: 8px 0;
         }
@@ -1469,8 +1467,8 @@ export default function HumanBodyPage() {
         .anatomy-canvas-container {
           position: relative;
           border-radius: 24px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          background: radial-gradient(circle at center, #050a05, #000200);
+          border: 1px solid var(--ds-border-muted);
+          background: radial-gradient(circle at center, var(--ds-bg-primary), #000);
           overflow: hidden;
           box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8);
           display: flex;
@@ -1481,7 +1479,7 @@ export default function HumanBodyPage() {
           bottom: 7rem;
           left: 50%;
           transform: translateX(-50%);
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--ds-fg-subtle);
           font-size: 0.62rem;
           font-weight: 700;
           letter-spacing: 0.12em;
@@ -1522,25 +1520,25 @@ export default function HumanBodyPage() {
           font-size: 0.65rem;
           font-weight: 850;
           letter-spacing: 0.05em;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--ds-fg-muted);
         }
         .slider-label {
           margin-right: auto;
         }
         .slider-value {
-          color: #38bdf8;
+          color: var(--ds-accent);
         }
         .control-slider {
           width: 100%;
           height: 4px;
-          background: rgba(255, 255, 255, 0.08);
+          background: var(--ds-border-muted);
           outline: none;
-          accent-color: #38bdf8;
+          accent-color: var(--ds-accent);
         }
         .vertical-divider {
           width: 1px;
           height: 36px;
-          background: rgba(255, 255, 255, 0.1);
+          background: var(--ds-border-muted);
         }
 
         .cutter-toggle-row {
@@ -1561,9 +1559,9 @@ export default function HumanBodyPage() {
           transition: all 0.25s;
         }
         .clipper-btn.active {
-          border-color: #38bdf8;
-          background: rgba(56, 189, 248, 0.08);
-          color: #38bdf8;
+          border-color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          color: var(--ds-accent);
         }
         .clipper-axis-selector {
           display: flex;
@@ -1582,7 +1580,7 @@ export default function HumanBodyPage() {
           cursor: pointer;
         }
         .axis-btn.active {
-          background: #38bdf8;
+          background: var(--ds-accent);
           color: #000;
         }
         .control-slider-inner {
@@ -1752,15 +1750,15 @@ export default function HumanBodyPage() {
           margin: 0;
           font-size: 0.78rem;
           line-height: 1.6;
-          color: rgba(255, 255, 255, 0.72);
+          color: var(--ds-fg-muted);
         }
 
         .detail-meta-grid {
           display: grid;
           grid-template-columns: 1fr;
           gap: 8px;
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.04);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           padding: 10px 14px;
         }
@@ -1771,12 +1769,12 @@ export default function HumanBodyPage() {
         }
         .meta-cell-label {
           font-size: 0.55rem;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           font-weight: 750;
         }
         .meta-cell-value {
           font-size: 0.72rem;
-          color: rgba(255, 255, 255, 0.8);
+          color: var(--ds-fg-muted);
         }
 
         .telemetry-grid {
@@ -1795,7 +1793,7 @@ export default function HumanBodyPage() {
           font-size: 0.65rem;
         }
         .telemetry-stat-label {
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--ds-fg-subtle);
           text-transform: uppercase;
         }
         .telemetry-stat-value {
@@ -1806,7 +1804,7 @@ export default function HumanBodyPage() {
           width: 100%;
           height: 5px;
           border-radius: 100px;
-          background: rgba(255, 255, 255, 0.04);
+          background: var(--ds-border-muted);
           overflow: hidden;
         }
         .telemetry-fill {
@@ -1821,7 +1819,7 @@ export default function HumanBodyPage() {
           margin: 0;
           font-size: 0.72rem;
           line-height: 1.5;
-          color: rgba(255, 255, 255, 0.5);
+          color: var(--ds-fg-subtle);
           font-style: italic;
         }
 
@@ -1832,9 +1830,9 @@ export default function HumanBodyPage() {
         }
         .pathology-tag {
           font-size: 0.62rem;
-          color: rgba(255, 255, 255, 0.65);
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.06);
+          color: var(--ds-fg-muted);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 100px;
           padding: 4px 10px;
         }
@@ -1883,14 +1881,14 @@ export default function HumanBodyPage() {
         }
         .modal-header {
           padding: 1.5rem 2.25rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+          border-bottom: 1px solid var(--ds-border-muted);
           display: flex;
           justify-content: space-between;
           align-items: center;
         }
         .modal-badge {
           font-size: 0.6rem;
-          color: #38bdf8;
+          color: var(--ds-accent);
           font-weight: 900;
           letter-spacing: 0.25em;
         }
@@ -1933,7 +1931,7 @@ export default function HumanBodyPage() {
           left: 50%;
           transform: translateX(-50%);
           font-size: 0.58rem;
-          color: rgba(255, 255, 255, 0.3);
+          color: var(--ds-fg-subtle);
           font-weight: 800;
           letter-spacing: 0.15em;
           pointer-events: none;
@@ -1941,7 +1939,7 @@ export default function HumanBodyPage() {
 
         .modal-info-panel {
           padding: 2.25rem;
-          border-left: 1px solid rgba(255, 255, 255, 0.06);
+          border-left: 1px solid var(--ds-border-muted);
           overflow-y: auto;
           display: flex;
           flex-direction: column;
@@ -1950,7 +1948,7 @@ export default function HumanBodyPage() {
         .modal-panel-heading {
           margin: 0;
           font-size: 0.75rem;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           letter-spacing: 0.12em;
           font-weight: 800;
         }
@@ -1958,7 +1956,7 @@ export default function HumanBodyPage() {
           margin: 0;
           font-size: 0.85rem;
           line-height: 1.7;
-          color: rgba(255, 255, 255, 0.75);
+          color: var(--ds-fg-muted);
         }
 
         .modal-stats-grid {
@@ -1967,8 +1965,8 @@ export default function HumanBodyPage() {
           gap: 12px;
         }
         .modal-stat-card {
-          background: rgba(255, 255, 255, 0.02);
-          border: 1px solid rgba(255, 255, 255, 0.04);
+          background: var(--ds-surface-subtle);
+          border: 1px solid var(--ds-border-muted);
           border-radius: 12px;
           padding: 12px;
           display: flex;
@@ -1977,7 +1975,7 @@ export default function HumanBodyPage() {
         }
         .stat-card-label {
           font-size: 0.6rem;
-          color: rgba(255, 255, 255, 0.35);
+          color: var(--ds-fg-subtle);
           text-transform: uppercase;
         }
         .stat-card-value {
@@ -1987,7 +1985,7 @@ export default function HumanBodyPage() {
 
         .modal-fact-box {
           border: 1px solid;
-          background: rgba(255, 255, 255, 0.01);
+          background: var(--ds-surface-subtle);
           padding: 14px;
           border-radius: 16px;
           display: flex;
@@ -2020,20 +2018,20 @@ export default function HumanBodyPage() {
         .glowing-spinner {
           width: 60px;
           height: 60px;
-          border: 3px solid rgba(57, 255, 20, 0.1);
+          border: 3px solid var(--ds-border-muted);
           border-radius: 50%;
-          border-top-color: #39FF14;
-          border-right-color: #00D4AA;
+          border-top-color: var(--ds-accent);
+          border-right-color: var(--ds-accent-muted);
           animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-          box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+          box-shadow: var(--ds-glow-sm);
           margin-bottom: 20px;
         }
         .loading-text {
           font-family: monospace;
           font-size: 0.72rem;
-          color: #39FF14;
+          color: var(--ds-accent);
           letter-spacing: 0.15em;
-          text-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+          text-shadow: var(--ds-glow-sm);
           animation: blink 1.5s infinite;
         }
         @keyframes spin {
@@ -2113,14 +2111,14 @@ export default function HumanBodyPage() {
 
         .medical-label {
           background: rgba(1, 4, 1, 0.95);
-          border: 1px solid rgba(56, 189, 248, 0.4);
-          color: #38bdf8;
+          border: 1px solid var(--ds-border-accent);
+          color: var(--ds-accent);
           padding: 5px 12px;
           border-radius: 4px;
           font-size: 0.68rem;
           font-weight: 800;
           white-space: nowrap;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 10px rgba(56, 189, 248, 0.15);
+          box-shadow: 0 4px 15px rgba(0,0,0,0.5), var(--ds-glow-sm);
           letter-spacing: 0.05em;
           pointer-events: none;
           transform: translate(-50%, -100%);

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Skeleton from "@/components/ds/Skeleton";
+import GalleryGrid from "@/components/ds/GalleryGrid";
 
 type LoadingType = "3d" | "skeleton";
 
@@ -33,37 +35,50 @@ export default function LoadingScreen({
   if (type === "skeleton") return <SkeletonScreen />;
 
   return (
-    <div style={styles.overlay} role="status" aria-label="Loading 3D model">
+    <div
+      className="fixed inset-0 z-[var(--ds-z-cursor)] bg-[var(--ds-bg-primary)] flex flex-col items-center justify-center gap-5"
+      role="status"
+      aria-label="Loading 3D model"
+    >
       {/* DNA Helix */}
-      <div style={styles.helixContainer}>
-        <div className="dna-helix">
+      <div className="perspective-[400px] mb-2">
+        <div className="dna-helix flex flex-col items-center gap-1.5">
           {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="dna-rung" style={{ animationDelay: `${i * 0.12}s` }}>
-              <span className="dna-dot dna-dot--left" />
-              <span className="dna-bar" />
-              <span className="dna-dot dna-dot--right" />
+            <div
+              key={i}
+              className="dna-rung flex items-center gap-0"
+              style={{ animationDelay: `${i * 0.12}s` }}
+            >
+              <span className="dna-dot dna-dot--left w-2.5 h-2.5 rounded-full shrink-0 bg-[#39FF14] shadow-[0_0_10px_rgba(57,255,20,0.7)]" />
+              <span className="dna-bar w-9 h-[2px] bg-gradient-to-r from-[rgba(57,255,20,0.6)] to-[rgba(0,212,170,0.6)] rounded-[1px]" />
+              <span className="dna-dot dna-dot--right w-2.5 h-2.5 rounded-full shrink-0 bg-[#00D4AA] shadow-[0_0_10px_rgba(0,212,170,0.7)]" />
             </div>
           ))}
         </div>
       </div>
 
       {/* Status text */}
-      <p style={styles.label}>Loading 3D model…</p>
+      <p className="text-[length:var(--ds-text-base)] text-[var(--ds-fg-muted)] tracking-[0.08em] font-medium m-0">
+        Loading 3D model…
+      </p>
 
       {/* Progress bar */}
-      <div style={styles.progressTrack}>
+      <div className="w-[min(260px,60vw)] h-1 rounded-[var(--ds-radius-sm)] bg-[rgba(57,255,20,0.1)] overflow-hidden">
         <div
-          style={{ ...styles.progressFill, width: `${progress}%` }}
+          className="h-full rounded-[var(--ds-radius-sm)] bg-gradient-to-r from-[#39FF14] to-[#00D4AA] shadow-[0_0_12px_rgba(57,255,20,0.5)] transition-[width] duration-300"
+          style={{ width: `${progress}%` }}
         />
       </div>
-      <span style={styles.progressText}>{Math.round(progress)}%</span>
+      <span className="text-[length:var(--ds-text-sm)] text-[var(--ds-accent-muted)] font-mono">
+        {Math.round(progress)}%
+      </span>
 
       {/* Pulsing dots */}
-      <div style={styles.dotsRow}>
+      <div className="flex gap-2 mt-2">
         {[0, 1, 2, 3, 4].map((i) => (
           <span
             key={i}
-            className="pulse-dot"
+            className="pulse-dot w-2 h-2 rounded-full bg-[#39FF14]"
             style={{ animationDelay: `${i * 0.18}s` }}
           />
         ))}
@@ -71,43 +86,8 @@ export default function LoadingScreen({
 
       {/* Inline Styles (CSS animations) */}
       <style>{`
-        /* ── DNA Helix ───────────────────────────────── */
-        .dna-helix {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 6px;
-        }
-
         .dna-rung {
-          display: flex;
-          align-items: center;
-          gap: 0;
           animation: dnaWave 1.8s ease-in-out infinite alternate;
-        }
-
-        .dna-dot {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          flex-shrink: 0;
-        }
-
-        .dna-dot--left {
-          background: #39FF14;
-          box-shadow: 0 0 10px rgba(57,255,20,0.7);
-        }
-
-        .dna-dot--right {
-          background: #00D4AA;
-          box-shadow: 0 0 10px rgba(0,212,170,0.7);
-        }
-
-        .dna-bar {
-          width: 36px;
-          height: 2px;
-          background: linear-gradient(90deg, rgba(57,255,20,0.6), rgba(0,212,170,0.6));
-          border-radius: 1px;
         }
 
         @keyframes dnaWave {
@@ -116,12 +96,7 @@ export default function LoadingScreen({
           100% { transform: rotateY(180deg) scaleX(1);   }
         }
 
-        /* ── Pulse Dots ──────────────────────────────── */
         .pulse-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: #39FF14;
           animation: pulseDot 1.2s ease-in-out infinite;
         }
 
@@ -138,101 +113,19 @@ export default function LoadingScreen({
 
 function SkeletonScreen() {
   return (
-    <div style={styles.skeletonContainer} role="status" aria-label="Loading content">
+    <div className="w-full p-[40px_clamp(16px,5vw,48px)] box-border" role="status" aria-label="Loading content">
       {/* Fake heading */}
-      <div className="skeleton-box" style={{ width: "60%", height: 32, marginBottom: 16 }} />
+      <Skeleton variant="text" width="60%" height={32} className="mb-4" />
       {/* Fake paragraph lines */}
-      <div className="skeleton-box" style={{ width: "90%", height: 14, marginBottom: 10 }} />
-      <div className="skeleton-box" style={{ width: "75%", height: 14, marginBottom: 10 }} />
-      <div className="skeleton-box" style={{ width: "82%", height: 14, marginBottom: 28 }} />
+      <Skeleton variant="text" width="90%" height={14} className="mb-2.5" />
+      <Skeleton variant="text" width="75%" height={14} className="mb-2.5" />
+      <Skeleton variant="text" width="82%" height={14} className="mb-7" />
       {/* Fake card grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16 }}>
+      <GalleryGrid minItemWidth="200px" gap="16px">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="skeleton-box" style={{ height: 160, borderRadius: 12 }} />
+          <Skeleton key={i} variant="rectangular" height={160} className="rounded-[var(--ds-radius-lg)]" />
         ))}
-      </div>
-
-      <style>{`
-        .skeleton-box {
-          background: linear-gradient(
-            90deg,
-            rgba(57,255,20,0.04) 25%,
-            rgba(57,255,20,0.09) 50%,
-            rgba(57,255,20,0.04) 75%
-          );
-          background-size: 200% 100%;
-          border-radius: 8px;
-          animation: skeletonShimmer 1.6s ease-in-out infinite;
-        }
-
-        @keyframes skeletonShimmer {
-          0%   { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-      `}</style>
+      </GalleryGrid>
     </div>
   );
 }
-
-/* ─── Styles ─────────────────────────────────────────────── */
-
-const styles: Record<string, React.CSSProperties> = {
-  overlay: {
-    position: "fixed",
-    inset: 0,
-    zIndex: 9999,
-    background: "#050A05",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 20,
-  },
-
-  helixContainer: {
-    perspective: 400,
-    marginBottom: 8,
-  },
-
-  label: {
-    fontSize: "1rem",
-    color: "rgba(200,245,200,0.7)",
-    letterSpacing: "0.08em",
-    fontWeight: 500,
-    margin: 0,
-  },
-
-  progressTrack: {
-    width: "min(260px, 60vw)",
-    height: 4,
-    borderRadius: 2,
-    background: "rgba(57,255,20,0.1)",
-    overflow: "hidden",
-  },
-
-  progressFill: {
-    height: "100%",
-    borderRadius: 2,
-    background: "linear-gradient(90deg, #39FF14, #00D4AA)",
-    boxShadow: "0 0 12px rgba(57,255,20,0.5)",
-    transition: "width 0.3s ease",
-  },
-
-  progressText: {
-    fontSize: "0.8rem",
-    color: "rgba(57,255,20,0.6)",
-    fontVariantNumeric: "tabular-nums",
-  },
-
-  dotsRow: {
-    display: "flex",
-    gap: 8,
-    marginTop: 8,
-  },
-
-  skeletonContainer: {
-    width: "100%",
-    padding: "40px clamp(16px, 5vw, 48px)",
-    boxSizing: "border-box",
-  },
-};
