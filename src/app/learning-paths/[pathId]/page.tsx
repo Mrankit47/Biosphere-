@@ -1,17 +1,15 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { BackLink } from "@/components/ds";
 import { getJourneyById } from "@/data/learningPaths";
 import { getUserProgress, getOrCreateUserId, UserProgressData } from "@/utils/supabase";
 
-interface JourneyPageProps {
-  params: Promise<{ pathId: string }>;
-}
-
-export default function JourneyPage({ params }: JourneyPageProps) {
-  const { pathId } = use(params);
+export default function JourneyPage() {
+  const params = useParams();
+  const pathId = params?.pathId as string;
   const journey = getJourneyById(pathId);
 
   const [mounted, setMounted] = useState(false);

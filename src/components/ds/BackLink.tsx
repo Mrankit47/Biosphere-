@@ -6,6 +6,7 @@ interface BackLinkProps {
   href?: string;
   label?: string;
   className?: string;
+  relative?: boolean;
 }
 
 /**
@@ -16,12 +17,14 @@ export default function BackLink({
   href = "/",
   label = "Home",
   className = "",
+  relative = false,
 }: BackLinkProps) {
   return (
     <Link
       href={href}
       className={`
-        absolute top-5 left-6 z-[var(--ds-z-overlay)]
+        ${relative ? "relative" : "absolute top-5 left-6"}
+        z-[var(--ds-z-overlay)]
         inline-flex items-center gap-2
         px-3.5 py-2 rounded-[var(--ds-radius-md)]
         bg-[var(--ds-surface-overlay)] border border-[var(--ds-border-accent)]

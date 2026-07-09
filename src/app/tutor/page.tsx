@@ -385,7 +385,7 @@ export default function BiologyTutorPage() {
           {/* Header */}
           <header style={S.chatHeader}>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <BackLink href="/" label="Home" />
+              <BackLink href="/" label="Home" relative={true} />
               <div>
                 <h1 style={S.headerTitle}>BIOLOGY TUTOR 🔬</h1>
                 <p style={S.headerSub}>Ask questions, generate flowcharts, and test your knowledge interactively.</p>

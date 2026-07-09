@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { BackLink } from "@/components/ds";
 
 /* ── Tree Data ─────────────────────────────────────────────── */
@@ -161,34 +161,68 @@ interface LayoutNode {
   animDelay: number;
 }
 
-/* Count total leaves under a node so spacing is proportional */
-function countLeaves(node: TreeNode): number {
-  if (!node.children || node.children.length === 0) return 1;
-  return node.children.reduce((sum, c) => sum + countLeaves(c), 0);
+function collectLeafIds(node: TreeNode): string[] {
+  if (!node.children || node.children.length === 0) return [node.id];
+  const ids: string[] = [];
+  node.children.forEach(c => ids.push(...collectLeafIds(c)));
+  return ids;
+}
+
+function assignLeafSlots(node: TreeNode, startSlot: number = 0): { slots: Record<string, number>; nextSlot: number } {
+  const slots: Record<string, number> = {};
+  
+  if (!node.children || node.children.length === 0) {
+    slots[node.id] = startSlot;
+    return { slots, nextSlot: startSlot + 1 };
+  }
+  
+  let currentSlot = startSlot;
+  node.children.forEach((child, i) => {
+    if (i > 0) {
+      if (node.id === "root") {
+        currentSlot += 1.8; // Large gap between domains (Bacteria, Archaea, Eukarya)
+      } else if (node.id === "eukarya") {
+        currentSlot += 1.0; // Medium gap between eukaryotic kingdoms (Protista, Fungi, etc.)
+      } else {
+        currentSlot += 0.3; // Default sibling gap
+      }
+    }
+    
+    const res = assignLeafSlots(child, currentSlot);
+    Object.assign(slots, res.slots);
+    currentSlot = res.nextSlot;
+  });
+  
+  return { slots, nextSlot: currentSlot };
+}
+
+const { slots: LEAF_SLOTS, nextSlot: TOTAL_SLOT_WIDTH } = assignLeafSlots(TREE, 0);
+const MAX_SLOT_VAL = TOTAL_SLOT_WIDTH > 1 ? TOTAL_SLOT_WIDTH - 1 : 1;
+
+function getSubtreeMidSlot(node: TreeNode): number {
+  const leaves = collectLeafIds(node);
+  const slotsSum = leaves.reduce((sum, id) => sum + (LEAF_SLOTS[id] ?? 0), 0);
+  return slotsSum / leaves.length;
 }
 
 const PADDING = 60;        // left/right margin inside SVG
-const SVG_W = 1600;
+const SVG_W = 1800;
 const SVG_H = 780;
 const USABLE_W = SVG_W - PADDING * 2;
 const Y_TOP = 50;
 const Y_STEP = 140;       // vertical gap between levels
-const TOTAL_LEAVES = countLeaves(TREE);
 
 function layoutTree(
   node: TreeNode,
-  leafStart: number,      // which leaf index this subtree starts at
   depth: number,
   delay: number,
   parentX?: number,
   parentY?: number,
 ): LayoutNode[] {
   const result: LayoutNode[] = [];
-  const myLeaves = countLeaves(node);
 
-  // Center this node over its leaf range
-  const leafMid = leafStart + myLeaves / 2;
-  const x = PADDING + (leafMid / TOTAL_LEAVES) * USABLE_W;
+  const midSlot = getSubtreeMidSlot(node);
+  const x = PADDING + (midSlot / MAX_SLOT_VAL) * USABLE_W;
   const y = Y_TOP + depth * Y_STEP;
 
   result.push({
@@ -198,19 +232,17 @@ function layoutTree(
   });
 
   if (node.children) {
-    let childLeafStart = leafStart;
     node.children.forEach((child, i) => {
       result.push(
-        ...layoutTree(child, childLeafStart, depth + 1, delay + 0.12 + i * 0.06, x, y)
+        ...layoutTree(child, depth + 1, delay + 0.12 + i * 0.06, x, y)
       );
-      childLeafStart += countLeaves(child);
     });
   }
 
   return result;
 }
 
-const nodes = layoutTree(TREE, 0, 0, 0);
+const nodes = layoutTree(TREE, 0, 0);
 
 /* ── Page ───────────────────────────────────────────────────── */
 export default function TreeOfLifePage() {
@@ -218,6 +250,12 @@ export default function TreeOfLifePage() {
   const [hovered, setHovered] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [highlightPath, setHighlightPath] = useState<string[]>([]);
+
+  // Precompute leaf order to alternate vertical label positions
+  const leafIndexMap = useMemo(() => {
+    const leaves = nodes.filter(n => n.depth === 3).sort((a, b) => a.x - b.x);
+    return new Map(leaves.map((n, idx) => [n.id, idx]));
+  }, []);
 
   const handleClick = useCallback((n: LayoutNode) => {
     setSelected(prev => (prev?.id === n.id ? null : n));
@@ -298,8 +336,9 @@ export default function TreeOfLifePage() {
                   strokeWidth={isActive ? 2 : 1.2}
                   style={{ transition: "all 0.3s ease" }}
                 />
+                {/* Alternate leaf labels down to prevent horizontal overlapping */}
                 <text
-                  x={n.x} y={n.y + r + 16}
+                  x={n.x} y={n.y + r + (n.depth === 3 && ((leafIndexMap.get(n.id) ?? 0) % 2 === 1) ? 30 : 16)}
                   textAnchor="middle"
                   fill={isActive ? n.color : "rgba(200,245,200,0.65)"}
                   fontSize={n.depth === 0 ? 12 : n.depth <= 2 ? 11 : 9}

@@ -357,10 +357,17 @@ export default function HomePage() {
         </p>
 
         {/* CTA */}
-        <div className={`transition-all duration-900 delay-500 transform ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[18px]"}`}>
+        <div className={`flex gap-4 justify-center items-center transition-all duration-900 delay-500 transform ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-[18px]"}`}>
           <GlowButton href="/cell-explorer" ariaLabel="Enter the Cell Explorer">
             Enter the Cell →
           </GlowButton>
+          <Link
+            href="/dashboard"
+            className="px-6 py-3 border border-[var(--ds-border-accent)] bg-[var(--ds-accent-faint)] text-[var(--ds-accent)] font-bold rounded-lg hover:bg-[var(--ds-accent-subtle)] transition-all flex items-center justify-center text-sm shadow-[var(--ds-glow-sm)] cursor-pointer decoration-none"
+            style={{ textDecoration: "none" }}
+          >
+            Learning Dashboard 📊
+          </Link>
         </div>
 
         {/* Scroll hint */}
