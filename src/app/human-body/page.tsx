@@ -5,7 +5,20 @@ import * as THREE from 'three'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { BackLink } from '@/components/ds'
+import { useMentor } from '@/components/ui/navigation'
 import { RenderMode } from './_components/BodyModel'
+
+// Experience Engine Imports
+import {
+  ExperienceProvider,
+  LearningOverlay,
+  useExperience,
+  type ObjectMetadata,
+  type TourStep,
+  type QuizQuestion,
+  type TeacherConsoleInfo,
+  type ModelAnimation
+} from "@/components/3d"
 
 // Lazy-load the heavy 3D canvas and model components with a custom high-tech glowing loading state
 const AnatomyViewer = dynamic(
@@ -316,7 +329,14 @@ const ORGAN_INFO: Record<
 /* ══════════════════════════════════════════════════════════════
    ▸ PAGE COMPONENT
    ══════════════════════════════════════════════════════════════ */
-export default function HumanBodyPage() {
+function HumanBodyPageContent() {
+  const {
+    selectedObjectId,
+    setSelectedObjectId,
+    layerOpacities,
+    explodeFactor
+  } = useExperience()
+
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
     setMounted(false)
@@ -326,6 +346,93 @@ export default function HumanBodyPage() {
 
   const [selectedOrgan, setSelectedOrgan] = useState<string | null>(null)
   const [activeSystem, setActiveSystem] = useState<string | null>(null)
+
+  // Experience Syncing Effects
+  const { registerActionListener, setPageContext, clearPageContext } = useMentor()
+  const { dispatchCameraMove } = useExperience()
+
+  useEffect(() => {
+    setPageContext({ page: "human-body", program: "Human Anatomy", selectedOrgan: selectedOrgan });
+    return () => {
+      clearPageContext();
+    };
+  }, [setPageContext, clearPageContext]);
+
+  useEffect(() => {
+    setPageContext({ selectedOrgan });
+  }, [selectedOrgan, setPageContext]);
+
+  useEffect(() => {
+    const unregister = registerActionListener((action) => {
+      if (action.type === "zoom" || action.type === "highlight") {
+        const organId = action.id.toLowerCase();
+        if (ORGAN_INFO[organId]) {
+          setSelectedObjectId(organId);
+          setSelectedOrgan(organId);
+
+          const coordMap: Record<string, { pos: [number, number, number], tar: [number, number, number] }> = {
+            brain: { pos: [0, 8.16, 2], tar: [0, 8.16, 0] },
+            heart: { pos: [0.13, 5.06, 2.5], tar: [0.13, 5.06, 0.4] },
+            lungs: { pos: [0, 5.24, 2.5], tar: [0, 5.24, 0.1] },
+            liver: { pos: [0.48, 4.02, 2.2], tar: [0.48, 4.02, 0.3] },
+            stomach: { pos: [-0.42, 3.65, 2.2], tar: [-0.42, 3.65, 0.4] },
+            intestines: { pos: [0, 2.22, 2.5], tar: [0, 2.22, 0.3] },
+            kidneys: { pos: [0, 3.2, 2.2], tar: [0, 3.2, 0.2] }
+          };
+          if (coordMap[organId]) {
+            dispatchCameraMove(coordMap[organId].pos, coordMap[organId].tar, 1.2);
+          }
+        }
+      }
+    });
+    return unregister;
+  }, [registerActionListener, setSelectedObjectId, dispatchCameraMove]);
+
+  useEffect(() => {
+    if (selectedObjectId !== selectedOrgan) {
+      setSelectedOrgan(selectedObjectId)
+    }
+  }, [selectedObjectId])
+
+  useEffect(() => {
+    if (selectedOrgan !== selectedObjectId) {
+      setSelectedObjectId(selectedOrgan)
+    }
+  }, [selectedOrgan])
+
+  useEffect(() => {
+    if (explodeFactor !== explode) {
+      setExplode(explodeFactor)
+    }
+  }, [explodeFactor])
+
+  useEffect(() => {
+    setVisibleSystems((prev) => ({
+      ...prev,
+      skin: layerOpacities.skin > 0.05,
+      skeleton: layerOpacities.skeleton > 0.05,
+      muscles: layerOpacities.muscles > 0.05,
+      organs: layerOpacities.organs > 0.05,
+      vascular: layerOpacities.vascular > 0.05,
+      nervous: layerOpacities.nervous > 0.05,
+      endocrine: layerOpacities.endocrine > 0.05,
+      lymphatic: layerOpacities.lymphatic > 0.05,
+      reproductive: layerOpacities.reproductive > 0.05,
+    }))
+
+    setOpacityOverrides((prev) => ({
+      ...prev,
+      skin: layerOpacities.skin,
+      skeleton: layerOpacities.skeleton,
+      muscles: layerOpacities.muscles,
+      organs: layerOpacities.organs,
+      vascular: layerOpacities.vascular,
+      nervous: layerOpacities.nervous,
+      endocrine: layerOpacities.endocrine,
+      lymphatic: layerOpacities.lymphatic,
+      reproductive: layerOpacities.reproductive,
+    }))
+  }, [layerOpacities])
   const [detailModal, setDetailModal] = useState(false)
   const [renderMode, setRenderMode] = useState<RenderMode>('realistic')
   const [gender, setGender] = useState<'male' | 'female'>('male')
@@ -740,6 +847,9 @@ export default function HumanBodyPage() {
               opacityOverrides={opacityOverrides}
             />
           )}
+
+          {/* Interactive 3D Experience Engine Overlays */}
+          <LearningOverlay />
 
           <div className="anatomy-bottom-controls glassmorphic">
             <div className="control-slider-group">
@@ -2125,5 +2235,306 @@ export default function HumanBodyPage() {
         }
       `}</style>
     </div>
+  )
+}
+
+// ─── Experience Engine Metadata Declarations ────────────────
+
+const EXPERIENCE_METADATA: Record<string, ObjectMetadata> = {
+  brain: {
+    id: "brain",
+    name: "Brain",
+    scientificName: "Cerebrum",
+    emoji: "🧠",
+    color: "#E879F9",
+    description: "The control center of the central nervous system, coordinating sensory input, motor control, memory, and cognitive thought.",
+    location: "Cranial cavity within the skull",
+    function: "Cognition, motor command, sensory integration, homeostasis regulation",
+    diseases: ["Alzheimer's disease", "Stroke", "Glioma", "Meningitis"],
+    facts: ["Contains 86 billion neurons.", "Consumes about 20% of your body's energy output."],
+    realWorldImportance: "Maintains conscious control, processes sensory data, and executes nervous system outputs.",
+    relatedLessons: [{ title: "The Nervous System", url: "/learning-paths/human-anatomy/lessons/cardiovascular-system" }],
+    difficulty: "advanced",
+    estimatedStudyTime: "10 mins"
+  },
+  heart: {
+    id: "heart",
+    name: "Heart",
+    scientificName: "Cor",
+    emoji: "❤️",
+    color: "#EF4444",
+    description: "A muscular organ that pumps blood throughout the circulatory system, delivering oxygen and nutrients to tissues.",
+    location: "Mediastinum of the thoracic cavity",
+    function: "Pumps blood through pulmonary and systemic circuits.",
+    diseases: ["Coronary artery disease", "Myocardial infarction", "Arrhythmia"],
+    facts: ["Beats about 100,000 times per day.", "Pumps about 2,000 gallons of blood daily."],
+    realWorldImportance: "Provides necessary tissue perfusion to support life across all metabolic systems.",
+    relatedLessons: [{ title: "The Cardiovascular System", url: "/learning-paths/human-anatomy/lessons/cardiovascular-system" }],
+    difficulty: "intermediate",
+    estimatedStudyTime: "8 mins"
+  },
+  lungs: {
+    id: "lungs",
+    name: "Lungs",
+    scientificName: "Pulmones",
+    emoji: "🫁",
+    color: "#F472B6",
+    description: "Primary organs of respiration that facilitate gas exchange, absorbing oxygen and releasing carbon dioxide.",
+    location: "Pleural cavities of the chest",
+    function: "Gas exchange, ventilation, blood pH balance.",
+    diseases: ["Pneumonia", "Asthma", "COPD", "Emphysema"],
+    facts: ["Total surface area of lungs is about the size of a tennis court.", "The left lung is slightly smaller to make room for the heart."],
+    realWorldImportance: "Allows cellular respiration to happen by oxygenating hemoglobin.",
+    relatedLessons: [{ title: "Respiratory Cycles", url: "/learning-paths/human-anatomy/lessons/cardiovascular-system" }],
+    difficulty: "intermediate",
+    estimatedStudyTime: "5 mins"
+  },
+  liver: {
+    id: "liver",
+    name: "Liver",
+    scientificName: "Hepar",
+    emoji: "🍍",
+    color: "#F59E0B",
+    description: "A vital organ involved in detoxification, protein synthesis, and production of biochemicals necessary for digestion.",
+    location: "Right upper quadrant of the abdomen",
+    function: "Metabolism, detoxification, bile production.",
+    diseases: ["Hepatitis", "Cirrhosis", "Fatty liver disease"],
+    facts: ["Can regenerate itself fully from just 25% of its original tissue.", "Performs over 500 different functions."],
+    realWorldImportance: "Acts as the chemical processing plant of the human body.",
+    relatedLessons: [{ title: "Digestive Track", url: "/learning-paths/human-anatomy/lessons/skeleton-basics" }],
+    difficulty: "intermediate",
+    estimatedStudyTime: "6 mins"
+  },
+  stomach: {
+    id: "stomach",
+    name: "Stomach",
+    scientificName: "Gaster",
+    emoji: "🥣",
+    color: "#10B981",
+    description: "A muscular, hollow organ in the gastrointestinal tract that facilitates chemical and mechanical digestion.",
+    location: "Left upper quadrant of the abdomen",
+    function: "Acidic breakdown of food, mixing chyme.",
+    diseases: ["Gastritis", "Peptic ulcers", "Acid reflux"],
+    facts: ["Produces a new mucus lining every two weeks to avoid digesting itself.", "Stomach acid can dissolve metal razor blades."],
+    realWorldImportance: "Starts protein breakdown for systemic nutrient absorption.",
+    relatedLessons: [{ title: "Digestive Track", url: "/learning-paths/human-anatomy/lessons/skeleton-basics" }],
+    difficulty: "beginner",
+    estimatedStudyTime: "4 mins"
+  },
+  intestines: {
+    id: "intestines",
+    name: "Intestines",
+    scientificName: "Intestina",
+    emoji: "🌀",
+    color: "#3B82F6",
+    description: "The long tube segment of the digestive tract responsible for absorbing water and nutrients.",
+    location: "Lower abdominal cavity",
+    function: "Nutrient absorption, water recovery, waste excretion.",
+    diseases: ["Celiac disease", "Crohn's disease", "Irritable bowel syndrome"],
+    facts: ["Small intestine is about 20 feet long.", "Contains trillions of microbes aiding digestion."],
+    realWorldImportance: "Primary site of nutrient exchange between food and the circulatory system.",
+    relatedLessons: [{ title: "Digestive Track", url: "/learning-paths/human-anatomy/lessons/skeleton-basics" }],
+    difficulty: "intermediate",
+    estimatedStudyTime: "6 mins"
+  },
+  kidneys: {
+    id: "kidneys",
+    name: "Kidneys",
+    scientificName: "Renes",
+    emoji: "🥜",
+    color: "#EC4899",
+    description: "Two bean-shaped organs that filter blood to produce urine, maintaining fluid and electrolyte balance.",
+    location: "Retroperitoneal space of the abdomen",
+    function: "Blood filtration, waste removal, blood pressure regulation.",
+    diseases: ["Chronic kidney disease", "Nephritis", "Kidney stones"],
+    facts: ["Filter about 150 quarts of blood every single day.", "You can live a completely normal life with just one kidney."],
+    realWorldImportance: "Prevents toxic urea build-up and controls blood volume.",
+    relatedLessons: [{ title: "Endocrine and Homeostasis", url: "/learning-paths/human-anatomy/lessons/skeleton-basics" }],
+    difficulty: "advanced",
+    estimatedStudyTime: "8 mins"
+  },
+  bladder: {
+    id: "bladder",
+    name: "Bladder",
+    scientificName: "Vesica Urinaria",
+    emoji: "🎈",
+    color: "#06B6D4",
+    description: "A hollow muscular organ that stores urine before urination.",
+    location: "Pelvic floor",
+    function: "Urine storage and controlled release.",
+    diseases: ["Cystitis", "Bladder stones", "Urinary tract infection"],
+    facts: ["Can stretch to hold up to 500ml of fluid.", "Sends signal to brain once it is half full."],
+    realWorldImportance: "Allows voluntary regulation of fluid waste excretion.",
+    relatedLessons: [{ title: "Endocrine and Homeostasis", url: "/learning-paths/human-anatomy/lessons/skeleton-basics" }],
+    difficulty: "beginner",
+    estimatedStudyTime: "3 mins"
+  },
+  thyroid: {
+    id: "thyroid",
+    name: "Thyroid Gland",
+    scientificName: "Glandula Thyroidea",
+    emoji: "🦋",
+    color: "#A855F7",
+    description: "A butterfly-shaped endocrine gland in the neck that regulates metabolism, growth, and temperature.",
+    location: "Anterior neck below the larynx",
+    function: "Hormone secretion (T3, T4, calcitonin).",
+    diseases: ["Hyperthyroidism", "Hypothyroidism", "Goiter"],
+    facts: ["Uses iodine from food to manufacture thyroid hormones.", "Regulates cellular respiration rates body-wide."],
+    realWorldImportance: "Sets the baseline metabolic speed for all tissues.",
+    relatedLessons: [{ title: "Endocrine and Homeostasis", url: "/learning-paths/human-anatomy/lessons/skeleton-basics" }],
+    difficulty: "intermediate",
+    estimatedStudyTime: "5 mins"
+  },
+  pituitary: {
+    id: "pituitary",
+    name: "Pituitary Gland",
+    scientificName: "Hypophysis",
+    emoji: "🔴",
+    color: "#EF4444",
+    description: "The 'master gland' of the endocrine system, secreting hormones that direct other glands.",
+    location: "Sella turcica at the base of the brain",
+    function: "Hormonal master coordination (growth, reproduction, stress).",
+    diseases: ["Pituitary adenoma", "Gigantism", "Acromegaly"],
+    facts: ["About the size of a single pea.", "Secretes growth hormone (GH) and thyroid-stimulating hormone (TSH)."],
+    realWorldImportance: "Links the central nervous system signals with the endocrine output.",
+    relatedLessons: [{ title: "Endocrine and Homeostasis", url: "/learning-paths/human-anatomy/lessons/skeleton-basics" }],
+    difficulty: "advanced",
+    estimatedStudyTime: "7 mins"
+  },
+  spleen: {
+    id: "spleen",
+    name: "Spleen",
+    scientificName: "Lien",
+    emoji: "🍠",
+    color: "#6366F1",
+    description: "An organ of the lymphatic system that filters blood, recycles old red blood cells, and stores platelets.",
+    location: "Left upper quadrant under the ribcage",
+    function: "Immune surveillance, blood recycling, antibody synthesis.",
+    diseases: ["Splenomegaly", "Splenic rupture"],
+    facts: ["Acts as a blood reservoir, releasing extra blood during extreme exercise or blood loss.", "Plays a key role in the infant immune system."],
+    realWorldImportance: "Filters out blood-borne pathogens and damaged cells.",
+    relatedLessons: [{ title: "Nervous and Lymphatic Pathways", url: "/learning-paths/human-anatomy/lessons/cardiovascular-system" }],
+    difficulty: "intermediate",
+    estimatedStudyTime: "5 mins"
+  },
+  reproductive: {
+    id: "reproductive",
+    name: "Reproductive Organs",
+    scientificName: "Organa Genitalia",
+    emoji: "🧬",
+    color: "#F472B6",
+    description: "Glands and structures responsible for gamete production, fertilization, and hormone secretion.",
+    location: "Pelvic cavity",
+    function: "Gamete synthesis, sex hormone production.",
+    diseases: ["Polycystic ovary syndrome", "Prostate hyperplasia", "Endometriosis"],
+    facts: ["Produces testosterone in males and estrogen/progesterone in females.", "Determines secondary sexual characteristics."],
+    realWorldImportance: "Enables gene inheritance and reproductive continuation of species.",
+    relatedLessons: [{ title: "Endocrine and Homeostasis", url: "/learning-paths/human-anatomy/lessons/skeleton-basics" }],
+    difficulty: "intermediate",
+    estimatedStudyTime: "6 mins"
+  }
+};
+
+const TOUR_STEPS: TourStep[] = [
+  {
+    id: "step1",
+    title: "Central Command: The Brain",
+    description: "Coordination center processing sensory data and commands.",
+    voiceText: "Scan initiated. Focus on the central command, the brain. It processes body-wide sensory feeds and directs action.",
+    cameraPosition: [0, 8.46, 3.9],
+    cameraTarget: [0, 8.16, 0.1],
+    highlightedObjectId: "brain"
+  },
+  {
+    id: "step2",
+    title: "The Pump: The Heart",
+    description: "Pumps oxygenated and deoxygenated blood.",
+    voiceText: "Navigating to the chest. The heart beats continuously, driving oxygen-rich blood systemic circulation.",
+    cameraPosition: [0.13, 5.36, 3.48],
+    cameraTarget: [0.13, 5.06, 0.48],
+    highlightedObjectId: "heart"
+  },
+  {
+    id: "step3",
+    title: "Gas Exchanges: The Lungs",
+    description: "Exchanges oxygen and carbon dioxide.",
+    voiceText: "Scanning respiratory chambers. Lungs diffuse oxygen into erythrocytes and expel carbon dioxide exhaust.",
+    cameraPosition: [0, 5.54, 4.14],
+    cameraTarget: [0, 5.24, 0.14],
+    highlightedObjectId: "lungs"
+  },
+  {
+    id: "step4",
+    title: "Fuel Processor: The Stomach",
+    description: "Breaks food down chemically using acids.",
+    voiceText: "Descending to stomach. Gastric juices breakdown ingested proteins.",
+    cameraPosition: [-0.42, 3.95, 3.66],
+    cameraTarget: [-0.42, 3.65, 0.46],
+    highlightedObjectId: "stomach"
+  }
+];
+
+const QUIZZES: QuizQuestion[] = [
+  {
+    id: "q1",
+    type: "identify",
+    question: "Which organ pumps blood throughout the circulatory system?",
+    options: ["Brain", "Heart", "Lungs", "Kidneys"],
+    correctAnswer: "Heart",
+    explanation: "The heart is the muscular pump driving pulmonary and systemic circulation.",
+    targetObjectId: "heart"
+  },
+  {
+    id: "q2",
+    type: "truefalse",
+    question: "The pituitary gland is also known as the master endocrine gland.",
+    correctAnswer: true,
+    explanation: "The pituitary gland secretes hormones coordinating thyroid, adrenal, and reproductive glands.",
+    targetObjectId: "pituitary"
+  },
+  {
+    id: "q3",
+    type: "identify",
+    question: "Which organ acts as a blood filter, recycling old red blood cells?",
+    options: ["Spleen", "Bladder", "Stomach", "Thyroid Gland"],
+    correctAnswer: "Spleen",
+    explanation: "The spleen filters out worn red blood cells, recycling iron and storing platelets.",
+    targetObjectId: "spleen"
+  }
+];
+
+const ANIMATIONS: ModelAnimation[] = [
+  { name: "heartbeat", label: "Cardiac Rhythm", icon: "❤️", isPlaying: true, speed: 1.0 },
+  { name: "breathing", label: "Pulmonary Expansion", icon: "🫁", isPlaying: false, speed: 1.0 }
+];
+
+const TEACHER_INFO: TeacherConsoleInfo = {
+  guideNotes: [
+    "Introduce anatomical terminology using the 3D viewer.",
+    "Click and toggle specific body layers (Bones/Muscles) to highlight spatial placement.",
+    "Launch the quiz module as a class knowledge check."
+  ],
+  suggestedActivities: [
+    "Challenge students to locate the endocrine pituitary gland.",
+    "Perform a virtual dissection by setting muscle transparency to 50%."
+  ],
+  discussionPrompts: [
+    "What homeostatic responses occur when blood pressure drops?",
+    "Why does the liver receive blood from both the portal vein and hepatic artery?"
+  ],
+  printableSummary: "Teacher guide summary detailing muscular, skeletal, and visceral layout coordinates."
+};
+
+export default function HumanBodyPage() {
+  return (
+    <ExperienceProvider
+      metadata={EXPERIENCE_METADATA}
+      tourSteps={TOUR_STEPS}
+      quizzes={QUIZZES}
+      animations={ANIMATIONS}
+      teacherInfo={TEACHER_INFO}
+    >
+      <HumanBodyPageContent />
+    </ExperienceProvider>
   )
 }

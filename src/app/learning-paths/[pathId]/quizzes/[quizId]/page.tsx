@@ -1,19 +1,17 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { BackLink } from "@/components/ds";
 import { getJourneyById, getQuizById } from "@/data/learningPaths";
 import { getUserProgress, saveUserProgress, getOrCreateUserId, UserProgressData } from "@/utils/supabase";
 
-interface QuizPageProps {
-  params: Promise<{ pathId: string; quizId: string }>;
-}
-
-export default function QuizPage({ params }: QuizPageProps) {
-  const { pathId, quizId } = use(params);
+export default function QuizPage() {
   const router = useRouter();
+  const params = useParams();
+  const pathId = params?.pathId as string;
+  const quizId = params?.quizId as string;
 
   const journey = getJourneyById(pathId);
   const quiz = journey ? getQuizById(journey, quizId) : undefined;

@@ -16,6 +16,7 @@ import {
   ReproductiveSystem,
   RenderMode
 } from './BodyModel'
+import { ExperienceCameraManager, Hotspot } from "@/components/3d"
 
 // Helper to add vectors for positioning
 const addVectors = (v1: [number, number, number], v2: [number, number, number]): [number, number, number] => {
@@ -288,6 +289,21 @@ export default function AnatomyViewer({
           clipPlane={clipPlane}
           opacityOverrides={opacityOverrides}
         />
+        <ExperienceCameraManager />
+        <Hotspot position={[0, 8.16, 0.1]} targetObjectId="brain" />
+        <Hotspot position={[0, 8.05, 0.52]} targetObjectId="eyes" />
+        <Hotspot position={[0.85, 8.08, 0]} targetObjectId="ears" />
+        <Hotspot position={[0.13, 5.06, 0.48]} targetObjectId="heart" />
+        <Hotspot position={[0, 5.24, 0.14]} targetObjectId="lungs" />
+        <Hotspot position={[0.48, 4.02, 0.38]} targetObjectId="liver" />
+        <Hotspot position={[-0.42, 3.65, 0.46]} targetObjectId="stomach" />
+        <Hotspot position={[0, 2.22, 0.38]} targetObjectId="intestines" />
+        <Hotspot position={[0, 3.32, -0.22]} targetObjectId="kidneys" />
+        <Hotspot position={[0, 1.25, 0.48]} targetObjectId="bladder" />
+        <Hotspot position={[0, 6.72, 0.38]} targetObjectId="thyroid" />
+        <Hotspot position={[0, 7.82, 0.12]} targetObjectId="pituitary" />
+        <Hotspot position={[-0.56, 3.82, -0.06]} targetObjectId="spleen" />
+        <Hotspot position={[0, 0.85, 0.44]} targetObjectId="reproductive" />
       </Suspense>
     </Canvas>
   )
