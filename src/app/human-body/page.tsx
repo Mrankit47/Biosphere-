@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { motion, AnimatePresence } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { BackLink } from '@/components/ds'
+import { useMentor } from '@/components/ui/navigation'
 import { RenderMode } from './_components/BodyModel'
 
 // Experience Engine Imports
@@ -347,6 +348,46 @@ function HumanBodyPageContent() {
   const [activeSystem, setActiveSystem] = useState<string | null>(null)
 
   // Experience Syncing Effects
+  const { registerActionListener, setPageContext, clearPageContext } = useMentor()
+  const { dispatchCameraMove } = useExperience()
+
+  useEffect(() => {
+    setPageContext({ page: "human-body", program: "Human Anatomy", selectedOrgan: selectedOrgan });
+    return () => {
+      clearPageContext();
+    };
+  }, [setPageContext, clearPageContext]);
+
+  useEffect(() => {
+    setPageContext({ selectedOrgan });
+  }, [selectedOrgan, setPageContext]);
+
+  useEffect(() => {
+    const unregister = registerActionListener((action) => {
+      if (action.type === "zoom" || action.type === "highlight") {
+        const organId = action.id.toLowerCase();
+        if (ORGAN_INFO[organId]) {
+          setSelectedObjectId(organId);
+          setSelectedOrgan(organId);
+
+          const coordMap: Record<string, { pos: [number, number, number], tar: [number, number, number] }> = {
+            brain: { pos: [0, 8.16, 2], tar: [0, 8.16, 0] },
+            heart: { pos: [0.13, 5.06, 2.5], tar: [0.13, 5.06, 0.4] },
+            lungs: { pos: [0, 5.24, 2.5], tar: [0, 5.24, 0.1] },
+            liver: { pos: [0.48, 4.02, 2.2], tar: [0.48, 4.02, 0.3] },
+            stomach: { pos: [-0.42, 3.65, 2.2], tar: [-0.42, 3.65, 0.4] },
+            intestines: { pos: [0, 2.22, 2.5], tar: [0, 2.22, 0.3] },
+            kidneys: { pos: [0, 3.2, 2.2], tar: [0, 3.2, 0.2] }
+          };
+          if (coordMap[organId]) {
+            dispatchCameraMove(coordMap[organId].pos, coordMap[organId].tar, 1.2);
+          }
+        }
+      }
+    });
+    return unregister;
+  }, [registerActionListener, setSelectedObjectId, dispatchCameraMove]);
+
   useEffect(() => {
     if (selectedObjectId !== selectedOrgan) {
       setSelectedOrgan(selectedObjectId)

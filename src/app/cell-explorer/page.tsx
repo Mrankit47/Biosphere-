@@ -16,6 +16,7 @@ import {
   GlowButton,
   SlidePanel,
 } from "@/components/ds";
+import { useMentor } from "@/components/ui/navigation";
 
 /* ══════════════════════════════════════════════════════════════
    ORGANELLE DATA
@@ -520,6 +521,42 @@ export default function CellExplorerPage() {
   const [panelVisible, setPanelVisible] = useState(false);
   const [showLabels, setShowLabels] = useState(false);
   const [activeTab, setActiveTab] = useState<"function" | "structure">("function");
+
+  const { registerActionListener, setPageContext, clearPageContext } = useMentor();
+
+  useEffect(() => {
+    setPageContext({ page: "cell-explorer", program: "Cell Biology", selectedCell: activeOrganelle });
+    return () => {
+      clearPageContext();
+    };
+  }, [setPageContext, clearPageContext]);
+
+  useEffect(() => {
+    setPageContext({ selectedCell: activeOrganelle });
+  }, [activeOrganelle, setPageContext]);
+
+  useEffect(() => {
+    const unregister = registerActionListener((action) => {
+      if (action.type === "zoom" || action.type === "highlight") {
+        const cellId = action.id.toLowerCase();
+        if (ORGANELLE_DATA[cellId]) {
+          const posMap: Record<string, THREE.Vector3> = {
+            nucleus: new THREE.Vector3(0, 0, 0),
+            membrane: new THREE.Vector3(0, 2.5, 2.5),
+            mitochondria: new THREE.Vector3(1.5, 0.6, 0.8),
+            ribosome: new THREE.Vector3(0.5, 1.0, 1.0),
+            golgi: new THREE.Vector3(1.8, -0.2, 0.3),
+            er: new THREE.Vector3(-1.0, 0, 1.2),
+          };
+          setActiveOrganelle(cellId);
+          setZoomTarget(posMap[cellId] || new THREE.Vector3(0, 0, 0));
+          setPanelVisible(true);
+          setActiveTab("function");
+        }
+      }
+    });
+    return unregister;
+  }, [registerActionListener]);
 
   const handleSelect = useCallback(
     (id: string, position: THREE.Vector3) => {

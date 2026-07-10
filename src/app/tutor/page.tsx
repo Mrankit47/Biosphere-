@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { BackLink } from "@/components/ds";
+import { MentorChat } from "@/components/ui/navigation";
 
 interface Message {
   role: "user" | "assistant";
@@ -381,14 +382,14 @@ export default function BiologyTutorPage() {
         </aside>
 
         {/* Chat Area */}
-        <main style={S.chatArea}>
+        <main style={{ ...S.chatArea, display: "flex", flexDirection: "column", padding: "16px" }}>
           {/* Header */}
-          <header style={S.chatHeader}>
+          <header style={{ ...S.chatHeader, marginBottom: "16px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
               <BackLink href="/" label="Home" relative={true} />
               <div>
-                <h1 style={S.headerTitle}>BIOLOGY TUTOR 🔬</h1>
-                <p style={S.headerSub}>Ask questions, generate flowcharts, and test your knowledge interactively.</p>
+                <h1 style={S.headerTitle}>BIOLOGY MENTOR 🔬</h1>
+                <p style={S.headerSub}>Context-aware explanations, visual triggers, and interactive learning tools.</p>
               </div>
             </div>
             <Link href="/learning-paths" style={S.dashboardLink}>
@@ -396,117 +397,9 @@ export default function BiologyTutorPage() {
             </Link>
           </header>
 
-          {/* Conversation Screen */}
-          <div style={S.messageScrollWrap} data-lenis-prevent>
-            {(!activeChat || activeChat.messages.length === 0) && !streamingMessage ? (
-              <div style={S.welcomeView}>
-                <div style={S.logoPulse}>🧬</div>
-                <h2 style={{ color: "#fff", fontSize: "1.3rem", margin: "12px 0 6px" }}>Hello! I'm BioTutor.</h2>
-                <p style={{ color: "rgba(200, 245, 200, 0.5)", fontSize: "0.85rem", maxWidth: 440, margin: "0 auto 24px", lineHeight: 1.5 }}>
-                  I can explain biological processes, render flowcharts, and test you with interactive quizzes. Ask me about cell biology, genetics, ecosystems, or microbiology!
-                </p>
-                
-                <h3 style={S.suggestedHeading}>SUGGESTED LESSONS</h3>
-                <div style={S.suggestedGrid}>
-                  {SUGGESTED_QUESTIONS.map((q, i) => (
-                    <button
-                      key={i}
-                      onClick={() => handleSendMessage(q.text)}
-                      style={S.suggestedCard}
-                    >
-                      <span style={{ fontSize: "0.75rem", color: "#39FF14", display: "block", marginBottom: 4, letterSpacing: "0.08em" }}>{q.label}</span>
-                      <p style={S.suggestedText}>{q.text}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div style={S.messagesList}>
-                {activeChat?.messages.map((m, idx) => (
-                  <MessageBubble 
-                    key={idx} 
-                    message={m} 
-                    onSpeak={handleSpeak}
-                    isSpeaking={speakingText === m.content}
-                  />
-                ))}
-                {streamingMessage && (
-                  <MessageBubble 
-                    message={{ role: "assistant", content: streamingMessage }} 
-                    isStreaming 
-                    onSpeak={() => {}}
-                    isSpeaking={false}
-                  />
-                )}
-                {loading && !streamingMessage && (
-                  <div style={{ ...S.bubbleRow, background: "rgba(57, 255, 20, 0.02)", borderBottom: "1px solid rgba(255, 255, 255, 0.02)" }}>
-                    <div style={S.bubbleInner}>
-                      <div style={{ ...S.avatarBox, background: "rgba(0, 212, 170, 0.15)", borderColor: "#00D4AA" }}>
-                        🧬
-                      </div>
-                      <div style={S.bubbleContentWrap}>
-                        <div style={S.bubbleRolePill}>
-                          <span style={{ color: "#00D4AA", fontWeight: 700 }}>BIOTUTOR</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 4, height: 24 }}>
-                          <span className="thinking-dot">●</span>
-                          <span className="thinking-dot" style={{ animationDelay: "0.2s" }}>●</span>
-                          <span className="thinking-dot" style={{ animationDelay: "0.4s" }}>●</span>
-                          <span style={{ color: "rgba(200,245,200,0.5)", fontSize: "0.82rem", marginLeft: 8 }}>Thinking...</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-            )}
+          <div style={{ flex: 1, minHeight: 0 }}>
+            <MentorChat />
           </div>
-
-          {/* Input Bar */}
-          <footer style={S.inputArea}>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendMessage(input);
-              }}
-              style={S.inputForm}
-            >
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={isListening ? `🎙️ Listening (${systemLang})... Speak now!` : "Ask me a biology question (e.g. 'Explain carbon cycle')..."}
-                disabled={loading}
-                style={S.textInput}
-              />
-              <button
-                type="button"
-                onClick={isListening ? stopListening : startListening}
-                style={{
-                  ...S.micBtn,
-                  background: isListening ? "#E24B4A" : "rgba(255,255,255,0.05)",
-                  color: isListening ? "#fff" : "rgba(200,245,200,0.6)",
-                  boxShadow: isListening ? "0 0 15px #E24B4A80" : "none",
-                }}
-                title={isListening ? "Stop listening" : "Start Voice Input (Supports All Languages)"}
-              >
-                {isListening ? "🛑" : "🎙️"}
-              </button>
-              <button
-                type="submit"
-                disabled={!input.trim() || loading}
-                style={{
-                  ...S.sendBtn,
-                  background: input.trim() && !loading ? "#39FF14" : "rgba(255,255,255,0.05)",
-                  color: input.trim() && !loading ? "#000" : "rgba(255,255,255,0.2)",
-                  cursor: input.trim() && !loading ? "pointer" : "not-allowed"
-                }}
-              >
-                {loading ? "..." : "Send ➔"}
-              </button>
-            </form>
-          </footer>
         </main>
       </div>
     </div>

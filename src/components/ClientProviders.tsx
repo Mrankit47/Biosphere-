@@ -2,7 +2,7 @@
 
 import LenisProvider from "@/components/ui/LenisProvider";
 import CustomCursor from "@/components/ui/CustomCursor";
-import { NavigationSystem, NavigationProvider, MobileBottomNav, FloatingLearningToolbar } from "@/components/ui/navigation";
+import { NavigationSystem, NavigationProvider, MobileBottomNav, FloatingLearningToolbar, MentorProvider } from "@/components/ui/navigation";
 import { AuthProvider, AuthGuard, AuthModal } from "@/components/ui/auth";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PageTransition from "@/components/PageTransition";
@@ -16,18 +16,20 @@ export default function ClientProviders({
     <LenisProvider>
       <AuthProvider>
         <NavigationProvider>
-          <CustomCursor />
-          <NavigationSystem />
-          <ErrorBoundary>
-            <main className="biosphere-main-content">
-              <AuthGuard>
-                <PageTransition>{children}</PageTransition>
-              </AuthGuard>
-            </main>
-          </ErrorBoundary>
-          <MobileBottomNav />
-          <FloatingLearningToolbar />
-          <AuthModal />
+          <MentorProvider>
+            <CustomCursor />
+            <NavigationSystem />
+            <ErrorBoundary>
+              <main className="biosphere-main-content">
+                <AuthGuard>
+                  <PageTransition>{children}</PageTransition>
+                </AuthGuard>
+              </main>
+            </ErrorBoundary>
+            <MobileBottomNav />
+            <FloatingLearningToolbar />
+            <AuthModal />
+          </MentorProvider>
         </NavigationProvider>
       </AuthProvider>
 

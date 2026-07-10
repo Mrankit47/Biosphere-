@@ -2,60 +2,264 @@ import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const SYSTEM_INSTRUCTION = `You are a specialized AI Biology Tutor for the BioSphere application.
-Your name is BioTutor. You are ONLY allowed to answer questions related to biology (e.g., cells, genetics, human anatomy, microbiology, viruses, ecology, botany, zoology, biochemistry).
-If the user asks about any other topic (such as programming, math, history, general advice, politics, etc.), you must politely decline to answer, explaining that your programming is strictly limited to biology, and suggest they ask a biology-related question instead.
+const CONTEXT_GUIDES: Record<string, string> = {
+  heart: `
+Current topic: Human Heart
+Suggested topics: Blood circulation, Arteries, Veins, Cardiovascular core, Cardiac cycle
+Relevant clinical diseases: Heart Attack (Myocardial infarction), Arrhythmia, Hypertension, Coronary artery disease
+Relevant simulations: Blood Flow, Cardiac Pace
+`,
+  brain: `
+Current topic: Human Brain
+Suggested topics: Neurons, Central Nervous System, Synapses, Neurotransmitters, Cerebrum
+Relevant clinical diseases: Stroke, Alzheimer's disease, Meningitis, Glioma
+Relevant simulations: Nerve Pulse Transmission
+`,
+  lungs: `
+Current topic: Human Lungs
+Suggested topics: Respiration, Alveoli, Gas Exchange, Oxygen transport, Ventilation
+Relevant clinical diseases: Asthma, Pneumonia, COPD, Emphysema
+Relevant simulations: Pulmonary Expansion
+`,
+  liver: `
+Current topic: Human Liver
+Suggested topics: Metabolism, Detoxification, Bile production, Hepatic portal circuit
+Relevant clinical diseases: Hepatitis, Cirrhosis, Fatty liver disease
+Relevant simulations: Liver Detox Lab
+`,
+  stomach: `
+Current topic: Human Stomach
+Suggested topics: Digestion, Gastric acid, Protease breakdown, Gastrointestinal tract
+Relevant clinical diseases: Gastritis, Peptic ulcers, Acid reflux (GERD)
+Relevant simulations: Digestive Breakdown
+`,
+  intestines: `
+Current topic: Human Intestines
+Suggested topics: Nutrient absorption, Microbiome, Peristalsis, Water recovery
+Relevant clinical diseases: Celiac disease, Crohn's disease, Irritable Bowel Syndrome (IBS)
+Relevant simulations: Nutrient Absorption Lab
+`,
+  kidneys: `
+Current topic: Human Kidneys
+Suggested topics: Nephrons, Blood filtration, Osmoregulation, Urine formation
+Relevant clinical diseases: Chronic kidney disease, Kidney stones, Nephritis
+Relevant simulations: Dialysis Simulator
+`,
+  bladder: `
+Current topic: Human Bladder
+Suggested topics: Urinary system, Fluid excretion, Detrusor muscle, Micturition
+Relevant clinical diseases: Cystitis, Bladder stones, Urinary Tract Infection (UTI)
+Relevant simulations: Homeostasis Lab
+`,
+  thyroid: `
+Current topic: Thyroid Gland
+Suggested topics: Endocrine system, Metabolism regulation, T3/T4 hormones, Goiter
+Relevant clinical diseases: Hyperthyroidism, Hypothyroidism, Graves' disease
+Relevant simulations: Hormonal Feedback Loops
+`,
+  pituitary: `
+Current topic: Pituitary Gland
+Suggested topics: Master endocrine gland, Growth hormone, Hypothalamus axis
+Relevant clinical diseases: Gigantism, Pituitary adenoma, Acromegaly
+Relevant simulations: Endocrine Cascades
+`,
+  spleen: `
+Current topic: Human Spleen
+Suggested topics: Lymphatic system, Red blood cell recycling, Immune filtration, Platelet storage
+Relevant clinical diseases: Splenomegaly, Splenic rupture
+Relevant simulations: Immune Surveillance Sim
+`,
+  reproductive: `
+Current topic: Reproductive Organs
+Suggested topics: Gametes, Sex hormones (testosterone, estrogen), Meiosis
+Relevant clinical diseases: Polycystic Ovary Syndrome (PCOS), Prostate hyperplasia
+Relevant simulations: Meiosis Simulation
+`,
+  membrane: `
+Current topic: Cell Membrane
+Suggested topics: Phospholipid bilayer, Active transport, Passive diffusion, Osmosis, Ion channels
+Relevant clinical diseases: Cystic fibrosis (CFTR channel defect), Familial hypercholesterolemia
+Relevant simulations: Membrane Permeability Sim
+`,
+  nucleus: `
+Current topic: Cell Nucleus
+Suggested topics: Transcription, Chromatin structure, Nuclear pore complex, Nucleolus, DNA replication
+Relevant clinical diseases: Progeria (lamin A defect), Genetic mutations
+Relevant simulations: DNA Transcription Lab
+`,
+  mitochondria: `
+Current topic: Mitochondria
+Suggested topics: ATP synthesis, Citric Acid Cycle, Oxidative phosphorylation, Electron Transport Chain
+Relevant clinical diseases: Mitochondrial myopathies, Leber hereditary optic neuropathy (LHON)
+Relevant simulations: ATP Synthesis Sim
+`,
+  ribosome: `
+Current topic: Ribosome
+Suggested topics: Translation, Protein synthesis, Peptide bond formation, tRNA, mRNA decoding
+Relevant clinical diseases: Ribosomopathies (e.g., Diamond-Blackfan anemia)
+Relevant simulations: Translation Speed Lab
+`
+};
 
-Formatting Rules:
-1. Render headings, lists, bold text using standard Markdown.
-2. If explaining a process, cycle, or structure that can be visualised as a diagram, write a Mermaid.js flowchart inside a code block marked with "mermaid".
-   Example:
-   \`\`\`mermaid
-   graph TD
-   A[Cell] --> B[Nucleus]
-   \`\`\`
-3. If the user asks for a quiz, OR if you believe a quiz would help consolidate their learning, generate a multiple-choice quiz.
-   Format the quiz ONLY as a single valid JSON block inside a code block marked with "json". The JSON must have this exact schema:
-   {
-     "quiz": [
-       {
-         "question": "The question text...",
-         "options": ["Option A", "Option B", "Option C", "Option D"],
-         "answerIndex": 2,
-         "explanation": "Explanation for why the correct answer is correct."
-       }
-     ]
-   }
-   Do NOT add any other conversational text inside that code block besides the JSON object.
+function buildSystemPrompt(context: any, progress: any, difficulty: string, action?: string) {
+  let prompt = `You are a Context-Aware Biology Mentor for the BioSphere application. Your name is BioTutor.
+You are ONLY allowed to answer questions related to biology (cells, genetics, anatomy, microbiology, viruses, ecology, botany, zoology, biochemistry).
+If the user asks about other topics (coding, math, history, general advice, etc.), politely decline, explaining your programming is limited to biology, and suggest they ask a biology question.
+
+--- TEACHER PERSONALITY ---
+Never sound like ChatGPT. You are a friendly, curious biology professor.
+- Encourage curiosity: use active phrases like "Fascinating inquiry!", "Let's investigate this together!", "Did you know that...".
+- Ask guidance follow-up questions at the end to prompt student thinking.
+- Never overwhelm with massive information walls; keep formatting tidy and readable.
+
+--- ADAPTIVE TEACHING LEVEL ---
+You must tailor your explanation style to the requested difficulty level: "${difficulty || 'intermediate'}".
+- beginner: Explain with simple, everyday analogies (e.g. comparing mitochondria to power generators or lysosomes to trash compactors). Avoid complex formulas or dense medical terms.
+- intermediate: High school or undergraduate level. Use standard biological concepts (e.g., ATP synthesis, active transport).
+- advanced: Graduate or researcher level. Focus on molecular pathways, protein names, membrane biochemistry.
+- medical: Medical student level. Focus on clinical relevance, pathology, diagnostic markers, and anatomical relationships.
+- teacher: Focus on pedagogical strategies, key study topics, classroom experiments, and helping students clarify misconceptions.
+
+--- VISUAL INTEGRATION COMMANDS ---
+If the topic discussed directly relates to a specific 3D model, organ, or cell structure present in our system, you MUST output a control tag at the very end of your response (after all conversational text):
+\`[ACTION: zoom <id>]\` or \`[ACTION: highlight <id>]\` or \`[ACTION: play <animation>]\` or \`[ACTION: open <lesson>]\`.
+Valid IDs: "brain", "heart", "lungs", "liver", "stomach", "intestines", "kidneys", "bladder", "thyroid", "pituitary", "spleen", "reproductive", "membrane", "nucleus", "mitochondria", "ribosome".
+
+--- RESPONSE STRUCTURE ---
 `;
+
+  if (action === "quiz") {
+    prompt += `
+The user wants you to generate a multiple-choice quiz based on the active topic. Generate 3 questions.
+Format the quiz ONLY as a single valid JSON block inside a code block marked with "json". The JSON must have this exact schema:
+{
+  "quiz": [
+    {
+      "question": "The question text...",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "answerIndex": 2,
+      "explanation": "Explanation for why the correct answer is correct."
+    }
+  ]
+}
+Do NOT add any other conversational text inside or outside that code block. Just return the JSON code block.
+`;
+  } else if (action === "flashcards") {
+    prompt += `
+The user wants you to generate revision flashcards based on the active topic. Generate 4 cards.
+Format the flashcards ONLY as a single valid JSON block inside a code block marked with "json". The JSON must have this exact schema:
+{
+  "flashcards": [
+    {
+      "front": "Front question or concept...",
+      "back": "Back answer or detail...",
+      "hint": "Brief hint..."
+    }
+  ]
+}
+Do NOT add any other conversational text inside or outside that code block. Just return the JSON code block.
+`;
+  } else if (action === "summary") {
+    prompt += `
+Generate a highly structured revision summary of the active topic. Use headings and bullet points. Include key takeaways and a short review checklist.
+`;
+  } else if (action === "notes") {
+    prompt += `
+Generate comprehensive study revision notes. Focus on explaining core mechanisms, chemical structures/pathways, and highlights to focus on for exams.
+`;
+  } else {
+    prompt += `
+Every normal message response must strictly follow this template (do not deviate):
+
+### 💡 Simple Explanation
+[Analogy and simple breakdown]
+
+### 🔬 Scientific Explanation (Level: ${difficulty || 'intermediate'})
+[Detailed physiological/biological explanation]
+
+### 🔑 Key Terms
+- **[Term Name]**: [Definition]
+- ...
+
+### 💡 Interesting Facts
+- [Fact 1]
+- ...
+
+### ⚠️ Common Mistakes
+- [Misconception 1] (Why it happens and how to think about it correctly)
+
+### 🧭 Recommended Path
+- **Related Lessons**: [Lesson Title](URL)
+- **3D Model**: [Anatomy or Cell Explorer name]
+- **Simulation**: [Simulation name]
+- **Quiz**: [Quiz name]
+- **Further Reading**: [Topics/links]
+
+### ❓ Ask Another Question
+[Friendly professor prompt and a follow-up question]
+`;
+  }
+
+  // Append user progress context if available
+  if (progress) {
+    prompt += `
+--- USER LEARNING PROGRESS CONTEXT ---
+Completed lessons count: ${progress.completedLessonsCount || 0}
+Weak topics: ${progress.weakTopics?.join(", ") || "None registered yet"}
+Total study XP: ${progress.totalXp || 0}
+Bookmarks count: ${progress.bookmarkedLessonsCount || 0}
+Recent study focus: ${progress.favoriteTopics?.join(", ") || "None"}
+`;
+  }
+
+  // Append current page and item context
+  if (context) {
+    const organId = context.selectedOrgan || context.selectedCell || "";
+    const contextGuide = CONTEXT_GUIDES[organId.toLowerCase()] || "";
+    
+    prompt += `
+--- ACTIVE VIEWING CONTEXT ---
+Current page: ${context.page || "tutor"}
+Active Lesson: ${context.lesson || "None"}
+Active Learning Program: ${context.program || "None"}
+Selected Organ: ${context.selectedOrgan || "None"}
+Selected Cell: ${context.selectedCell || "None"}
+Selected Disease: ${context.selectedDisease || "None"}
+Selected Species: ${context.selectedSpecies || "None"}
+${contextGuide}
+`;
+  }
+
+  return prompt;
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { messages } = await req.json();
+    const { messages, context, progress, difficulty, action } = await req.json();
     const apiKey = process.env.GEMINI_API_KEY || "";
     const groqKey = process.env.GROQ_API_KEY || "";
+
+    const systemPrompt = buildSystemPrompt(context, progress, difficulty, action);
 
     // Tier 1: Try Gemini API first (First preference)
     if (apiKey) {
       try {
         console.log("Attempting Gemini API call...");
-        return await callGeminiAPI(messages, apiKey);
+        return await callGeminiAPI(messages, systemPrompt, apiKey);
       } catch (geminiError: any) {
-        console.warn("Gemini call failed (rate limit or token issue). Fallback path active. Error:", geminiError.message || geminiError);
+        console.warn("Gemini call failed. Fallback path active. Error:", geminiError.message || geminiError);
         
-        // If Gemini fails, immediately try Groq fallback if key exists
         if (groqKey) {
           try {
             console.log("Gemini failed. Falling back to Groq API...");
-            return await callGroqAPI(messages, groqKey);
+            return await callGroqAPI(messages, systemPrompt, groqKey);
           } catch (groqError: any) {
             console.warn("Groq fallback also failed. Falling back to offline mock database. Error:", groqError.message || groqError);
-            return makeMockResponse(messages);
+            return makeMockResponse(messages, difficulty, action);
           }
         } else {
-          // If no Groq fallback, fall back to offline mock database so the user experience is never broken
           console.warn("No Groq key available. Falling back to offline mock database.");
-          return makeMockResponse(messages);
+          return makeMockResponse(messages, difficulty, action);
         }
       }
     }
@@ -64,32 +268,31 @@ export async function POST(req: NextRequest) {
     if (groqKey) {
       try {
         console.log("Attempting Groq API call directly...");
-        return await callGroqAPI(messages, groqKey);
+        return await callGroqAPI(messages, systemPrompt, groqKey);
       } catch (groqError: any) {
         console.warn("Groq call failed. Falling back to offline mock database. Error:", groqError.message || groqError);
-        return makeMockResponse(messages);
+        return makeMockResponse(messages, difficulty, action);
       }
     }
 
     // Tier 3: If no API keys are present, call the local mock database directly
     console.log("No API keys found. Accessing offline mock biology database...");
-    return makeMockResponse(messages);
+    return makeMockResponse(messages, difficulty, action);
 
   } catch (error: any) {
     console.error("General routing error:", error);
-    // Absolute safety fallback: always return a mock stream rather than crashing with 500
     try {
-      const { messages } = await req.json();
-      return makeMockResponse(messages);
+      const { messages, difficulty, action } = await req.json();
+      return makeMockResponse(messages, difficulty, action);
     } catch {
-      return makeMockResponse([]);
+      return makeMockResponse([], "intermediate");
     }
   }
 }
 
 // ── Helper API Functions ──────────────────────────────────────────
 
-async function callGeminiAPI(messages: any[], apiKey: string) {
+async function callGeminiAPI(messages: any[], systemPrompt: string, apiKey: string) {
   const geminiMessages = messages.map((m: any) => ({
     role: m.role === "assistant" ? "model" : "user",
     parts: [{ text: m.content }]
@@ -103,7 +306,7 @@ async function callGeminiAPI(messages: any[], apiKey: string) {
       body: JSON.stringify({
         contents: geminiMessages,
         systemInstruction: {
-          parts: [{ text: SYSTEM_INSTRUCTION }]
+          parts: [{ text: systemPrompt }]
         }
       })
     }
@@ -143,7 +346,7 @@ async function callGeminiAPI(messages: any[], apiKey: string) {
                   controller.enqueue(encoder.encode(text));
                 }
               } catch (e) {
-                // Ignore parsing errors of partial JSON chunks
+                // Ignore parsing errors
               }
             }
           }
@@ -161,7 +364,7 @@ async function callGeminiAPI(messages: any[], apiKey: string) {
   });
 }
 
-async function callGroqAPI(messages: any[], groqKey: string) {
+async function callGroqAPI(messages: any[], systemPrompt: string, groqKey: string) {
   const response = await fetch(
     "https://api.groq.com/openai/v1/chat/completions",
     {
@@ -173,7 +376,7 @@ async function callGroqAPI(messages: any[], groqKey: string) {
       body: JSON.stringify({
         model: "llama-3.3-70b-specdec",
         messages: [
-          { role: "system", content: SYSTEM_INSTRUCTION },
+          { role: "system", content: systemPrompt },
           ...messages.map((m: any) => ({ role: m.role, content: m.content }))
         ],
         stream: true
@@ -216,7 +419,7 @@ async function callGroqAPI(messages: any[], groqKey: string) {
                   controller.enqueue(encoder.encode(text));
                 }
               } catch (e) {
-                // Ignore parsing errors of partial JSON chunks
+                // Ignore parsing errors
               }
             }
           }
@@ -234,7 +437,7 @@ async function callGroqAPI(messages: any[], groqKey: string) {
   });
 }
 
-function makeMockResponse(messages: any[]) {
+function makeMockResponse(messages: any[], difficulty: string, action?: string) {
   const userMessage = messages[messages.length - 1]?.content?.toLowerCase() || "";
   let responseText = "";
 
@@ -242,18 +445,14 @@ function makeMockResponse(messages: any[]) {
   const isNonBiology = nonBiologyKeywords.some(keyword => userMessage.includes(keyword));
 
   if (isNonBiology) {
-    responseText = `I am strictly a Biology Tutor. I apologize, but I cannot assist with non-biological subjects like programming, mathematics, or general history.
+    responseText = `I am strictly a Biology Mentor. I apologize, but I cannot assist with non-biological subjects like programming, mathematics, or general history.
 
 Please ask me a biology question, such as:
 - *How does cellular respiration produce energy?*
 - *Can you explain DNA replication?*
 - *What is the difference between prokaryotic and eukaryotic cells?*`;
-  } else if (userMessage.includes("quiz") || userMessage.includes("test")) {
-    responseText = `Certainly! Let's test your knowledge on cell biology with this short quiz. 
-
-Answer the questions below to see how well you understand cell structures:
-
-\`\`\`json
+  } else if (action === "quiz" || userMessage.includes("quiz") || userMessage.includes("test")) {
+    responseText = `\`\`\`json
 {
   "quiz": [
     {
@@ -271,138 +470,82 @@ Answer the questions below to see how well you understand cell structures:
   ]
 }
 \`\`\``;
-  } else if (userMessage.includes("respiration") || userMessage.includes("atp")) {
-    responseText = `### Cellular Respiration & ATP Production
+  } else if (action === "flashcards") {
+    responseText = `\`\`\`json
+{
+  "flashcards": [
+    {
+      "front": "Mitochondria",
+      "back": "The powerhouse of the cell, generating ATP through oxidative phosphorylation.",
+      "hint": "Cellular energy"
+    },
+    {
+      "front": "Nucleus",
+      "back": "The organelle containing genetic chromatin structures and directing transcription.",
+      "hint": "Control center"
+    }
+  ]
+}
+\`\`\``;
+  } else if (action === "summary" || action === "notes" || userMessage.includes("respiration") || userMessage.includes("atp")) {
+    responseText = `### 💡 Simple Explanation
+Think of Cellular Respiration like a power plant. The cell takes in glucose (fuel) and oxygen (air), processes it inside the mitochondria, and outputs ATP (batteries) to power all cellular tools.
 
-Cellular respiration is the process by which cells break down glucose and oxygen to produce energy in the form of **Adenosine Triphosphate (ATP)**, water, and carbon dioxide.
-
-It occurs in three primary stages:
-1. **Glycolysis** (takes place in the cytosol, breaks glucose into pyruvate).
-2. **The Krebs Cycle / Citric Acid Cycle** (occurs in the mitochondrial matrix, releases carbon dioxide and charges energy carriers).
-3. **The Electron Transport Chain (ETC)** (located on the mitochondrial cristae, produces the bulk of ATP via oxidative phosphorylation).
-
-Here is a visual map of the energy pathway:
+### 🔬 Scientific Explanation (Level: ${difficulty})
+Cellular respiration breaks down glucose in the presence of oxygen. It occurs in three major steps:
+1. **Glycolysis**: Cytosolic pathway converting glucose into pyruvate, yielding 2 ATP and 2 NADH.
+2. **Krebs Cycle**: Mitochondrial matrix cycle producing carbon dioxide and energy carriers.
+3. **Electron Transport Chain (ETC)**:cristae membrane flow generating 32-34 ATP via ATP Synthase motors.
 
 \`\`\`mermaid
 graph TD
   A[Glucose] -->|Glycolysis| B[Pyruvate]
   B -->|Krebs Cycle| C[CO2 + Charged Carriers]
   C -->|Electron Transport Chain| D[ATP + H2O]
+  style D fill:#39FF14,stroke:#00D4AA,stroke-width:2px
 \`\`\`
 
-Would you like to test your understanding of cellular respiration? Simply ask me for a **respiration quiz**!`;
-  } else if (userMessage.includes("dna") || userMessage.includes("helix") || userMessage.includes("genetics")) {
-    responseText = `### The DNA Double Helix
+### 🔑 Key Terms
+- **ATP**: Adenosine Triphosphate, the main energy currency.
+- **Glycolysis**: Soluble breakdown of sugar.
 
-**Deoxyribonucleic Acid (DNA)** is the double-stranded molecule that encodes the genetic instructions for all living organisms.
+### 💡 Interesting Facts
+- Your body turns over its own weight in ATP every single day!
 
-#### Molecular Structure
-- **Sugar-Phosphate Backbones**: The outer rails of the DNA ladder, held together by strong covalent bonds.
-- **Nitrogenous Rungs**: The ladder rungs, formed by base pairs held together by weak hydrogen bonds.
-  - **Adenine (A)** pairs only with **Thymine (T)** (2 hydrogen bonds).
-  - **Guanine (G)** pairs only with **Cytosine (C)** (3 hydrogen bonds).
+### ⚠️ Common Mistakes
+- Thinking plants only perform photosynthesis. Plants actually perform respiration too, using mitochondria to break down sugars at night!
 
-Here is a simplified flowchart of how DNA transcription translates into traits:
+### 🧭 Recommended Path
+- **Related Lessons**: [Cell Introduction](/learning-paths/cell-biology)
+- **3D Model**: [Mitochondria Model]
+- **Simulation**: [Membrane Transport]
+- **Quiz**: [Respiration Challenge]
 
-\`\`\`mermaid
-graph LR
-  DNA -->|Transcription| mRNA
-  mRNA -->|Translation| Protein
-  Protein -->|Folds| Trait[Physical Trait]
-\`\`\`
-
-Would you like to take a **DNA quiz** to test your knowledge?`;
-  } else if (userMessage.includes("virus") || userMessage.includes("capsid")) {
-    responseText = `### The Architecture of Viruses
-
-A **virus** is a small infectious agent that replicates only inside the living cells of an organism. They lack cellular structures and are not considered fully alive.
-
-#### Viral Structures
-- **Capsid**: The outer protein shell protecting the viral genome. It is composed of protein subunits called protomers.
-- **Envelope**: A lipid bilayer membrane surrounding the capsid (in enveloped viruses like influenza or coronavirus), derived from host cell membranes and studded with viral glycoproteins (spikes).
-- **Genetic Material**: Can be DNA or RNA, single-stranded or double-stranded.
-
-Here is a diagram representing a simple bacteriophage virus structure:
-
-\`\`\`mermaid
-graph TD
-  Head[Icosahedral Head: DNA] --> Collar[Collar]
-  Collar --> Sheath[Helical Sheath]
-  Sheath --> Baseplate[Baseplate]
-  Baseplate --> Fibers[Tail Fibers: Receptor Keys]
-\`\`\`
-
-Would you like to test your understanding of virus structures? Just ask me for a **virus quiz**!`;
-  } else if (userMessage.includes("human") || userMessage.includes("body") || userMessage.includes("anatomy") || userMessage.includes("organ")) {
-    responseText = `### Human Anatomy & Physiological Systems
-
-Human anatomy is the study of the structure of the human body, while physiology is the study of how these structures function together to maintain life.
-
-#### Key Physiological Systems
-1. **The Cardiovascular System**: The heart, blood vessels, and blood. It pumps oxygen and nutrients throughout the body.
-2. **The Nervous System**: The brain, spinal cord, and nerves. It controls voluntary and involuntary actions.
-3. **The Skeletal System**: 206 bones in adults that provide structure, protect organs, and support movement.
-
-Here is a simplified flowchart of blood circulation through the heart:
-
-\`\`\`mermaid
-graph TD
-  Body[Deoxygenated Blood from Body] --> RA[Right Atrium]
-  RA --> RV[Right Ventricle]
-  RV -->|Pulmonary Artery| Lungs[Lungs: Oxygenation]
-  Lungs -->|Pulmonary Veins| LA[Left Atrium]
-  LA --> LV[Left Ventricle]
-  LV -->|Aorta| BodyOut[Oxygenated Blood to Body]
-\`\`\`
-
-Would you like to test your understanding of human anatomy? Ask me for an **anatomy quiz**!`;
-  } else if (userMessage.includes("ecology") || userMessage.includes("ecosystem") || userMessage.includes("pyramid") || userMessage.includes("10%")) {
-    responseText = `### Ecosystems & Trophic Pyramids
-
-An ecosystem represents the interaction between living (biotic) organisms and non-living (abiotic) elements. Energy flows through ecosystems via food chains and webs.
-
-#### The 10% Ecological Rule
-When energy is transferred from one trophic level to the next, **only about 10% of the energy is stored as biomass** and made available to the next consumer level. The remaining 90% is lost as metabolic heat during respiration, motion, and decomposition.
-
-Here is how energy flows up the trophic pyramid:
-
-\`\`\`mermaid
-graph TD
-  A[Sunlight] --> B[Producers: 100% Energy]
-  B --> C[Primary Consumers: 10% Energy]
-  C --> D[Secondary Consumers: 1% Energy]
-  D --> E[Tertiary Consumers: 0.1% Energy]
-\`\`\`
-
-Ask me for an **ecology quiz** if you'd like to test your knowledge!`;
+[ACTION: zoom mitochondria]
+`;
   } else {
-    const messageCount = messages.length;
-    if (messageCount > 1) {
-      responseText = `### Biology Insights: "${messages[messages.length - 1]?.content}"
+    responseText = `### 💡 Simple Explanation
+Welcome! I am your personal Context-Aware Biology Mentor. I sync with whatever page or organ structure you are currently viewing to guide your studies!
 
-I understand you are interested in this topic! As a mock biology tutor (running because no \`GEMINI_API_KEY\` or \`GROQ_API_KEY\` is active in your \`.env\` file yet, or requests rate-limited), I have pre-programmed interactive lessons for:
-- **Cellular Respiration & ATP** (try typing "respiration" or "atp")
-- **Genetics & DNA structure** (try typing "dna" or "helix")
-- **Ecosystems & Trophic Pyramids** (try typing "ecology" or "pyramid")
-- **Microorganisms & Viruses** (try typing "virus" or "capsid")
+### 🔬 Scientific Explanation (Level: ${difficulty})
+BioSphere compiles custom pathways. I can explain genetic transcripts, physiological structures, and disease pathologies.
 
-To unlock live, open-ended tutoring on **any** biological question (like photosynthesis, protein folding, cell division, etc.), please set up your API keys in the \`.env\` file.`;
-    } else {
-      responseText = `### Welcome to BioTutor! 🔬
+### 🔑 Key Terms
+- **Homeostasis**: Maintenance of steady internal states.
 
-I am your personal AI Biology Tutor. I can explain complex biological processes, render flowcharts, and compile custom quizzes.
+### 💡 Interesting Facts
+- We share 60% of our DNA layout with bananas!
 
-What would you like to explore today?
-- **Cell Biology**: Cellular respiration, organelles, membrane transport.
-- **Genetics**: DNA double-helix, translation, replication.
-- **Ecosystems**: Trophic levels, carbon cycle, food webs.
-- **Microorganisms & Viruses**: Capsids, bacteria structures, viruses.
+### 🧭 Recommended Path
+- **Related Lessons**: [Evolutionary Path](/tree-of-life)
+- **3D Model**: [Human Anatomy]
 
-*Tip: You can ask me to "give me a quiz" at any time to test your learning!*`;
-    }
+### ❓ Ask Another Question
+What biology concept would you like to investigate next? Or click the action cards to generate custom flashcards!
+`;
   }
 
-  // Stream the mock text to the client
+  // Stream the mock text
   const encoder = new TextEncoder();
   const words = responseText.split(" ");
   const stream = new ReadableStream({
@@ -410,8 +553,7 @@ What would you like to explore today?
       for (let i = 0; i < words.length; i++) {
         const word = words[i] + (i === words.length - 1 ? "" : " ");
         controller.enqueue(encoder.encode(word));
-        // Simulate networking delays
-        await new Promise(resolve => setTimeout(resolve, 25));
+        await new Promise(resolve => setTimeout(resolve, 20));
       }
       controller.close();
     }
