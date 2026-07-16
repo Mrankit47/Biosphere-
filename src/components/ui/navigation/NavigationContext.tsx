@@ -67,6 +67,8 @@ export const ROUTE_META: Record<string, { label: string; icon: string }> = {
   "/ecosystems": { label: "Ecosystems", icon: "🌿" },
   "/ecosystem-simulator": { label: "Ecosystem Sim", icon: "🌐" },
   "/tree-of-life": { label: "Tree of Life", icon: "🌳" },
+  "/photosynthesis": { label: "Photosynthesis", icon: "☀️" },
+  "/food-chain": { label: "Food Chain", icon: "🦅" },
   "/learning-paths": { label: "Learning Paths", icon: "🎓" },
   "/gamification": { label: "Profile Hub", icon: "🏆" },
   "/virtual-lab": { label: "Virtual Lab", icon: "🧪" },

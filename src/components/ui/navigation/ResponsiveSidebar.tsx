@@ -33,6 +33,8 @@ const CATEGORIES: NavCategory[] = [
       { href: "/cell-explorer", label: "Cell Explorer", icon: "🔬" },
       { href: "/human-body", label: "Human Body", icon: "🫀" },
       { href: "/tree-of-life", label: "Tree of Life", icon: "🌳" },
+      { href: "/photosynthesis", label: "Photosynthesis", icon: "☀️" },
+      { href: "/food-chain", label: "Food Chain", icon: "🦅" },
     ],
   },
   {
@@ -117,7 +119,7 @@ export const ResponsiveSidebar: React.FC = () => {
         </div>
 
         {/* Navigation Categories */}
-        <nav className="sidebar-nav-scroller">
+        <nav className="sidebar-nav-scroller" data-lenis-prevent>
           {CATEGORIES.map((category) => (
             <div key={category.title} className="sidebar-category">
               <span className={`category-title ${isExpanded ? "visible" : "hidden"}`}>
