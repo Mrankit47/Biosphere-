@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useExperience } from "./ExperienceContext";
+import { BioIcon } from "../../../components/ui/navigation/BioIcon";
 
 export const ModelToolbar: React.FC = () => {
   const {
@@ -15,11 +16,11 @@ export const ModelToolbar: React.FC = () => {
   const [speedDropdown, setSpeedDropdown] = useState<string | null>(null);
 
   const modesList = [
-    { id: "explore", label: "Explore Mode", icon: "🌐", desc: "Free interactive viewing" },
-    { id: "learn", label: "Guided Learn", icon: "📖", desc: "Visual tour & voice narration" },
-    { id: "quiz", label: "Challenge Quiz", icon: "📝", desc: "Structure matching & quizzes" },
-    { id: "simulation", label: "Simulation Lab", icon: "🧪", desc: "Cross section & animations" },
-    { id: "teacher", label: "Teacher Console", icon: "🎓", desc: "Classroom slides & prompts" },
+    { id: "explore", label: "Explore Mode", icon: "explore", desc: "Free interactive viewing" },
+    { id: "learn", label: "Guided Learn", icon: "learn", desc: "Visual tour & voice narration" },
+    { id: "quiz", label: "Challenge Quiz", icon: "quiz", desc: "Structure matching & quizzes" },
+    { id: "simulation", label: "Simulation Lab", icon: "simulation", desc: "Cross section & animations" },
+    { id: "teacher", label: "Teacher Console", icon: "teacher", desc: "Classroom slides & prompts" },
   ];
 
   return (
@@ -33,7 +34,9 @@ export const ModelToolbar: React.FC = () => {
             className={`toolbar-mode-btn ${mode === m.id ? "active" : ""}`}
             title={m.desc}
           >
-            <span className="mode-btn-icon">{m.icon}</span>
+            <span className="mode-btn-icon">
+              <BioIcon name={m.icon} size={16} />
+            </span>
             <span className="mode-btn-label">{m.label}</span>
           </button>
         ))}
@@ -42,7 +45,9 @@ export const ModelToolbar: React.FC = () => {
       {/* Animation system controls (only shown in simulation/explore modes if animations exist) */}
       {animations.length > 0 && (mode === "simulation" || mode === "explore") && (
         <div className="toolbar-animations-row">
-          <span className="anim-row-title">⚙️ ANIMATIONS:</span>
+          <span className="anim-row-title" style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+            <BioIcon name="process-simulations" size={14} /> ANIMATIONS:
+          </span>
           <div className="animations-grid">
             {animations.map((anim) => (
               <div key={anim.name} className="anim-control-card">

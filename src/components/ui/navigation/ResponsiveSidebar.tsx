@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useNavigation } from "./NavigationContext";
+import { BioIcon } from "./BioIcon";
 
 interface NavItem {
   href: string;
@@ -20,43 +21,43 @@ const CATEGORIES: NavCategory[] = [
   {
     title: "Core",
     items: [
-      { href: "/", label: "Home", icon: "🏠" },
-      { href: "/dashboard", label: "Dashboard", icon: "📊" },
-      { href: "/learning-paths", label: "Learning Paths", icon: "🎓" },
-      { href: "/tutor", label: "AI Tutor", icon: "🤖" },
-      { href: "/gamification", label: "Profile Hub", icon: "🏆" },
+      { href: "/", label: "Home", icon: "home" },
+      { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
+      { href: "/learning-paths", label: "Learning Paths", icon: "learning-paths" },
+      { href: "/tutor", label: "AI Tutor", icon: "tutor" },
+      { href: "/gamification", label: "Profile Hub", icon: "gamification" },
     ],
   },
   {
     title: "3D Modules",
     items: [
-      { href: "/cell-explorer", label: "Cell Explorer", icon: "🔬" },
-      { href: "/human-body", label: "Human Body", icon: "🫀" },
-      { href: "/tree-of-life", label: "Tree of Life", icon: "🌳" },
-      { href: "/photosynthesis", label: "Photosynthesis", icon: "☀️" },
-      { href: "/food-chain", label: "Food Chain", icon: "🦅" },
+      { href: "/cell-explorer", label: "Cell Explorer", icon: "cell-explorer" },
+      { href: "/human-body", label: "Human Body", icon: "human-body" },
+      { href: "/tree-of-life", label: "Tree of Life", icon: "tree-of-life" },
+      { href: "/photosynthesis", label: "Photosynthesis", icon: "photosynthesis" },
+      { href: "/food-chain", label: "Food Chain", icon: "food-chain" },
     ],
   },
   {
     title: "Labs & Sims",
     items: [
-      { href: "/virtual-lab", label: "Virtual Lab", icon: "🧪" },
-      { href: "/ecosystem-simulator", label: "Ecosystem Sim", icon: "🌐" },
-      { href: "/process-simulations", label: "Process Sims", icon: "🌀" },
+      { href: "/virtual-lab", label: "Virtual Lab", icon: "virtual-lab" },
+      { href: "/ecosystem-simulator", label: "Ecosystem Sim", icon: "ecosystem-simulator" },
+      { href: "/process-simulations", label: "Process Sims", icon: "process-simulations" },
     ],
   },
   {
     title: "Research",
     items: [
-      { href: "/microorganisms", label: "Microorganisms", icon: "🦠" },
-      { href: "/viruses", label: "Viruses", icon: "☣️" },
-      { href: "/disease-explorer", label: "Disease Explorer", icon: "🏥" },
-      { href: "/rare-species", label: "Rare Species", icon: "🦁" },
-      { href: "/dna-genetics", label: "DNA & Genetics", icon: "🧬" },
-      { href: "/ecosystems", label: "Ecosystems", icon: "🌿" },
-      { href: "/dictionary", label: "Dictionary", icon: "📖" },
-      { href: "/quiz", label: "Quiz", icon: "📝" },
-      { href: "/research-hub", label: "Research Hub", icon: "📚" },
+      { href: "/microorganisms", label: "Microorganisms", icon: "microorganisms" },
+      { href: "/viruses", label: "Viruses", icon: "viruses" },
+      { href: "/disease-explorer", label: "Disease Explorer", icon: "disease-explorer" },
+      { href: "/rare-species", label: "Rare Species", icon: "rare-species" },
+      { href: "/dna-genetics", label: "DNA & Genetics", icon: "dna-genetics" },
+      { href: "/ecosystems", label: "Ecosystems", icon: "ecosystems" },
+      { href: "/dictionary", label: "Dictionary", icon: "dictionary" },
+      { href: "/quiz", label: "Quiz", icon: "quiz" },
+      { href: "/research-hub", label: "Research Hub", icon: "research-hub" },
     ],
   },
 ];
@@ -105,13 +106,15 @@ export const ResponsiveSidebar: React.FC = () => {
           onClick={() => setSidebarOpen(false)}
           aria-label="Close navigation sidebar"
         >
-          ✕
+          <BioIcon name="close" size={18} />
         </button>
 
         {/* Sidebar Brand Header */}
         <div className="sidebar-brand">
           <Link href="/" onClick={() => setSidebarOpen(false)} className="brand-logo-link">
-            <span className="brand-icon">🔬</span>
+            <span className="brand-icon">
+              <BioIcon name="cell-explorer" size={24} />
+            </span>
             <span className={`brand-text ${isExpanded ? "visible" : "hidden"}`}>
               BIOSPHERE
             </span>
@@ -140,7 +143,9 @@ export const ResponsiveSidebar: React.FC = () => {
                         className={`sidebar-nav-link ${isActive ? "active" : ""}`}
                         title={!isExpanded ? item.label : undefined}
                       >
-                        <span className="nav-item-icon">{item.icon}</span>
+                        <span className="nav-item-icon">
+                          <BioIcon name={item.icon} size={18} />
+                        </span>
                         <span className={`nav-item-label ${isExpanded ? "visible" : "hidden"}`}>
                           {item.label}
                         </span>
@@ -162,7 +167,9 @@ export const ResponsiveSidebar: React.FC = () => {
             onClick={handleSidebarClickToggle}
             aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <span className="toggle-chevron-icon">{sidebarCollapsed ? "❯" : "❮"}</span>
+            <span className="toggle-chevron-icon">
+              <BioIcon name={sidebarCollapsed ? "chevron-right" : "chevron-left"} size={14} />
+            </span>
             <span className={`toggle-btn-label ${isExpanded ? "visible" : "hidden"}`}>
               Collapse Sidebar
             </span>

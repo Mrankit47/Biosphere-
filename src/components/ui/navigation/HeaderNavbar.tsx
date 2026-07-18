@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useNavigation, ROUTE_META } from "./NavigationContext";
 import { useAuth } from "../auth";
+import { BioIcon } from "./BioIcon";
 
 export const HeaderNavbar: React.FC = () => {
   const pathname = usePathname();
@@ -106,7 +107,7 @@ export const HeaderNavbar: React.FC = () => {
           onClick={() => setSidebarOpen(true)}
           aria-label="Open sidebar menu"
         >
-          ☰
+          <BioIcon name="menu" size={20} />
         </button>
 
         {/* Dynamic Breadcrumbs */}
@@ -135,7 +136,9 @@ export const HeaderNavbar: React.FC = () => {
           onClick={() => setSearchOpen(true)}
           aria-label="Open search dialog"
         >
-          <span className="search-bar-icon">🔍</span>
+          <span className="search-bar-icon">
+            <BioIcon name="search" size={15} />
+          </span>
           <span className="search-bar-placeholder">Search topics...</span>
           <kbd className="search-bar-shortcut-kbd">
             {isMac ? "⌘K" : "Ctrl+K"}
@@ -151,7 +154,7 @@ export const HeaderNavbar: React.FC = () => {
           className={`favorite-page-action-btn ${isCurrentFavorite ? "is-favorite" : ""}`}
           title={isCurrentFavorite ? "Remove page from favorites" : "Bookmark this page"}
         >
-          {isCurrentFavorite ? "★" : "☆"}
+          <BioIcon name="star" size={16} />
         </button>
 
         {/* Quick Links Dropdown */}
@@ -161,7 +164,7 @@ export const HeaderNavbar: React.FC = () => {
             className={`quick-actions-trigger-btn ${quickOpen ? "active" : ""}`}
             title="Favorites & Pinned links"
           >
-            🔗
+            <BioIcon name="link" size={16} />
           </button>
 
           {quickOpen && (
@@ -170,7 +173,7 @@ export const HeaderNavbar: React.FC = () => {
               {favorites.length > 0 ? (
                 <ul className="dropdown-list">
                   {favorites.map((favPath) => {
-                    const meta = ROUTE_META[favPath] || { label: "Details Page", icon: "🧬" };
+                    const meta = ROUTE_META[favPath] || { label: "Details Page", icon: "dna-genetics" };
                     return (
                       <li key={favPath}>
                         <Link
@@ -178,7 +181,9 @@ export const HeaderNavbar: React.FC = () => {
                           onClick={() => setQuickOpen(false)}
                           className="dropdown-list-link"
                         >
-                          <span className="dropdown-icon">{meta.icon}</span>
+                          <span className="dropdown-icon">
+                            <BioIcon name={meta.icon} size={16} />
+                          </span>
                           <span className="dropdown-lbl">{meta.label}</span>
                         </Link>
                       </li>
@@ -195,7 +200,7 @@ export const HeaderNavbar: React.FC = () => {
               {pinned.length > 0 ? (
                 <ul className="dropdown-list">
                   {pinned.map((pinPath) => {
-                    const meta = ROUTE_META[pinPath] || { label: "Specimen", icon: "🧬" };
+                    const meta = ROUTE_META[pinPath] || { label: "Specimen", icon: "dna-genetics" };
                     return (
                       <li key={pinPath}>
                         <Link
@@ -203,7 +208,9 @@ export const HeaderNavbar: React.FC = () => {
                           onClick={() => setQuickOpen(false)}
                           className="dropdown-list-link"
                         >
-                          <span className="dropdown-icon">{meta.icon}</span>
+                          <span className="dropdown-icon">
+                            <BioIcon name={meta.icon} size={16} />
+                          </span>
                           <span className="dropdown-lbl">{meta.label}</span>
                         </Link>
                       </li>
@@ -227,7 +234,7 @@ export const HeaderNavbar: React.FC = () => {
             className={`notifications-trigger-btn ${unreadCount > 0 ? "has-unread" : ""}`}
             title="Notifications"
           >
-            🔔
+            <BioIcon name="bell" size={16} />
             {unreadCount > 0 && <span className="notification-badge-dot">{unreadCount}</span>}
           </button>
 
@@ -245,7 +252,9 @@ export const HeaderNavbar: React.FC = () => {
                 {notifications.length > 0 ? (
                   notifications.map((notif) => (
                     <div key={notif.id} className="notification-card-item">
-                      <span className="notif-icon">{notif.icon}</span>
+                      <span className="notif-icon">
+                        <BioIcon name={notif.icon} size={18} />
+                      </span>
                       <div className="notif-content">
                         <span className="notif-title">{notif.title}</span>
                         <p className="notif-message">{notif.message}</p>
@@ -266,7 +275,7 @@ export const HeaderNavbar: React.FC = () => {
           className="shortcuts-trigger-btn"
           title="Keyboard shortcuts guide"
         >
-          ⌨️
+          <BioIcon name="keyboard" size={16} />
         </button>
 
         {/* Theme Cycle Switcher */}
@@ -280,7 +289,7 @@ export const HeaderNavbar: React.FC = () => {
           className="theme-switcher-btn"
           title={`Active accent: ${activeTheme}. Click to cycle themes.`}
         >
-          🎨
+          <BioIcon name="palette" size={16} />
         </button>
 
         {/* Progress Circle component */}
