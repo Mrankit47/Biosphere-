@@ -9,4 +9,6 @@ export { MobileBottomNav } from "./MobileBottomNav";
 export { FloatingLearningToolbar } from "./FloatingLearningToolbar";
 export { MentorProvider, useMentor } from "./MentorContext";
 export { MentorChat } from "./MentorChat";
+export { BioIcon } from "./BioIcon";
 export type { DifficultyLevel, PageContextData } from "./MentorContext";
+

@@ -4,20 +4,21 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useNavigation, ROUTE_META } from "./NavigationContext";
+import { BioIcon } from "./BioIcon";
 
 // Sibling timeline flow mapping (Step 5)
 const LEARNING_FLOW = [
-  { path: "/cell-explorer", label: "Cell Structure Overview", icon: "🔬" },
-  { path: "/cell-explorer/membrane", label: "Plasma Membrane", icon: "🛡️" },
-  { path: "/cell-explorer/nucleus", label: "Cell Nucleus Structure", icon: "📂" },
-  { path: "/cell-explorer/mitochondria", label: "Mitochondria Powerhouse", icon: "⚡" },
-  { path: "/dna-genetics", label: "DNA Double Helix Genetics", icon: "🧬" },
-  { path: "/process-simulations", label: "Protein Synthesis Transcription", icon: "🌀" },
-  { path: "/viruses/sars-cov-2", label: "Viral Structures (SARS-CoV-2)", icon: "☣️" },
-  { path: "/microorganisms/amoeba", label: "Microbe Mechanics (Amoeba)", icon: "🦠" },
-  { path: "/rare-species/vaquita", label: "Endangered Wildlife (Vaquita)", icon: "🐬" },
-  { path: "/quiz", label: "Quiz Certification Board", icon: "📝" },
-  { path: "/gamification", label: "Profile Certification Page", icon: "🏆" },
+  { path: "/cell-explorer", label: "Cell Structure Overview", icon: "cell-explorer" },
+  { path: "/cell-explorer/membrane", label: "Plasma Membrane", icon: "membrane" },
+  { path: "/cell-explorer/nucleus", label: "Cell Nucleus Structure", icon: "nucleus" },
+  { path: "/cell-explorer/mitochondria", label: "Mitochondria Powerhouse", icon: "mitochondria" },
+  { path: "/dna-genetics", label: "DNA Double Helix Genetics", icon: "dna-genetics" },
+  { path: "/process-simulations", label: "Protein Synthesis Transcription", icon: "process-simulations" },
+  { path: "/viruses/sars-cov-2", label: "Viral Structures (SARS-CoV-2)", icon: "viruses" },
+  { path: "/microorganisms/amoeba", label: "Microbe Mechanics (Amoeba)", icon: "microorganisms" },
+  { path: "/rare-species/vaquita", label: "Endangered Wildlife (Vaquita)", icon: "rare-species" },
+  { path: "/quiz", label: "Quiz Certification Board", icon: "quiz" },
+  { path: "/gamification", label: "Profile Certification Page", icon: "gamification" },
 ];
 
 export const FloatingLearningToolbar: React.FC = () => {
@@ -83,9 +84,9 @@ export const FloatingLearningToolbar: React.FC = () => {
     if (typeof window !== "undefined") {
       navigator.clipboard.writeText(window.location.href);
       addNotification(
-        "🔗 Link Copied",
+        "Link Copied",
         "The lesson URL has been copied to your clipboard. Share with fellow biologists!",
-        "📎"
+        "copy"
       );
     }
   };
@@ -105,7 +106,7 @@ export const FloatingLearningToolbar: React.FC = () => {
             <span className={`difficulty-indicator-badge ${difficulty.toLowerCase()}`}>
               {difficulty.toUpperCase()}
             </span>
-            <span className="read-time-indicator">⏱️ {readTime}</span>
+            <span className="read-time-indicator">{readTime}</span>
           </div>
           <span className="current-topic-lbl">CURRENT TOPIC</span>
           <h4 className="topic-header-title">{cleanPathLabel}</h4>
@@ -123,7 +124,9 @@ export const FloatingLearningToolbar: React.FC = () => {
               className={`action-pill-btn ${isCurrentFavorite ? "active-star" : ""}`}
               title={isCurrentFavorite ? "Remove bookmark" : "Add bookmark"}
             >
-              <span className="btn-icon">{isCurrentFavorite ? "★" : "☆"}</span>
+              <span className="btn-icon">
+                <BioIcon name="star" size={16} />
+              </span>
               <span className="btn-lbl">Bookmark</span>
             </button>
 
@@ -133,19 +136,25 @@ export const FloatingLearningToolbar: React.FC = () => {
               className={`action-pill-btn ${notesOpen ? "active-notes" : ""}`}
               title="Open scratchpad notepad"
             >
-              <span className="btn-icon">📝</span>
+              <span className="btn-icon">
+                <BioIcon name="notes" size={16} />
+              </span>
               <span className="btn-lbl">Scratchpad</span>
             </button>
 
             {/* Share URL */}
             <button onClick={handleShare} className="action-pill-btn" title="Copy URL path link">
-              <span className="btn-icon">🔗</span>
+              <span className="btn-icon">
+                <BioIcon name="copy" size={16} />
+              </span>
               <span className="btn-lbl">Share URL</span>
             </button>
 
             {/* Ask AI Tutor */}
             <Link href={`/tutor?q=${encodeURIComponent(tutorPrompt)}`} className="action-pill-btn text-link" title="Ask AI tutor about this">
-              <span className="btn-icon">🤖</span>
+              <span className="btn-icon">
+                <BioIcon name="tutor" size={16} />
+              </span>
               <span className="btn-lbl">Ask Tutor</span>
             </Link>
           </div>
@@ -160,7 +169,9 @@ export const FloatingLearningToolbar: React.FC = () => {
             {prevItem ? (
               <Link href={prevItem.path} className="timeline-nav-btn prev">
                 <span className="arrow-lbl">← PREVIOUS LESSON</span>
-                <span className="topic-lbl">{prevItem.icon} {prevItem.label}</span>
+                <span className="topic-lbl" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                  <BioIcon name={prevItem.icon} size={14} /> {prevItem.label}
+                </span>
               </Link>
             ) : (
               <div className="timeline-nav-btn disabled">
@@ -172,12 +183,16 @@ export const FloatingLearningToolbar: React.FC = () => {
             {nextItem ? (
               <Link href={nextItem.path} className="timeline-nav-btn next">
                 <span className="arrow-lbl">NEXT TOPIC →</span>
-                <span className="topic-lbl">{nextItem.icon} {nextItem.label}</span>
+                <span className="topic-lbl" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                  <BioIcon name={nextItem.icon} size={14} /> {nextItem.label}
+                </span>
               </Link>
             ) : (
               <Link href="/quiz" className="timeline-nav-btn next finish">
                 <span className="arrow-lbl">NEXT TOPIC →</span>
-                <span className="topic-lbl">📝 Final Quiz Board</span>
+                <span className="topic-lbl" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                  <BioIcon name="quiz" size={14} /> Final Quiz Board
+                </span>
               </Link>
             )}
           </div>
@@ -188,9 +203,11 @@ export const FloatingLearningToolbar: React.FC = () => {
       {notesOpen && (
         <div className="floating-notes-scratchpad glassmorphic">
           <div className="notes-header-row">
-            <span className="notes-title">🗒️ STUDY NOTES</span>
+            <span className="notes-title" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+              <BioIcon name="notes" size={16} /> STUDY NOTES
+            </span>
             <button onClick={() => setNotesOpen(false)} className="notes-close-btn" aria-label="Close notes pane">
-              ✕
+              <BioIcon name="close" size={14} />
             </button>
           </div>
           <textarea

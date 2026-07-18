@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useNavigation } from "./NavigationContext";
+import { BioIcon } from "./BioIcon";
 
 interface SearchItem {
   path: string;
@@ -14,57 +15,57 @@ interface SearchItem {
 
 const SEARCH_ITEMS: SearchItem[] = [
   // Core routes
-  { path: "/", name: "Home Landing Page", category: "Core Module", icon: "🏠", desc: "Access all Biosphere virtual exhibits, simulations, and AI study resources." },
-  { path: "/dashboard", name: "Biology Learning Dashboard", category: "Core Module", icon: "📊", desc: "View learning streaks, upcoming events, calendar milestones, and weak topics." },
-  { path: "/learning-paths", name: "Learning Paths", category: "Core Module", icon: "🎓", desc: "Interactive guided curriculum for step-by-step biological mastery." },
-  { path: "/tutor", name: "AI Biology Tutor", category: "Core Module", icon: "🤖", desc: "Chat with an intelligent bot specializing in cellular biology and medicine." },
-  { path: "/gamification", name: "Profile Hub & Achievements", category: "Core Module", icon: "🏆", desc: "Check XP levels, earned badges, streaks, and lab certificates." },
-  { path: "/quiz", name: "Quiz Board", category: "Core Module", icon: "📝", desc: "Quick-fire, fill-the-blanks, true/false, and label-the-cell challenges." },
-  { path: "/dictionary", name: "Biology Dictionary", category: "Core Module", icon: "📖", desc: "Search over dozens of scientific terms with phonetics and notes." },
-  { path: "/research-hub", name: "Research Hub", category: "Core Module", icon: "📚", desc: "Publish notes, bookmark publications, and track biology research." },
+  { path: "/", name: "Home Landing Page", category: "Core Module", icon: "home", desc: "Access all Biosphere virtual exhibits, simulations, and AI study resources." },
+  { path: "/dashboard", name: "Biology Learning Dashboard", category: "Core Module", icon: "dashboard", desc: "View learning streaks, upcoming events, calendar milestones, and weak topics." },
+  { path: "/learning-paths", name: "Learning Paths", category: "Core Module", icon: "learning-paths", desc: "Interactive guided curriculum for step-by-step biological mastery." },
+  { path: "/tutor", name: "AI Biology Tutor", category: "Core Module", icon: "tutor", desc: "Chat with an intelligent bot specializing in cellular biology and medicine." },
+  { path: "/gamification", name: "Profile Hub & Achievements", category: "Core Module", icon: "gamification", desc: "Check XP levels, earned badges, streaks, and lab certificates." },
+  { path: "/quiz", name: "Quiz Board", category: "Core Module", icon: "quiz", desc: "Quick-fire, fill-the-blanks, true/false, and label-the-cell challenges." },
+  { path: "/dictionary", name: "Biology Dictionary", category: "Core Module", icon: "dictionary", desc: "Search over dozens of scientific terms with phonetics and notes." },
+  { path: "/research-hub", name: "Research Hub", category: "Core Module", icon: "research-hub", desc: "Publish notes, bookmark publications, and track biology research." },
 
   // 3D Modules
-  { path: "/cell-explorer", name: "3D Cell Structure Explorer", category: "3D Module", icon: "🔬", desc: "Zoom into eukaryotic structures and inspect cell compartments." },
-  { path: "/human-body", name: "3D Human Anatomy Visualizer", category: "3D Module", icon: "🫀", desc: "Clinical engine with realistic, X-Ray, and Hologram rendering modes." },
-  { path: "/tree-of-life", name: "Tree of Life (Carl Woese)", category: "3D Module", icon: "🌳", desc: "Trace evolutionary path lines and cells between Bacteria, Archaea, and Eukarya." },
+  { path: "/cell-explorer", name: "3D Cell Structure Explorer", category: "3D Module", icon: "cell-explorer", desc: "Zoom into eukaryotic structures and inspect cell compartments." },
+  { path: "/human-body", name: "3D Human Anatomy Visualizer", category: "3D Module", icon: "human-body", desc: "Clinical engine with realistic, X-Ray, and Hologram rendering modes." },
+  { path: "/tree-of-life", name: "Tree of Life (Carl Woese)", category: "3D Module", icon: "tree-of-life", desc: "Trace evolutionary path lines and cells between Bacteria, Archaea, and Eukarya." },
 
   // Labs & Sims
-  { path: "/virtual-lab", name: "Virtual Biology Lab", category: "Labs & Sims", icon: "🧪", desc: "Run simulated titration and chromatography chemistry labs." },
-  { path: "/ecosystem-simulator", name: "Lotka-Volterra Ecosystem Sim", category: "Labs & Sims", icon: "🌐", desc: "Balance abiotic variables and study specimen populations." },
-  { path: "/process-simulations", name: "Interactive Process Simulators", category: "Labs & Sims", icon: "🌀", desc: "Watch animations for transcription, translation, and mitosis." },
+  { path: "/virtual-lab", name: "Virtual Biology Lab", category: "Labs & Sims", icon: "virtual-lab", desc: "Run simulated titration and chromatography chemistry labs." },
+  { path: "/ecosystem-simulator", name: "Lotka-Volterra Ecosystem Sim", category: "Labs & Sims", icon: "ecosystem-simulator", desc: "Balance abiotic variables and study specimen populations." },
+  { path: "/process-simulations", name: "Interactive Process Simulators", category: "Labs & Sims", icon: "process-simulations", desc: "Watch animations for transcription, translation, and mitosis." },
 
   // Cell structures
-  { path: "/cell-explorer/membrane", name: "Plasma Membrane", category: "Cell Organelle", icon: "🛡️", desc: "Selective lipid bilayer barrier controlling cellular import/export." },
-  { path: "/cell-explorer/nucleus", name: "Cell Nucleus", category: "Cell Organelle", icon: "📂", desc: "The genetic library storing DNA, chromatin, and the nucleolus." },
-  { path: "/cell-explorer/mitochondria", name: "Mitochondria", category: "Cell Organelle", icon: "⚡", desc: "Double-membraned organelle synthesising ATP cellular energy." },
-  { path: "/cell-explorer/ribosome", name: "Ribosome", category: "Cell Organelle", icon: "⚙️", desc: "Protein synthesis machinery parsing mRNA codon transcripts." },
-  { path: "/cell-explorer/golgi", name: "Golgi Apparatus", category: "Cell Organelle", icon: "📦", desc: "Packages and routes proteins from the endoplasmic reticulum." },
-  { path: "/cell-explorer/er", name: "Endoplasmic Reticulum", category: "Cell Organelle", icon: "🕸️", desc: "Rough ER hosting ribosomes and smooth ER synthesising lipids." },
+  { path: "/cell-explorer/membrane", name: "Plasma Membrane", category: "Cell Organelle", icon: "membrane", desc: "Selective lipid bilayer barrier controlling cellular import/export." },
+  { path: "/cell-explorer/nucleus", name: "Cell Nucleus", category: "Cell Organelle", icon: "nucleus", desc: "The genetic library storing DNA, chromatin, and the nucleolus." },
+  { path: "/cell-explorer/mitochondria", name: "Mitochondria", category: "Cell Organelle", icon: "mitochondria", desc: "Double-membraned organelle synthesising ATP cellular energy." },
+  { path: "/cell-explorer/ribosome", name: "Ribosome", category: "Cell Organelle", icon: "ribosome", desc: "Protein synthesis machinery parsing mRNA codon transcripts." },
+  { path: "/cell-explorer/golgi", name: "Golgi Apparatus", category: "Cell Organelle", icon: "golgi", desc: "Packages and routes proteins from the endoplasmic reticulum." },
+  { path: "/cell-explorer/er", name: "Endoplasmic Reticulum", category: "Cell Organelle", icon: "er", desc: "Rough ER hosting ribosomes and smooth ER synthesising lipids." },
 
   // Viruses
-  { path: "/viruses", name: "Virus Taxonomy", category: "Exploration Gallery", icon: "☣️", desc: "Analyze pathogenic structural models and capsids." },
-  { path: "/viruses/sars-cov-2", name: "SARS-CoV-2", category: "Pathogen: Virus", icon: "🧬", desc: "The coronavirus responsible for COVID-19 with spike proteins." },
-  { path: "/viruses/hiv", name: "HIV Retrovirus", category: "Pathogen: Virus", icon: "🩸", desc: "Human Immunodeficiency Virus causing AIDS via helper T-cells." },
-  { path: "/viruses/influenza", name: "Influenza Virus", category: "Pathogen: Virus", icon: "🤒", desc: "Orthomyxoviridae agent causing seasonal flu epidemics." },
-  { path: "/viruses/ebola", name: "Ebola Filovirus", category: "Pathogen: Virus", icon: "💀", desc: "Causes severe hemorrhagic fever with high mortality rates." },
-  { path: "/viruses/rabies", name: "Rabies Bullet Virus", category: "Pathogen: Virus", icon: "🐕", desc: "Neurotropic rhabdovirus infecting central nervous systems." },
-  { path: "/viruses/bacteriophage", name: "T4 Bacteriophage", category: "Pathogen: Virus", icon: "👾", desc: "Infects bacterial cells via tail fiber syringe injections." },
+  { path: "/viruses", name: "Virus Taxonomy", category: "Exploration Gallery", icon: "viruses", desc: "Analyze pathogenic structural models and capsids." },
+  { path: "/viruses/sars-cov-2", name: "SARS-CoV-2", category: "Pathogen: Virus", icon: "sars-cov-2", desc: "The coronavirus responsible for COVID-19 with spike proteins." },
+  { path: "/viruses/hiv", name: "HIV Retrovirus", category: "Pathogen: Virus", icon: "hiv", desc: "Human Immunodeficiency Virus causing AIDS via helper T-cells." },
+  { path: "/viruses/influenza", name: "Influenza Virus", category: "Pathogen: Virus", icon: "influenza", desc: "Orthomyxoviridae agent causing seasonal flu epidemics." },
+  { path: "/viruses/ebola", name: "Ebola Filovirus", category: "Pathogen: Virus", icon: "ebola", desc: "Causes severe hemorrhagic fever with high mortality rates." },
+  { path: "/viruses/rabies", name: "Rabies Bullet Virus", category: "Pathogen: Virus", icon: "rabies", desc: "Neurotropic rhabdovirus infecting central nervous systems." },
+  { path: "/viruses/bacteriophage", name: "T4 Bacteriophage", category: "Pathogen: Virus", icon: "bacteriophage", desc: "Infects bacterial cells via tail fiber syringe injections." },
 
   // Microorganisms
-  { path: "/microorganisms", name: "Microorganisms (Micro Zoo)", category: "Exploration Gallery", icon: "🦠", desc: "Observe living amoebae, euglenas, and tardigrades." },
-  { path: "/microorganisms/amoeba", name: "Amoeba Proteus", category: "Protozoa", icon: "💧", desc: "Unicellular protist capturing prey using pseudopodia." },
-  { path: "/microorganisms/ecoli", name: "Escherichia coli (E. coli)", category: "Bacteria", icon: "🌭", desc: "Gram-negative intestinal bacterium used as genetics model." },
-  { path: "/microorganisms/chlorella", name: "Chlorella", category: "Green Algae", icon: "🟢", desc: "Photosynthetic single-celled alga containing chlorophyll." },
-  { path: "/microorganisms/tardigrade", name: "Tardigrade (Water Bear)", category: "Micro-animal", icon: "🐻", desc: "Indestructible micro-animal surviving space vacuums." },
-  { path: "/microorganisms/volvox", name: "Volvox Colony", category: "Green Algae", icon: "⚽", desc: "Spherical multicellular algae colonies with flagella." },
-  { path: "/microorganisms/paramecium", name: "Paramecium Caudatum", category: "Ciliate", icon: "👟", desc: "Slipper-shaped ciliate covered in thousands of swimming cilia." },
+  { path: "/microorganisms", name: "Microorganisms (Micro Zoo)", category: "Exploration Gallery", icon: "microorganisms", desc: "Observe living amoebae, euglenas, and tardigrades." },
+  { path: "/microorganisms/amoeba", name: "Amoeba Proteus", category: "Protozoa", icon: "amoeba", desc: "Unicellular protist capturing prey using pseudopodia." },
+  { path: "/microorganisms/ecoli", name: "Escherichia coli (E. coli)", category: "Bacteria", icon: "ecoli", desc: "Gram-negative intestinal bacterium used as genetics model." },
+  { path: "/microorganisms/chlorella", name: "Chlorella", category: "Green Algae", icon: "chlorella", desc: "Photosynthetic single-celled alga containing chlorophyll." },
+  { path: "/microorganisms/tardigrade", name: "Tardigrade (Water Bear)", category: "Micro-animal", icon: "tardigrade", desc: "Indestructible micro-animal surviving space vacuums." },
+  { path: "/microorganisms/volvox", name: "Volvox Colony", category: "Green Algae", icon: "volvox", desc: "Spherical multicellular algae colonies with flagella." },
+  { path: "/microorganisms/paramecium", name: "Paramecium Caudatum", category: "Ciliate", icon: "paramecium", desc: "Slipper-shaped ciliate covered in thousands of swimming cilia." },
 
   // Rare Species
-  { path: "/rare-species", name: "Rare Species Collection", category: "Exploration Gallery", icon: "🦁", desc: "Study endangered mammals, reptiles, and amphibians." },
-  { path: "/rare-species/vaquita", name: "Vaquita Marina", category: "Rare Species", icon: "🐬", desc: "World's rarest marine mammal, native to the Gulf of California." },
-  { path: "/rare-species/amur-leopard", name: "Amur Leopard", category: "Rare Species", icon: "🐆", desc: "Critically endangered big cat native to Russian forests." },
-  { path: "/rare-species/sumatran-rhino", name: "Sumatran Rhinoceros", category: "Rare Species", icon: "🦏", desc: "Smallest and hairiest of all living rhino species." },
-  { path: "/rare-species/saola", name: "Saola (Asian Unicorn)", category: "Rare Species", icon: "🐂", desc: "Rare forest-dwelling bovid found in Annamite Range." },
+  { path: "/rare-species", name: "Rare Species Collection", category: "Exploration Gallery", icon: "rare-species", desc: "Study endangered mammals, reptiles, and amphibians." },
+  { path: "/rare-species/vaquita", name: "Vaquita Marina", category: "Rare Species", icon: "rare-species", desc: "World's rarest marine mammal, native to the Gulf of California." },
+  { path: "/rare-species/amur-leopard", name: "Amur Leopard", category: "Rare Species", icon: "rare-species", desc: "Critically endangered big cat native to Russian forests." },
+  { path: "/rare-species/sumatran-rhino", name: "Sumatran Rhinoceros", category: "Rare Species", icon: "rare-species", desc: "Smallest and hairiest of all living rhino species." },
+  { path: "/rare-species/saola", name: "Saola (Asian Unicorn)", category: "Rare Species", icon: "rare-species", desc: "Rare forest-dwelling bovid found in Annamite Range." },
 ];
 
 export const GlobalSearchModal: React.FC = () => {
@@ -148,7 +149,9 @@ export const GlobalSearchModal: React.FC = () => {
       <div className="search-modal-card glassmorphic" ref={modalRef}>
         {/* Search Input Bar */}
         <div className="search-modal-header">
-          <span className="modal-search-icon">🔍</span>
+          <span className="modal-search-icon">
+            <BioIcon name="search" size={20} />
+          </span>
           <input
             type="text"
             ref={inputRef}
@@ -195,7 +198,9 @@ export const GlobalSearchModal: React.FC = () => {
                             setSearchOpen(false);
                           }}
                         >
-                          <span className="search-card-icon">{item.icon}</span>
+                          <span className="search-card-icon">
+                            <BioIcon name={item.icon} size={20} />
+                          </span>
                           <div className="search-card-info">
                             <div className="search-card-name-row">
                               <span className="search-card-name">{item.name}</span>
@@ -214,14 +219,16 @@ export const GlobalSearchModal: React.FC = () => {
                           className={`search-card-pin-btn ${isPinned ? "is-pinned" : ""}`}
                           title={isPinned ? "Unpin topic" : "Pin topic to quick links"}
                         >
-                          📌
+                          <BioIcon name="pin" size={16} />
                         </button>
                       </div>
                     );
                   })
                 ) : (
                   <div className="search-empty-state">
-                    <span className="empty-state-icon">🔬</span>
+                    <span className="empty-state-icon">
+                      <BioIcon name="cell-explorer" size={36} />
+                    </span>
                     <p className="empty-state-lbl">No biological findings matched your query.</p>
                     <p className="empty-state-sub">Try searching "mitochondria", "virus", "vaquita", or "heart".</p>
                   </div>
@@ -233,7 +240,7 @@ export const GlobalSearchModal: React.FC = () => {
             <div className="search-recents-grid-layout">
               {/* Recently Visited */}
               <div className="recents-list-column">
-                <span className="search-section-hdr">⏱️ RECENTLY VISITED</span>
+                <span className="search-section-hdr">RECENTLY VISITED</span>
                 <div className="search-results-list">
                   {recentlyVisited.length > 0 ? (
                     recentlyVisited.map((item, idx) => {
@@ -248,7 +255,9 @@ export const GlobalSearchModal: React.FC = () => {
                           className={`search-result-row-card ${isSelected ? "selected" : ""}`}
                           onMouseEnter={() => setSelectedIndex(idx)}
                         >
-                          <span className="search-card-icon">{item.icon}</span>
+                          <span className="search-card-icon">
+                            <BioIcon name={item.icon} size={18} />
+                          </span>
                           <div className="search-card-info">
                             <span className="search-card-name">{item.label}</span>
                             <span className="search-card-category-tiny">{item.path}</span>
@@ -264,7 +273,7 @@ export const GlobalSearchModal: React.FC = () => {
 
               {/* Pinned Links */}
               <div className="pinned-list-column">
-                <span className="search-section-hdr">📌 PINNED TOPICS</span>
+                <span className="search-section-hdr">PINNED TOPICS</span>
                 <div className="pinned-grid-flow">
                   {pinned.length > 0 ? (
                     SEARCH_ITEMS.filter((item) => pinned.includes(item.path)).map((item) => (
@@ -276,7 +285,9 @@ export const GlobalSearchModal: React.FC = () => {
                         }}
                         className="pinned-topic-pill"
                       >
-                        <span className="pinned-pill-icon">{item.icon}</span>
+                        <span className="pinned-pill-icon">
+                          <BioIcon name={item.icon} size={16} />
+                        </span>
                         <span className="pinned-pill-name">{item.name}</span>
                         <button
                           onClick={(e) => {
@@ -286,7 +297,7 @@ export const GlobalSearchModal: React.FC = () => {
                           className="pinned-pill-unpin-btn"
                           title="Unpin"
                         >
-                          ✕
+                          <BioIcon name="close" size={12} />
                         </button>
                       </div>
                     ))

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useMentor } from "./MentorContext";
 import { MentorChat } from "./MentorChat";
 import { motion, AnimatePresence } from "framer-motion";
+import { BioIcon } from "./BioIcon";
 
 export const FloatingAIAssistant: React.FC = () => {
   const pathname = usePathname();
@@ -25,7 +26,9 @@ export const FloatingAIAssistant: React.FC = () => {
         {/* Tooltip speech bubble */}
         <div className={`ai-tutor-bubble-tooltip ${hovered && !sidebarOpen ? "visible" : "hidden"}`}>
           <span className="tooltip-indicator-arrow" />
-          <span className="tooltip-txt">Ask BioMentor! 🎓</span>
+          <span className="tooltip-txt" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+            Ask BioMentor! <BioIcon name="tutor" size={14} />
+          </span>
         </div>
 
         {/* Floating Action Button (Toggles sidebar drawer) */}
@@ -35,7 +38,9 @@ export const FloatingAIAssistant: React.FC = () => {
           aria-label="Toggle Biology Mentor"
         >
           <span className="ai-btn-pulse-glow" />
-          <span className="ai-btn-emoji">🎓</span>
+          <span className="ai-btn-emoji">
+            <BioIcon name="tutor" size={24} />
+          </span>
         </button>
       </div>
 
@@ -77,7 +82,7 @@ export const FloatingAIAssistant: React.FC = () => {
                     className="close-drawer-btn"
                     aria-label="Close mentor"
                   >
-                    ✕
+                    <BioIcon name="close" size={18} />
                   </button>
                 </div>
               </div>

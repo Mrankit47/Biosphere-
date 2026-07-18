@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BioIcon } from "./BioIcon";
 
 interface BottomNavItem {
   href: string;
@@ -11,11 +12,11 @@ interface BottomNavItem {
 }
 
 const ITEMS: BottomNavItem[] = [
-  { href: "/", label: "Home", icon: "🏠" },
-  { href: "/dashboard", label: "Dashboard", icon: "📊" },
-  { href: "/quiz", label: "Quiz", icon: "📝" },
-  { href: "/tutor", label: "AI Tutor", icon: "🤖" },
-  { href: "/gamification", label: "Profile", icon: "🏆" },
+  { href: "/", label: "Home", icon: "home" },
+  { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
+  { href: "/quiz", label: "Quiz", icon: "quiz" },
+  { href: "/tutor", label: "AI Tutor", icon: "tutor" },
+  { href: "/gamification", label: "Profile", icon: "gamification" },
 ];
 
 export const MobileBottomNav: React.FC = () => {
@@ -36,7 +37,9 @@ export const MobileBottomNav: React.FC = () => {
               href={item.href}
               className={`bottom-nav-link-btn ${isActive ? "active" : ""}`}
             >
-              <span className="bottom-nav-icon">{item.icon}</span>
+              <span className="bottom-nav-icon">
+                <BioIcon name={item.icon} size={20} />
+              </span>
               <span className="bottom-nav-label">{item.label}</span>
               {isActive && <span className="bottom-nav-active-dot" />}
             </Link>

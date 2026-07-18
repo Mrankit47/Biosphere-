@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { useNavigation } from "./NavigationContext";
+import { BioIcon } from "./BioIcon";
 
 export const ShortcutsModal: React.FC = () => {
   const { shortcutsOpen, setShortcutsOpen } = useNavigation();
@@ -23,27 +24,27 @@ export const ShortcutsModal: React.FC = () => {
   if (!shortcutsOpen) return null;
 
   const shortcutItems = [
-    { keys: ["Ctrl", "K"], desc: "Toggle Global Search engine", icon: "🔍" },
-    { keys: ["/"], desc: "Toggle Global Search engine", icon: "🔍" },
-    { keys: ["Shift", "H"], desc: "Navigate to Home dashboard", icon: "🏠" },
-    { keys: ["Shift", "T"], desc: "Navigate to AI Biology Tutor", icon: "🤖" },
-    { keys: ["Shift", "L"], desc: "Navigate to Learning Paths dashboard", icon: "🎓" },
-    { keys: ["Shift", "P"], desc: "Navigate to Profile Hub & certification achievements", icon: "🏆" },
-    { keys: ["?"], desc: "Display this keyboard shortcuts sheet", icon: "⌨️" },
-    { keys: ["Esc"], desc: "Close any active search, modal, or overlay", icon: "✕" },
+    { keys: ["Ctrl", "K"], desc: "Toggle Global Search engine", icon: "search" },
+    { keys: ["/"], desc: "Toggle Global Search engine", icon: "search" },
+    { keys: ["Shift", "H"], desc: "Navigate to Home dashboard", icon: "home" },
+    { keys: ["Shift", "T"], desc: "Navigate to AI Biology Tutor", icon: "tutor" },
+    { keys: ["Shift", "L"], desc: "Navigate to Learning Paths dashboard", icon: "learning-paths" },
+    { keys: ["Shift", "P"], desc: "Navigate to Profile Hub & certification achievements", icon: "gamification" },
+    { keys: ["?"], desc: "Display this keyboard shortcuts sheet", icon: "keyboard" },
+    { keys: ["Esc"], desc: "Close any active search, modal, or overlay", icon: "close" },
   ];
 
   return (
     <div className="shortcuts-modal-overlay">
       <div className="shortcuts-modal-card glassmorphic" ref={modalRef}>
         <div className="shortcuts-header-row">
-          <h3 className="shortcuts-modal-title">⌨️ SYSTEM KEYBOARD SHORTCUTS</h3>
+          <h3 className="shortcuts-modal-title">SYSTEM KEYBOARD SHORTCUTS</h3>
           <button
             onClick={() => setShortcutsOpen(false)}
             className="shortcuts-close-btn"
             aria-label="Close shortcuts modal"
           >
-            ✕
+            <BioIcon name="close" size={18} />
           </button>
         </div>
 
@@ -55,7 +56,9 @@ export const ShortcutsModal: React.FC = () => {
           <div className="shortcuts-list-grid">
             {shortcutItems.map((item, idx) => (
               <div key={idx} className="shortcut-row-item">
-                <span className="shortcut-item-icon">{item.icon}</span>
+                <span className="shortcut-item-icon">
+                  <BioIcon name={item.icon} size={18} />
+                </span>
                 <span className="shortcut-item-desc">{item.desc}</span>
                 <div className="shortcut-keys-row">
                   {item.keys.map((k, kIdx) => (
