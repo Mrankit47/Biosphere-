@@ -23,6 +23,7 @@ const CATEGORIES: NavCategory[] = [
     items: [
       { href: "/", label: "Home", icon: "home" },
       { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
+      { href: "/knowledge", label: "Knowledge Graph", icon: "tree-of-life" },
       { href: "/learning-paths", label: "Learning Paths", icon: "learning-paths" },
       { href: "/tutor", label: "AI Tutor", icon: "tutor" },
       { href: "/gamification", label: "Profile Hub", icon: "gamification" },

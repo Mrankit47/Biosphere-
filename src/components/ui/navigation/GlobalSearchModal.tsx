@@ -22,6 +22,7 @@ const SEARCH_ITEMS: SearchItem[] = [
   { path: "/gamification", name: "Profile Hub & Achievements", category: "Core Module", icon: "gamification", desc: "Check XP levels, earned badges, streaks, and lab certificates." },
   { path: "/quiz", name: "Quiz Board", category: "Core Module", icon: "quiz", desc: "Quick-fire, fill-the-blanks, true/false, and label-the-cell challenges." },
   { path: "/dictionary", name: "Biology Dictionary", category: "Core Module", icon: "dictionary", desc: "Search over dozens of scientific terms with phonetics and notes." },
+  { path: "/knowledge", name: "Universal Biology Knowledge Graph", category: "Core Module", icon: "tree-of-life", desc: "Search and navigate interconnected biological concepts, 3D exhibits, and graph networks." },
   { path: "/research-hub", name: "Research Hub", category: "Core Module", icon: "research-hub", desc: "Publish notes, bookmark publications, and track biology research." },
 
   // 3D Modules
