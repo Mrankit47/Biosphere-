@@ -77,6 +77,7 @@ export const ROUTE_META: Record<string, { label: string; icon: string }> = {
   "/tutor": { label: "AI Tutor", icon: "tutor" },
   "/dictionary": { label: "Dictionary", icon: "dictionary" },
   "/quiz": { label: "Quiz", icon: "quiz" },
+  "/knowledge": { label: "Knowledge Graph", icon: "tree-of-life" },
 };
 
 export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

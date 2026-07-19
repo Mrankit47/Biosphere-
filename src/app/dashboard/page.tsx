@@ -9,6 +9,7 @@ import { PROGRAMS } from "@/data/learningEngine";
 import { getAnalytics } from "@/utils/progressEngine";
 import { getRecommendations } from "@/utils/recommendationsEngine";
 import { AnalyticsPanel, RecommendationCard, ProgramCard, ProgressRing } from "@/components/ui/learning";
+import { BioIcon } from "@/components/ui/navigation/BioIcon";
 
 // Type definitions
 interface CalendarEvent {
@@ -136,7 +137,9 @@ export default function BiologyDashboard() {
   if (!mounted) {
     return (
       <div className="dashboard-loading">
-        <span className="loading-spinner">🔬</span>
+        <span className="loading-spinner">
+          <BioIcon name="cell-explorer" size={36} />
+        </span>
         <p>Initializing Biosphere Dashboard...</p>
       </div>
     );
@@ -159,7 +162,9 @@ export default function BiologyDashboard() {
         <div className="banner-stats-trackers">
           {/* Streak Flame */}
           <div className="stat-flame-card">
-            <span className="stat-card-icon">🔥</span>
+            <span className="stat-card-icon">
+              <BioIcon name="mitochondria" size={24} />
+            </span>
             <div className="stat-card-info">
               <span className="stat-card-val">{streak} Days</span>
               <span className="stat-card-lbl">Learning Streak</span>
@@ -168,7 +173,9 @@ export default function BiologyDashboard() {
 
           {/* Level Tracker */}
           <div className="stat-flame-card">
-            <span className="stat-card-icon">🏆</span>
+            <span className="stat-card-icon">
+              <BioIcon name="gamification" size={24} />
+            </span>
             <div className="stat-card-info">
               <span className="stat-card-val">Level {currentLevel}</span>
               <span className="stat-card-lbl">{calculatedXp} Total XP</span>
@@ -184,7 +191,9 @@ export default function BiologyDashboard() {
           {/* Continue Learning card */}
           <div className="dashboard-card glassmorphic continue-learning-card">
             <div className="card-header-action-row">
-              <h3 className="dashboard-card-hdr">⚡ CONTINUE LEARNING</h3>
+              <h3 className="dashboard-card-hdr" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                <BioIcon name="mitochondria" size={14} /> CONTINUE LEARNING
+              </h3>
               <span className="journey-track-lbl">CELL BIOLOGY</span>
             </div>
             
@@ -208,7 +217,7 @@ export default function BiologyDashboard() {
 
           {/* Today's Challenge */}
           <div className="dashboard-card glassmorphic challenge-card">
-            <h3 className="dashboard-card-hdr">📅 TODAY'S CHALLENGE (+20 XP)</h3>
+            <h3 className="dashboard-card-hdr">TODAY'S CHALLENGE (+20 XP)</h3>
             <p className="challenge-question">{dailyQuestion.q}</p>
 
             <div className="challenge-options-grid">
@@ -247,7 +256,7 @@ export default function BiologyDashboard() {
 
           {/* Weak Topics & AI Recommendations */}
           <div className="dashboard-card glassmorphic weak-topics-card">
-            <h3 className="dashboard-card-hdr">🧠 WEAK TOPICS & AI RECOMMENDATIONS</h3>
+            <h3 className="dashboard-card-hdr">WEAK TOPICS & AI RECOMMENDATIONS</h3>
             {weakTopics.length > 0 ? (
               <div className="weak-topics-list">
                 {weakTopics.map((topic, idx) => (
@@ -258,7 +267,9 @@ export default function BiologyDashboard() {
                     </div>
                     <p className="topic-desc">{topic.desc}</p>
                     <div className="ai-recommendation-block">
-                      <span className="ai-badge">🤖 AI RECOMMENDATION</span>
+                      <span className="ai-badge" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                        <BioIcon name="tutor" size={14} /> AI RECOMMENDATION
+                      </span>
                       <p className="ai-tip">
                         "Your lab profiles show incomplete metrics here. Ask the tutor to review active-site configurations to bolster quiz scores."
                       </p>
@@ -282,7 +293,7 @@ export default function BiologyDashboard() {
         <div className="dashboard-col-right">
           {/* Level Gauge Progress */}
           <div className="dashboard-card glassmorphic xp-gauge-card">
-            <h3 className="dashboard-card-hdr">🏆 LEARNING ENGINE LEVEL</h3>
+            <h3 className="dashboard-card-hdr">LEARNING ENGINE LEVEL</h3>
             <div className="level-gauge-info">
               <div className="gauge-text-row">
                 <span className="gauge-level-title">LEVEL {currentLevel}</span>
@@ -299,7 +310,7 @@ export default function BiologyDashboard() {
 
           {/* Upcoming Events & Learning Calendar */}
           <div className="dashboard-card glassmorphic calendar-card">
-            <h3 className="dashboard-card-hdr">📅 LEARNING CALENDAR</h3>
+            <h3 className="dashboard-card-hdr">LEARNING CALENDAR</h3>
             
             {/* Simple calendar grid */}
             <div className="calendar-grid-wrapper">
@@ -330,7 +341,9 @@ export default function BiologyDashboard() {
               <div className={`calendar-event-popup-card ${selectedEvent.type}`}>
                 <div className="event-popup-header">
                   <span className="event-title-badge">{selectedEvent.type.toUpperCase()}</span>
-                  <button onClick={() => setSelectedEvent(null)} className="close-popup-btn">✕</button>
+                  <button onClick={() => setSelectedEvent(null)} className="close-popup-btn">
+                    <BioIcon name="close" size={14} />
+                  </button>
                 </div>
                 <h4 className="event-popup-title">{selectedEvent.title}</h4>
                 <p className="event-popup-desc">{selectedEvent.desc}</p>
@@ -342,14 +355,16 @@ export default function BiologyDashboard() {
 
           {/* Bookmarked Lessons */}
           <div className="dashboard-card glassmorphic bookmarks-card">
-            <h3 className="dashboard-card-hdr">⭐ BOOKMARKED EXAMPLES</h3>
+            <h3 className="dashboard-card-hdr">BOOKMARKED EXHIBITS</h3>
             {favorites.length > 0 ? (
               <div className="dashboard-bookmarks-list">
                 {favorites.map((favPath) => {
-                  const meta = ROUTE_META[favPath] || { label: "Details Page", icon: "🧬" };
+                  const meta = ROUTE_META[favPath] || { label: "Details Page", icon: "dna-genetics" };
                   return (
                     <a href={favPath} key={favPath} className="dashboard-bookmark-pill">
-                      <span className="bookmark-icon">{meta.icon}</span>
+                      <span className="bookmark-icon">
+                        <BioIcon name={meta.icon} size={16} />
+                      </span>
                       <span className="bookmark-name">{meta.label}</span>
                     </a>
                   );
@@ -364,10 +379,12 @@ export default function BiologyDashboard() {
 
       {/* Recommended Topics & 3D Specimens Row */}
       <section className="recommended-topics-row-section">
-        <h2 className="section-title">💡 RECOMMENDED MODULES TO EXPLORE</h2>
+        <h2 className="section-title">RECOMMENDED MODULES TO EXPLORE</h2>
         <div className="recommendations-deck-grid">
           <div className="recommended-card glassmorphic">
-            <span className="rec-icon">🫀</span>
+            <span className="rec-icon">
+              <BioIcon name="human-body" size={24} />
+            </span>
             <div className="rec-details">
               <h4>Anatomical Systems</h4>
               <p>Explore X-Ray skeletal maps and cardiac valve animations in the 3D Anatomy Visualizer.</p>
@@ -376,7 +393,9 @@ export default function BiologyDashboard() {
           </div>
 
           <div className="recommended-card glassmorphic">
-            <span className="rec-icon">🔬</span>
+            <span className="rec-icon">
+              <BioIcon name="cell-explorer" size={24} />
+            </span>
             <div className="rec-details">
               <h4>Cell Organelles</h4>
               <p>Inspect double-membrane layers of Mitochondria and protein routing ribosomes.</p>
@@ -385,7 +404,9 @@ export default function BiologyDashboard() {
           </div>
 
           <div className="recommended-card glassmorphic">
-            <span className="rec-icon">🦠</span>
+            <span className="rec-icon">
+              <BioIcon name="microorganisms" size={24} />
+            </span>
             <div className="rec-details">
               <h4>Microorganisms Zoo</h4>
               <p>Compare swimming flagella of Euglena and colonial sphere rotation of Volvox.</p>
@@ -397,24 +418,30 @@ export default function BiologyDashboard() {
 
       {/* Achievements Horizontal Carousel */}
       <section className="recommended-topics-row-section">
-        <h2 className="section-title">🏆 ACHIEVEMENTS & PATH BADGES</h2>
+        <h2 className="section-title">ACHIEVEMENTS & PATH BADGES</h2>
         <div className="achievements-carousel-list">
           <div className={`achievement-badge-card glassmorphic ${labPhotosynthesis ? "unlocked" : ""}`}>
-            <span className="badge-medal-icon">🧪</span>
+            <span className="badge-medal-icon">
+              <BioIcon name="virtual-lab" size={24} />
+            </span>
             <h4>Lab Pioneer</h4>
             <p>Complete Photosynthesis Elodea certified chromatography.</p>
             <span className="badge-xp-val">+150 XP</span>
           </div>
 
           <div className={`achievement-badge-card glassmorphic ${quizPoints >= 20 ? "unlocked" : ""}`}>
-            <span className="badge-medal-icon">⚡</span>
+            <span className="badge-medal-icon">
+              <BioIcon name="quiz" size={24} />
+            </span>
             <h4>Quiz Whiz</h4>
             <p>Score 20+ points across quick-fire biology quizzes.</p>
             <span className="badge-xp-val">+200 XP</span>
           </div>
 
           <div className="achievement-badge-card glassmorphic unlocked">
-            <span className="badge-medal-icon">🌱</span>
+            <span className="badge-medal-icon">
+              <BioIcon name="sprout" size={24} />
+            </span>
             <h4>Biosphere Novice</h4>
             <p>Created an active study profile inside the ecosystem.</p>
             <span className="badge-xp-val">Unlocked</span>

@@ -5,6 +5,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import Link from "next/link";
 import { PillBadge, GlowButton, GlassCard, GalleryGrid } from "@/components/ds";
+import { BioIcon } from "@/components/ui/navigation/BioIcon";
 
 /* ═══════════════════════════════════════════════════════════════
    ▸ CONSTANTS
@@ -16,55 +17,55 @@ const BOUNDS = { x: 18, y: 12, z: 10 };
 
 const FEATURES = [
   {
-    emoji: "🔬",
+    icon: "cell-explorer",
     title: "Cell Explorer",
     desc: "Zoom into living cells and explore organelles in full 3D detail.",
     href: "/cell-explorer",
   },
   {
-    emoji: "🦠",
+    icon: "microorganisms",
     title: "Microbe Zoo",
     desc: "Volvox · E.coli · Amoeba — the microscopic world comes alive.",
     href: "/microorganisms",
   },
   {
-    emoji: "🧬",
+    icon: "dna-genetics",
     title: "DNA & Genetics",
     desc: "Watch the double helix twist, unzip, and replicate before your eyes.",
     href: "/dna-genetics",
   },
   {
-    emoji: "🌳",
+    icon: "tree-of-life",
     title: "Tree of Life",
     desc: "All species, one map — navigate 3.8 billion years of evolution.",
     href: "/tree-of-life",
   },
   {
-    emoji: "🫀",
+    icon: "human-body",
     title: "Human Body",
     desc: "Every system in 3D — skeletal, muscular, circulatory and more.",
     href: "/human-body",
   },
   {
-    emoji: "⚡",
+    icon: "quiz",
     title: "Quiz",
     desc: "Test your knowledge with dynamic, randomized biology challenges.",
     href: "/quiz",
   },
   {
-    emoji: "☣️",
+    icon: "viruses",
     title: "Viruses",
     desc: "Explore SARS-CoV-2, HIV, Ebola and more — 3D structure to pandemic history.",
     href: "/viruses",
   },
   {
-    emoji: "🦁",
+    icon: "rare-species",
     title: "Rare Species",
     desc: "100 endangered creatures — from vaquita to axolotl — with interactive 3D models.",
     href: "/rare-species",
   },
   {
-    emoji: "🌿",
+    icon: "ecosystems",
     title: "Ecosystems",
     desc: "Dive into biomes — forests, oceans, deserts — with interactive food webs.",
     href: "/ecosystems",
@@ -269,13 +270,13 @@ function Marquee() {
    ═══════════════════════════════════════════════════════════════ */
 
 function FeatureCard({
-  emoji,
+  icon,
   title,
   desc,
   href,
   delay,
 }: {
-  emoji: string;
+  icon: string;
   title: string;
   desc: string;
   href: string;
@@ -289,8 +290,10 @@ function FeatureCard({
       className="p-[32px_28px] gap-2.5 hover:bg-[var(--ds-gradient-card-hover)] ds-card-group"
       ariaLabel={`Explore ${title}`}
     >
-      <span className="text-[2.2rem] leading-none select-none">{emoji}</span>
-      <h3 className="text-[length:var(--ds-text-lg)] font-bold text-[var(--ds-fg)] m-0">{title}</h3>
+      <span className="w-12 h-12 rounded-xl bg-[var(--ds-accent-faint)] border border-[var(--ds-border-accent)] flex items-center justify-center text-[var(--ds-accent)] shadow-[var(--ds-glow-sm)] transition-transform duration-300 ds-card-group-hover:scale-110">
+        <BioIcon name={icon} size={26} />
+      </span>
+      <h3 className="text-[length:var(--ds-text-lg)] font-bold text-[var(--ds-fg)] m-0 mt-1">{title}</h3>
       <p className="text-[length:var(--ds-text-base)] text-[var(--ds-fg-muted)] leading-[1.55] m-0 flex-1">{desc}</p>
       <span className="inline-flex items-center gap-1.5 text-[length:var(--ds-text-sm)] font-semibold text-[var(--ds-accent)] mt-2 tracking-[0.04em] transition-[gap] duration-300 ds-card-group-hover:gap-3">
         Explore <span className="transition-transform duration-300 ds-card-group-hover:translate-x-1">→</span>
@@ -363,10 +366,10 @@ export default function HomePage() {
           </GlowButton>
           <Link
             href="/dashboard"
-            className="px-6 py-3 border border-[var(--ds-border-accent)] bg-[var(--ds-accent-faint)] text-[var(--ds-accent)] font-bold rounded-lg hover:bg-[var(--ds-accent-subtle)] transition-all flex items-center justify-center text-sm shadow-[var(--ds-glow-sm)] cursor-pointer decoration-none"
+            className="px-6 py-3 border border-[var(--ds-border-accent)] bg-[var(--ds-accent-faint)] text-[var(--ds-accent)] font-bold rounded-lg hover:bg-[var(--ds-accent-subtle)] transition-all flex items-center justify-center text-sm shadow-[var(--ds-glow-sm)] cursor-pointer decoration-none gap-2"
             style={{ textDecoration: "none" }}
           >
-            Learning Dashboard 📊
+            Learning Dashboard <BioIcon name="dashboard" size={16} />
           </Link>
         </div>
 
