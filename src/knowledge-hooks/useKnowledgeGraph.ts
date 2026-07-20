@@ -5,46 +5,58 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { useState, useEffect } from "react";
-import type { KnowledgeGraphNode, KnowledgeEdge } from "@/knowledge-types/graph";
+import type {
+  KnowledgeGraphNode,
+  KnowledgeEdge,
+  GraphVisualizationData,
+  GraphPath,
+} from "@/knowledge-types/graph";
 import type { KnowledgeObject } from "@/knowledge-types/object";
 import { knowledgeGraph } from "@/knowledge-engine/graphIndexer";
 import { initKnowledge, getRelatedGrouped } from "@/knowledge-services/knowledgeService";
+import { visualizationEngine } from "@/knowledge-services/visualizationEngine";
+import { graphTraversalService } from "@/knowledge-services/graphTraversal";
 
-export interface UseKnowledgeGraphResult {
-  /** Direct neighbor nodes (1-hop) */
-  neighbors: KnowledgeGraphNode[];
-  /** All edges from the queried node */
-  edges: KnowledgeEdge[];
-  /** Related objects grouped by relationship type */
-  relatedGroups: Record<string, KnowledgeObject[]>;
-  /** BFS traversal result (nodes within depth) */
-  traversal: { nodes: KnowledgeGraphNode[]; edges: KnowledgeEdge[] };
-  loading: boolean;
+export interface UseKnowledgeGraphOptions {
+  depth?: number;
+  focusMode?: boolean;
 }
 
-/**
- * React hook for graph traversal and relationship queries.
- * Returns neighbors, edges, grouped relations, and BFS traversal.
- */
+export interface UseKnowledgeGraphResult {
+  node: KnowledgeGraphNode | null;
+  neighbors: KnowledgeGraphNode[];
+  edges: KnowledgeEdge[];
+  relatedGroups: Record<string, KnowledgeObject[]>;
+  visData: GraphVisualizationData | null;
+  loading: boolean;
+  findPathTo: (targetId: string) => GraphPath | null;
+}
+
 export function useKnowledgeGraph(
   id: string | undefined,
-  depth: number = 2
+  options: UseKnowledgeGraphOptions = {}
 ): UseKnowledgeGraphResult {
-  const [result, setResult] = useState<UseKnowledgeGraphResult>({
+  const [result, setResult] = useState<Omit<UseKnowledgeGraphResult, "findPathTo">>({
+    node: null,
     neighbors: [],
     edges: [],
     relatedGroups: {},
-    traversal: { nodes: [], edges: [] },
+    visData: null,
     loading: true,
   });
 
+  const depth = options.depth ?? 2;
+
   useEffect(() => {
     if (!id) {
+      initKnowledge();
+      const visData = visualizationEngine.generateVisualizationData();
       setResult({
+        node: null,
         neighbors: [],
         edges: [],
         relatedGroups: {},
-        traversal: { nodes: [], edges: [] },
+        visData,
         loading: false,
       });
       return;
@@ -52,29 +64,39 @@ export function useKnowledgeGraph(
 
     try {
       initKnowledge();
-
+      const node = knowledgeGraph.getNode(id) ?? null;
       const neighbors = knowledgeGraph.getNeighbors(id);
       const edges = knowledgeGraph.getEdges(id);
       const relatedGroups = getRelatedGrouped(id);
-      const traversal = knowledgeGraph.traverse(id, depth);
+      const visData = visualizationEngine.generateVisualizationData({
+        focusNodeId: id,
+        maxHopDepth: depth,
+      });
 
       setResult({
+        node,
         neighbors,
         edges,
         relatedGroups,
-        traversal,
+        visData,
         loading: false,
       });
     } catch {
       setResult({
+        node: null,
         neighbors: [],
         edges: [],
         relatedGroups: {},
-        traversal: { nodes: [], edges: [] },
+        visData: null,
         loading: false,
       });
     }
-  }, [id, depth]);
+  }, [id, depth, options.focusMode]);
 
-  return result;
+  const findPathTo = (targetId: string): GraphPath | null => {
+    if (!id) return null;
+    return graphTraversalService.findShortestPath(id, targetId);
+  };
+
+  return { ...result, findPathTo };
 }

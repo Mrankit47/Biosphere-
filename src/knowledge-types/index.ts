@@ -21,14 +21,25 @@ export type {
   KnowledgeObject,
 } from "./object";
 
-// Graph types
+// Graph & Recommendation types
 export type {
+  NodeType,
+  ExtendedRelationshipType,
   RelationshipType,
   KnowledgeEdge,
   KnowledgeGraphNode,
   GraphTraversalResult,
   GraphPath,
   GraphStats,
+  VisNode,
+  VisLink,
+  VisCluster,
+  GraphVisualizationData,
+  RecommendationCategory,
+  RecommendationItem,
+  MultiVectorRecommendations,
+  DynamicPathStep,
+  DynamicLearningPath,
 } from "./graph";
 
 // Validation types
