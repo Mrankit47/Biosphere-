@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BackLink } from '@/components/ds'
+import { BioIcon } from '@/components/ui/navigation/BioIcon'
 
 interface SimStep {
   title: string
@@ -28,7 +29,7 @@ const PROCESSES: ProcessConfig[] = [
     name: 'DNA Replication Fork',
     category: 'Molecular Genetics',
     desc: 'Observe the replication fork in action as Helicase unzips the double helix, Primase sets anchors, DNA Polymerase builds strands, and Ligase seals nicks.',
-    emoji: '🧬',
+    emoji: 'dna-genetics',
     steps: [
       {
         title: 'Helicase Unwinding',
@@ -65,7 +66,7 @@ const PROCESSES: ProcessConfig[] = [
     name: 'Mitosis Phases (Cell Division)',
     category: 'Cellular Biology',
     desc: 'Simulate karyokinesis phases: trace chromatin condensation, equator alignment, spindle contraction, and cleavage furrow cytokinesis.',
-    emoji: '🦠',
+    emoji: 'cell-explorer',
     steps: [
       {
         title: 'Prophase: Chromosome Condensation',
@@ -196,7 +197,9 @@ export default function ProcessSimulations() {
             {PROCESSES.map(p => (
               <div key={p.id} className="sim-select-card glassmorphic">
                 <div className="card-top">
-                  <span className="card-emoji">{p.emoji}</span>
+                  <span className="card-emoji text-[#39FF14] inline-flex items-center justify-center">
+                    <BioIcon name={p.emoji} size={28} />
+                  </span>
                   <span className="card-category">{p.category}</span>
                 </div>
                 <h3 className="card-title">{p.name}</h3>

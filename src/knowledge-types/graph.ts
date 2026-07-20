@@ -1,84 +1,208 @@
 // ═══════════════════════════════════════════════════════════════
-// Biosphere — Knowledge Graph Type Definitions
+// Biosphere — Knowledge Graph & Recommendation Engine Types
 // ═══════════════════════════════════════════════════════════════
 
 import type { KnowledgeCategory } from "./object";
 
+// ─── Node Types ───────────────────────────────────────────────
+
+export type NodeType =
+  | "cell"
+  | "dna"
+  | "rna"
+  | "neuron"
+  | "liver"
+  | "heart"
+  | "organ"
+  | "system"
+  | "virus"
+  | "bacteria"
+  | "species"
+  | "disease"
+  | "experiment"
+  | "simulation"
+  | "lab"
+  | "research-article"
+  | "scientist"
+  | "process";
+
 // ─── Edge / Relationship Types ───────────────────────────────
 
-/** Semantic relationship type between two knowledge nodes */
-export type RelationshipType =
-  | "parent"
-  | "child"
-  | "related"
+export type ExtendedRelationshipType =
   | "prerequisite"
   | "next"
-  | "disease"
-  | "species"
-  | "organ"
-  | "cell"
-  | "simulation"
-  | "research"
-  | "process"
-  | "experiment";
+  | "parent"
+  | "child"
+  | "part-of"
+  | "contains"
+  | "related-disease"
+  | "related-organ"
+  | "related-cell"
+  | "related-species"
+  | "related-simulation"
+  | "related-virtual-lab"
+  | "related-quiz"
+  | "related-flashcards"
+  | "related-research"
+  | "related-scientist"
+  | "medical-importance"
+  | "environmental-importance";
+
+// Retro-compatibility alias
+export type RelationshipType = ExtendedRelationshipType | "related";
 
 /** A directed edge between two knowledge graph nodes */
 export interface KnowledgeEdge {
-  /** Source node ID */
   from: string;
-  /** Target node ID */
   to: string;
-  /** Semantic relationship type */
   type: RelationshipType;
-  /** Relationship strength / confidence (0–1) */
-  weight: number;
-  /** Optional label for UI display */
+  weight: number; // 0.0 - 1.0 confidence/strength
   label?: string;
+  metadata?: Record<string, unknown>;
 }
 
 // ─── Graph Node ──────────────────────────────────────────────
 
-/** Lightweight graph node for traversal (not the full KnowledgeObject) */
 export interface KnowledgeGraphNode {
   id: string;
   name: string;
+  nodeType: NodeType;
   category: KnowledgeCategory;
   subcategory: string;
   icon: string;
   accentColor: string;
   difficulty: string;
-  /** Direct edges from this node */
+  importanceScore?: number; // 0-100 score for search & ranking
   edges: KnowledgeEdge[];
 }
 
-// ─── Graph Query Results ─────────────────────────────────────
+// ─── Traversal & Query Types ─────────────────────────────────
 
-/** Result from a graph traversal query */
 export interface GraphTraversalResult {
-  /** The root node that was queried */
   rootId: string;
-  /** All reachable nodes within the requested depth */
   nodes: KnowledgeGraphNode[];
-  /** All edges in the traversal */
   edges: KnowledgeEdge[];
-  /** Maximum depth reached */
   depth: number;
 }
 
-/** A single path between two nodes in the graph */
 export interface GraphPath {
   nodeIds: string[];
   edges: KnowledgeEdge[];
   totalWeight: number;
 }
 
-// ─── Graph Statistics ────────────────────────────────────────
-
-/** Aggregate statistics for the knowledge graph */
 export interface GraphStats {
   totalNodes: number;
   totalEdges: number;
   categoryCounts: Record<string, number>;
+  nodeTypeCounts: Record<string, number>;
   averageEdgesPerNode: number;
   maxDepth: number;
+}
+
+// ─── Graph Visualization Data Format ──────────────────────────
+
+export interface VisNode {
+  id: string;
+  label: string;
+  nodeType: NodeType;
+  category: KnowledgeCategory;
+  color: string;
+  icon: string;
+  size: number;
+  clusterId?: string;
+  x?: number;
+  y?: number;
+  z?: number;
+}
+
+export interface VisLink {
+  source: string;
+  target: string;
+  type: RelationshipType;
+  weight: number;
+  label?: string;
+}
+
+export interface VisCluster {
+  id: string;
+  label: string;
+  color: string;
+  nodeIds: string[];
+}
+
+export interface GraphVisualizationData {
+  nodes: VisNode[];
+  links: VisLink[];
+  clusters: VisCluster[];
+  focusedNodeId?: string;
+  metadata: {
+    totalNodes: number;
+    totalLinks: number;
+    generatedAt: string;
+  };
+}
+
+// ─── Recommendation Engine Types ─────────────────────────────
+
+export type RecommendationCategory =
+  | "continue-learning"
+  | "recommended-topic"
+  | "recommended-simulation"
+  | "recommended-lab"
+  | "recommended-quiz"
+  | "recommended-flashcards"
+  | "recommended-research"
+  | "recommended-anatomy"
+  | "ai-suggested-learning";
+
+export interface RecommendationItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  category: RecommendationCategory;
+  targetUrl: string;
+  icon: string;
+  accentColor: string;
+  score: number; // 0-100 relevance score
+  reason: string; // Human-readable explanation for the recommendation
+  nodeType: NodeType;
+}
+
+export interface MultiVectorRecommendations {
+  continueLearning: RecommendationItem[];
+  recommendedTopics: RecommendationItem[];
+  recommendedSimulations: RecommendationItem[];
+  recommendedLabs: RecommendationItem[];
+  recommendedQuizzes: RecommendationItem[];
+  recommendedFlashcards: RecommendationItem[];
+  recommendedResearch: RecommendationItem[];
+  recommendedAnatomy: RecommendationItem[];
+  aiSuggestedPath: RecommendationItem[];
+}
+
+// ─── Dynamic Learning Path Types ─────────────────────────────
+
+export interface DynamicPathStep {
+  stepNumber: number;
+  nodeId: string;
+  title: string;
+  subcategory: string;
+  estimatedMinutes: number;
+  difficulty: string;
+  icon: string;
+  accentColor: string;
+  prerequisitesMet: boolean;
+  targetUrl: string;
+  keyConcepts: string[];
+}
+
+export interface DynamicLearningPath {
+  id: string;
+  title: string;
+  description: string;
+  interestTag: string;
+  totalMinutes: number;
+  difficulty: string;
+  steps: DynamicPathStep[];
 }

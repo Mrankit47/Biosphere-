@@ -37,7 +37,7 @@ export const JOURNEYS: Journey[] = [
     id: "cell-biology",
     title: "Cell Biology",
     description: "Discover the micro-universe of cell structures, organelles, and basic cellular functions.",
-    icon: "🔬",
+    icon: "cell-explorer",
     color: "#39FF14",
     exploreUrl: "/cell-explorer",
     lessons: [
@@ -111,8 +111,8 @@ export const JOURNEYS: Journey[] = [
     id: "genetics",
     title: "Genetics & DNA",
     description: "Deconstruct the double helix structure, the role of genes, and replication principles.",
-    icon: "🧬",
-    color: "#E24B4A",
+    icon: "dna-genetics",
+    color: "#4ECDC4",
     exploreUrl: "/dna-genetics",
     lessons: [
       {
@@ -229,31 +229,28 @@ export const JOURNEYS: Journey[] = [
             text: "Where in the bones are red blood cells produced?",
             options: ["Bone Marrow", "Compact Bone", "Periosteum", "Joint Cavity"],
             answerIndex: 0,
-            explanation: "Red and white blood cells are manufactured inside the soft center of bones called marrow."
-          }
-        ]
-      }
-    ]
+            explanation: "Red blood cells are manufactured inside soft bone marrow.",
+          },
+        ],
+      },
+    ],
   },
   {
     id: "microbiology",
-    title: "Microbiology & Viruses",
-    description: "Compare unicellular organisms (bacteria/amoebae) with viruses and capsid capsules.",
-    icon: "🦠",
-    color: "#EF9F27",
+    title: "Microbiology & Pathogens",
+    description: "Inspect bacteria, viruses, protists, and micro-fauna in high resolution.",
+    icon: "microorganisms",
+    color: "#9B59B6",
     exploreUrl: "/microorganisms",
     lessons: [
       {
-        id: "bacteria-microbes",
-        title: "Microscopic Organisms: Bacteria",
+        id: "microbe-intro",
+        title: "The Micro-World",
         readingTime: "3 min read",
-        summary: "Understand bacterial shapes, structures, and ecological significance.",
-        content: `<h3>What are Bacteria?</h3>
-<p>Bacteria are microscopic, single-celled organisms that exist in huge numbers in almost every environment on Earth. They are prokaryotes, meaning their DNA float freely in a region called the nucleoid rather than inside a nucleus.</p>
-
-<h3>Beneficial vs. Pathogenic Bacteria</h3>
-<p>While some bacteria cause diseases (pathogens), the vast majority are harmless or highly beneficial. Beneficial bacteria help digest food in our gut, decompose organic waste, and capture nitrogen for plants.</p>`,
-        exploreButtonText: "Inspect Bacteria in 3D",
+        summary: "Discover the immense variety of single-celled organisms and viral particles.",
+        content: `<h3>Microorganisms & Pathogens</h3>
+<p>Microbiology is the study of microscopic organisms including bacteria, viruses, fungi, and protozoa.</p>`,
+        exploreButtonText: "Explore Microbe Zoo",
         exploreUrl: "/microorganisms",
       },
       {
@@ -300,7 +297,7 @@ export const JOURNEYS: Journey[] = [
     id: "ecology",
     title: "Ecology & Ecosystems",
     description: "Analyze food chains, energy flow in trophic pyramids, and biogeochemical cycles.",
-    icon: "🌿",
+    icon: "ecosystems",
     color: "#1D9E75",
     exploreUrl: "/ecosystems",
     lessons: [

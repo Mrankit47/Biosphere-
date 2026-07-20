@@ -154,9 +154,14 @@ export interface KnowledgeObject {
   virtualLabUrl?: string;
   askAiPrompt: string;
 
+  // ── Node Type Classification ──────────────────────────────
+  nodeType?: import("./graph").NodeType;
+
   // ── Graph Relationships (KnowledgeObject IDs) ─────────────
   parentTopicId?: string;
   childTopicIds: string[];
+  partOfId?: string;
+  containsIds?: string[];
   relatedTopicIds: string[];
   prerequisiteIds: string[];
   nextTopicIds: string[];
@@ -165,10 +170,14 @@ export interface KnowledgeObject {
   relatedOrganIds: string[];
   relatedCellIds: string[];
   relatedSimulationIds: string[];
+  relatedVirtualLabIds?: string[];
   relatedResearchIds: string[];
+  relatedScientistIds?: string[];
 
-  // ── Clinical & Real-World ─────────────────────────────────
+  // ── Clinical, Medical & Environmental ─────────────────────
   clinicalImportance?: string;
+  medicalImportance?: string;
+  environmentalImportance?: string;
   realWorldApplications: string[];
 
   // ── Assessment & Gamification ─────────────────────────────

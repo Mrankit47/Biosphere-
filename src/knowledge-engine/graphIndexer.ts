@@ -13,6 +13,7 @@ import type {
   RelationshipType,
   GraphStats,
 } from "@/knowledge-types/graph";
+import { inferNodeType, relationshipResolver } from "@/knowledge-services/relationshipResolver";
 
 // ─── Graph Index ─────────────────────────────────────────────
 
@@ -43,7 +44,7 @@ export class KnowledgeGraphIndex {
       this.adjacency.set(obj.id, new Set());
     }
 
-    // Phase 2 — build edges from relationship fields
+    // Phase 2 — build edges using RelationshipResolver
     for (const obj of objects) {
       this.indexRelationships(obj);
     }
@@ -184,11 +185,12 @@ export class KnowledgeGraphIndex {
   getStats(): GraphStats {
     let totalEdges = 0;
     const categoryCounts: Record<string, number> = {};
+    const nodeTypeCounts: Record<string, number> = {};
 
     for (const node of this.nodes.values()) {
       totalEdges += node.edges.length;
-      categoryCounts[node.category] =
-        (categoryCounts[node.category] ?? 0) + 1;
+      categoryCounts[node.category] = (categoryCounts[node.category] ?? 0) + 1;
+      nodeTypeCounts[node.nodeType] = (nodeTypeCounts[node.nodeType] ?? 0) + 1;
     }
 
     const totalNodes = this.nodes.size;
@@ -197,8 +199,9 @@ export class KnowledgeGraphIndex {
       totalNodes,
       totalEdges,
       categoryCounts,
+      nodeTypeCounts,
       averageEdgesPerNode: totalNodes > 0 ? totalEdges / totalNodes : 0,
-      maxDepth: 0, // computed lazily if needed
+      maxDepth: 0,
     };
   }
 
@@ -226,6 +229,7 @@ export class KnowledgeGraphIndex {
     return {
       id: obj.id,
       name: obj.name,
+      nodeType: inferNodeType(obj),
       category: obj.category,
       subcategory: obj.subcategory,
       icon: obj.icon,
@@ -235,69 +239,28 @@ export class KnowledgeGraphIndex {
     };
   }
 
-  /** Extract all relationship arrays from an object and create edges */
+  /** Extract all relationship arrays using RelationshipResolver and create edges */
   private indexRelationships(obj: KnowledgeObject): void {
-    const add = (
-      targetId: string,
-      type: RelationshipType,
-      weight: number = 1.0
-    ) => {
-      if (!this.nodes.has(targetId)) return; // skip dangling refs
+    const rawEdges = relationshipResolver.resolveObjectEdges(obj);
+
+    for (const edge of rawEdges) {
+      if (!this.nodes.has(edge.to)) continue; // skip dangling refs
 
       // Forward edge
-      const forwardEdge: KnowledgeEdge = {
-        from: obj.id,
-        to: targetId,
-        type,
-        weight,
-      };
-      this.nodes.get(obj.id)!.edges.push(forwardEdge);
-      this.adjacency.get(obj.id)!.add(targetId);
+      this.nodes.get(obj.id)!.edges.push(edge);
+      this.adjacency.get(obj.id)!.add(edge.to);
 
       // Reverse edge (bidirectional graph)
-      const reverseType = this.reverseRelationship(type);
+      const reverseType = relationshipResolver.getInverseRelationship(edge.type);
       const reverseEdge: KnowledgeEdge = {
-        from: targetId,
+        from: edge.to,
         to: obj.id,
         type: reverseType,
-        weight,
+        weight: edge.weight,
+        label: relationshipResolver.getRelationshipLabel(reverseType),
       };
-      this.nodes.get(targetId)!.edges.push(reverseEdge);
-      this.adjacency.get(targetId)!.add(obj.id);
-    };
-
-    // Parent-child
-    if (obj.parentTopicId) add(obj.parentTopicId, "parent", 1.0);
-    for (const cid of obj.childTopicIds) add(cid, "child", 0.9);
-
-    // Relationships
-    for (const rid of obj.relatedTopicIds) add(rid, "related", 0.7);
-    for (const pid of obj.prerequisiteIds) add(pid, "prerequisite", 0.95);
-    for (const nid of obj.nextTopicIds) add(nid, "next", 0.85);
-
-    // Domain-specific
-    for (const did of obj.relatedDiseaseIds) add(did, "disease", 0.8);
-    for (const sid of obj.relatedSpeciesIds) add(sid, "species", 0.6);
-    for (const oid of obj.relatedOrganIds) add(oid, "organ", 0.8);
-    for (const cid of obj.relatedCellIds) add(cid, "cell", 0.8);
-    for (const sid of obj.relatedSimulationIds)
-      add(sid, "simulation", 0.7);
-    for (const rid of obj.relatedResearchIds) add(rid, "research", 0.6);
-  }
-
-  /** Map a relationship type to its semantic reverse */
-  private reverseRelationship(type: RelationshipType): RelationshipType {
-    switch (type) {
-      case "parent":
-        return "child";
-      case "child":
-        return "parent";
-      case "prerequisite":
-        return "next";
-      case "next":
-        return "prerequisite";
-      default:
-        return type; // symmetric relationships
+      this.nodes.get(edge.to)!.edges.push(reverseEdge);
+      this.adjacency.get(edge.to)!.add(obj.id);
     }
   }
 }

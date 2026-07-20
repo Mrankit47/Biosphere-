@@ -81,7 +81,7 @@ export const PROGRAMS: Program[] = [
     id: "cell-biology",
     title: "Cell Biology",
     description: "Master the micro-universe of cellular structures, organelle functions, and cell processes.",
-    icon: "🔬",
+    icon: "cell-explorer",
     color: "#39FF14",
     difficulty: "beginner",
     estimatedHours: 8,
@@ -220,7 +220,7 @@ export const PROGRAMS: Program[] = [
         id: "cb-division",
         title: "Cell Division",
         description: "Mitosis, meiosis, and the cell cycle.",
-        icon: "🔄",
+        icon: "process-simulations",
         lessons: [
           {
             id: "cb-cell-cycle",
@@ -271,8 +271,8 @@ export const PROGRAMS: Program[] = [
   {
     id: "human-anatomy",
     title: "Human Anatomy",
-    description: "Explore the structure and function of every major organ system in the human body.",
-    icon: "🫀",
+    description: "Explore human body systems, organ structures, and physiological processes.",
+    icon: "human-body",
     color: "#378ADD",
     difficulty: "intermediate",
     estimatedHours: 12,
@@ -368,8 +368,8 @@ export const PROGRAMS: Program[] = [
   {
     id: "genetics",
     title: "Genetics & DNA",
-    description: "Decode the double helix, gene expression, inheritance patterns, and mutations.",
-    icon: "🧬",
+    description: "Unravel molecular genetics, DNA replication, inheritance, and gene editing.",
+    icon: "dna-genetics",
     color: "#E24B4A",
     difficulty: "intermediate",
     estimatedHours: 10,
@@ -467,9 +467,9 @@ export const PROGRAMS: Program[] = [
   // ════════════════════════════════════════════════════
   {
     id: "microbiology",
-    title: "Microbiology",
-    description: "Study bacteria, viruses, fungi, and protists — the invisible kingdoms of life.",
-    icon: "🦠",
+    title: "Microbiology & Viruses",
+    description: "Explore bacteria, viruses, single-celled protists, and immune defenses.",
+    icon: "microorganisms",
     color: "#EF9F27",
     difficulty: "intermediate",
     estimatedHours: 9,
@@ -481,7 +481,7 @@ export const PROGRAMS: Program[] = [
         id: "micro-bacteria",
         title: "Bacteria & Archaea",
         description: "Prokaryotic diversity and ecological roles.",
-        icon: "🔬",
+        icon: "cell-explorer",
         quizId: "micro-quiz-1",
         lessons: [
           {
@@ -566,9 +566,9 @@ export const PROGRAMS: Program[] = [
   // ════════════════════════════════════════════════════
   {
     id: "botany",
-    title: "Botany",
-    description: "Explore plant structure, photosynthesis, reproduction, and ecological significance.",
-    icon: "🌱",
+    title: "Botany & Plant Science",
+    description: "Discover plant structures, photosynthesis, vascular transport, and adaptations.",
+    icon: "photosynthesis",
     color: "#22C55E",
     difficulty: "beginner",
     estimatedHours: 8,
@@ -689,9 +689,9 @@ export const PROGRAMS: Program[] = [
   // ════════════════════════════════════════════════════
   {
     id: "ecology",
-    title: "Ecology & Ecosystems",
-    description: "Analyze food webs, energy flow, biogeochemical cycles, and conservation biology.",
-    icon: "🌿",
+    title: "Ecology & Environment",
+    description: "Study food webs, biomes, biogeochemical cycles, and ecosystem dynamics.",
+    icon: "ecosystems",
     color: "#1D9E75",
     difficulty: "intermediate",
     estimatedHours: 9,

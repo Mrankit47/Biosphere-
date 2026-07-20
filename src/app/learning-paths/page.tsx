@@ -2,9 +2,11 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 import { JOURNEYS } from '@/data/learningPaths'
 import { getUserProgress, getOrCreateUserId, UserProgressData } from '@/utils/supabase'
 import { BackLink } from '@/components/ds'
+import { BioIcon } from '@/components/ui/navigation/BioIcon'
 
 export default function LearningPathsDashboard() {
   const [mounted, setMounted] = useState(false)
@@ -344,8 +346,8 @@ export default function LearningPathsDashboard() {
                     className="journey-card glassmorphic"
                     style={{ borderColor: `${j.color}15` }}
                   >
-                    <div className="card-icon-box" style={{ background: `${j.color}10`, color: j.color }}>
-                      {j.icon}
+                    <div className="card-icon-box flex items-center justify-center" style={{ background: `${j.color}10`, color: j.color }}>
+                      <BioIcon name={j.icon} size={26} />
                     </div>
                     
                     <div className="card-body">

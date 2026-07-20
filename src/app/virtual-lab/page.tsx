@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { BackLink } from '@/components/ds'
+import { BioIcon } from '@/components/ui/navigation/BioIcon'
 
 // Define TS Interfaces
 interface QuizQuestion {
@@ -34,7 +35,7 @@ const EXPERIMENTS: LabExperiment[] = [
   {
     id: 'photosynthesis',
     name: 'Photosynthesis Limiting Factors',
-    icon: '🌿',
+    icon: 'photosynthesis',
     desc: 'Measure oxygen gas bubbles released by Elodea weed to investigate how light intensity, wavelength, and carbon dioxide limit cellular chloroplast productivity.',
     category: 'Plant Physiology',
     steps: [
@@ -102,7 +103,7 @@ const EXPERIMENTS: LabExperiment[] = [
   {
     id: 'enzyme',
     name: 'Enzyme Catalysis (Catalase)',
-    icon: '🧪',
+    icon: 'virtual-lab',
     desc: 'Investigate how temperature and pH affect the speed at which Catalase enzyme breaks down toxic Hydrogen Peroxide into water and oxygen gas.',
     category: 'Biochemistry',
     steps: [
@@ -393,7 +394,9 @@ export default function VirtualLab() {
               return (
                 <div key={lab.id} className="lab-select-card glassmorphic">
                   <div className="card-top">
-                    <span className="card-icon">{lab.icon}</span>
+                    <span className="card-icon text-[#39FF14] inline-flex items-center justify-center">
+                      <BioIcon name={lab.icon} size={28} />
+                    </span>
                     {isDone && <span className="completed-badge">✓ CERTIFIED</span>}
                   </div>
                   <h3 className="card-title">{lab.name}</h3>

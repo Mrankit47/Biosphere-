@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { BackLink } from "@/components/ds";
+import { BioIcon } from "@/components/ui/navigation/BioIcon";
 import { getJourneyById } from "@/data/learningPaths";
 import { getUserProgress, getOrCreateUserId, UserProgressData } from "@/utils/supabase";
 
@@ -72,8 +73,8 @@ export default function JourneyPage() {
 
         {/* Journey Hero Header */}
         <header style={{ ...S.header, borderColor: `${journey.color}15` }}>
-          <div style={{ ...S.iconBox, background: `${journey.color}10`, color: journey.color }}>
-            {journey.icon}
+          <div style={{ ...S.iconBox, background: `${journey.color}10`, color: journey.color, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <BioIcon name={journey.icon} size={28} />
           </div>
           <div style={S.headerContent}>
             <h1 style={S.title}>{journey.title}</h1>
