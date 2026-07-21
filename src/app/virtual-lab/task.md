@@ -1,0 +1,22 @@
+# Virtual Lab Engine Implementation Tasks
+
+- [x] Create experiment database file `src/data/experiments.ts`
+- [x] Create simulation canvas routing and visualizers:
+  - [x] `SimulationCanvas.tsx`
+  - [x] `PhotosynthesisVisualizer.tsx` (R3F 3D)
+  - [x] `CatalaseVisualizer.tsx` (R3F 3D)
+  - [x] `OsmosisVisualizer.tsx` (Solute/Membrane)
+  - [x] `MicroscopeVisualizer.tsx` (Slides eyepiece and blur focus)
+- [x] Create workspace panels:
+  - [x] `EquipmentPanel.tsx` (Material selection shelf)
+  - [x] `InstructionPanel.tsx` (Theory, Objectives, Safety)
+  - [x] `ObservationPanel.tsx` (Metrics, Charts, Questions)
+  - [x] `Notebook.tsx` (Student lab notes)
+  - [x] `AIMentorSidebar.tsx` (Interactive chatbot + Viva oral examiner)
+  - [x] `ResultPanel.tsx` (Scores, XP, Achievements)
+  - [x] `CompletionDialog.tsx` (Success certifications)
+  - [x] `LabReportGenerator.tsx` (Formatted print output)
+  - [x] `LabWorkspace.tsx` (Central coordinate)
+- [x] Extend API chat handler `src/app/api/chat/route.ts` with custom lab prompt rules and viva evaluation
+- [x] Clean up `/virtual-lab/page.tsx` to integrate the engine
+- [x] Verify build and compile success
