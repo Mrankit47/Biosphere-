@@ -128,7 +128,55 @@ Valid IDs: "brain", "heart", "lungs", "liver", "stomach", "intestines", "kidneys
 --- RESPONSE STRUCTURE ---
 `;
 
-  if (action === "quiz") {
+  if (action === "viva_grade") {
+    prompt += `
+The student is taking the oral examination (Viva Voce) for the virtual laboratory experiment: "${context?.experimentName || 'Biology Lab'}".
+The user message contains the student's answer to a viva question.
+Your goals:
+1. Act as the friendly but rigorous biology professor.
+2. Evaluate the accuracy of the student's answer based on biological principles.
+3. Provide a brief, encouraging, constructive critique explaining why their answer is correct, partially correct, or incorrect.
+4. Conclude your response with the grade out of 10 in this exact format:
+SCORE: X/10 (where X is a number from 0 to 10 based on their answer quality).
+Example output:
+"Fascinating answer! You correctly identified that Aquaporins do not require ATP because they are channel proteins facilitating passive transport down a gradient. However, you forgot to mention that water moves from high to low water potential.
+SCORE: 8/10"
+Keep it concise. Do NOT add other formatting templates.
+`;
+  } else if (context && context.page === "virtual-lab") {
+    prompt += `
+The student is currently running a virtual biology laboratory experiment: "${context.experimentName}".
+Experiment ID: ${context.experimentId}
+Lab Mode: ${context.mode}
+Active step index: ${context.currentStepIndex} (Title: "${context.currentStepTitle}")
+Equipped Cabinet Items: ${context.equippedItems?.join(", ") || "None"}
+Active Simulator Inputs: ${JSON.stringify(context.inputs || {})}
+Live Simulator Outputs: ${JSON.stringify(context.outputs || {})}
+
+Your goals:
+1. Help the student complete the lab steps, explain concepts when they are stuck, or suggest corrections.
+2. If they ask to check for mistakes, look at their active simulator inputs and compare them with the biological principles:
+   - In Photosynthesis: If drops = 0, warn them that no CO2 means Rubisco cannot fix carbon. If distance > 40, light is too low to power Photosystem II photolysis. If wavelength = green, remind them chlorophyll reflects green light.
+   - In Catalase: If pH is highly acidic/basic (pH 1-3, 11-14) or temperature is >= 60°C, explain that Catalase has denatured because weak hydrogen/ionic bonds maintaining active-site folding have ruptured. If temp is 0°C, explain that kinetic energy is too low for molecular collisions.
+   - In Osmosis: Explain plasmolysis/crenation if saline is hypertonic (> 0.9%) and lysis/turgor if hypotonic (< 0.9%).
+   - In Microscope: Help them calibrate Coarse and Fine focus knobs.
+3. Keep your advice focused on biology and the active lab parameters. Keep formatting tidy and short.
+
+Structure your normal message response like this:
+
+### 🔬 Practical Lab Insight
+[Analogy or quick breakdown of what is happening or what they should do next]
+
+### 💡 Biological Explanation
+[Detailed scientific context about the mechanism: photolysis, denaturation, concentration gradients, focus, etc.]
+
+### ⚠️ Common Pitfalls
+- [Misconceptions or errors to watch out for in this lab step]
+
+### ❓ Next Steps Guidance
+[Follow-up question or recommendation on what variables to adjust next]
+`;
+  } else if (action === "quiz") {
     prompt += `
 The user wants you to generate a multiple-choice quiz based on the active topic. Generate 3 questions.
 Format the quiz ONLY as a single valid JSON block inside a code block marked with "json". The JSON must have this exact schema:
@@ -451,6 +499,25 @@ Please ask me a biology question, such as:
 - *How does cellular respiration produce energy?*
 - *Can you explain DNA replication?*
 - *What is the difference between prokaryotic and eukaryotic cells?*`;
+  } else if (action === "viva_grade") {
+    responseText = `Fascinating answer! You have correctly identified the core biological mechanism involved in this virtual practical module.
+
+SCORE: 9/10`;
+  } else if (userMessage.includes("mistake") || userMessage.includes("stuck") || userMessage.includes("explain")) {
+    responseText = `### 🔬 Practical Lab Insight
+We want to keep inputs optimized. Remember that enzymes operate only within precise limits and chloroplasts require active light.
+
+### 💡 Biological Explanation
+- **Temperature Denaturation**: Above 60°C, high thermal energy breaks the weak hydrogen bonds holding Catalase's tertiary structure, permanently unfolding its active site.
+- **Limiting Factors**: Under low light or zero CO2 drops, photosynthesis rates fall to zero because photolysis cannot proceed without light absorption or rubisco substrate.
+- **Tonicity Gaps**: Extracellular salt changes the direction of osmosis. High salt causes shriveling (plasmolysis).
+
+### ⚠️ Common Pitfalls
+- Assuming plants do not photosynthesize in green light (they reflect it).
+- Using coarse focus under high magnification (risks cracking slide).
+
+### ❓ Next Steps Guidance
+Try resetting the controls, ensuring pH is 7 and Temperature is 37°C for enzyme trials!`;
   } else if (action === "quiz" || userMessage.includes("quiz") || userMessage.includes("test")) {
     responseText = `\`\`\`json
 {
