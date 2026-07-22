@@ -143,6 +143,37 @@ Example output:
 SCORE: 8/10"
 Keep it concise. Do NOT add other formatting templates.
 `;
+  } else if (context && context.page === "process-simulations") {
+    prompt += `
+The student is currently watching an interactive biology process simulation: "${context.simulationName}".
+Simulation ID: ${context.simulationId}
+Active milestone index: ${context.activeStepIdx} (Title: "${context.activeStepTitle}")
+Timeline Scrubber Percentage: ${Math.round(context.timeline || 0)}%
+Active variable configurations: ${JSON.stringify(context.controls || {})}
+
+Your goals:
+1. Act as the friendly biology tutor and explain what cellular/molecular actions are occurring at this specific timeline stage.
+2. Address custom variables:
+   - In DNA Replication: Explain leading/lagging synthesis, single-strand binding proteins (SSBs), replication forks, and ligase activity.
+   - In Mitosis: Describe chromosome packaging, centromere alignment, spindle fiber spindle checkpoints, and actomyosin cytokinetic rings. Explain how Colchicine blocks spindle fiber assembly, preventing division.
+   - In Protein Synthesis: Differentiate transcription (RNA Polymerase base matches, nucleus) and translation (mRNA translocation, codons, tRNA anticodon loops, peptide bonding in ribosome chambers).
+   - In Neuron Transmission: Detail Na+/K+ ATPase active pumps (-70mV), depolarization (+40mV Na+ entry), repolarization (K+ exit), and synaptic exocytosis of neurotransmitters. Discuss how myelination (sheaths) accelerates propagation via saltatory skipping.
+3. Guide their conceptual understanding and predict outcomes.
+
+Structure your response like this:
+
+### 🧬 Simulation Phase Overview
+[Analogy or simple breakdown of the active milestone]
+
+### 🔬 Molecular Mechanisms
+[Detailed biochemical explanation of active structures, enzymes, or ion gates]
+
+### ⚠️ Common Student Misconceptions
+- [Misconceptions or errors to clarify about this cellular process]
+
+### ❓ Active Inquiry Prompt
+[Conceptual biology question to prompt student reflection]
+`;
   } else if (context && context.page === "virtual-lab") {
     prompt += `
 The student is currently running a virtual biology laboratory experiment: "${context.experimentName}".
@@ -503,6 +534,21 @@ Please ask me a biology question, such as:
     responseText = `Fascinating answer! You have correctly identified the core biological mechanism involved in this virtual practical module.
 
 SCORE: 9/10`;
+  } else if (userMessage.includes("myelin") || userMessage.includes("transcription") || userMessage.includes("spindle") || userMessage.includes("codon") || userMessage.includes("phase") || userMessage.includes("predict")) {
+    responseText = `### 🧬 Simulation Phase Overview
+This milestone visualizes a key cellular process. We can adjust variables to see how structures respond in real-time.
+
+### 🔬 Molecular Mechanisms
+- **Depolarization**: Myelin sheaths act as electrical insulators, forcing the action potential to jump from node to node (saltatory conduction) which increases speed up to 120 m/s.
+- **DNA Transcription**: RNA Polymerase matches Uracil (U) to Adenine (A) templates inside the nucleus.
+- **Spindle Checkpoint**: Colchicine binds to tubulin dimers, halting spindle fiber assembly and arresting division at metaphase.
+
+### ⚠️ Common Student Misconceptions
+- Thinking translation occurs in the nucleus (it occurs in cytoplasm ribosomes).
+- Believing the myelin sheath covers the entire axon continuously (nodes of Ranvier are left exposed).
+
+### ❓ Active Inquiry Prompt
+What would happen if we disabled proofreading in DNA Polymerase? How would it affect cell mutation rates?`;
   } else if (userMessage.includes("mistake") || userMessage.includes("stuck") || userMessage.includes("explain")) {
     responseText = `### 🔬 Practical Lab Insight
 We want to keep inputs optimized. Remember that enzymes operate only within precise limits and chloroplasts require active light.
