@@ -19,6 +19,17 @@ import {
   type TeacherConsoleInfo,
   type ModelAnimation
 } from "@/components/3d"
+import {
+  DigitalHumanEngineProvider,
+  LayerSelector,
+  PhysiologyOverlayControls,
+  BookmarkPanel,
+  AISidebar,
+  ComparisonPanel,
+  TissueCellModal,
+  OrganInformationPanel,
+  useDigitalHumanEngine,
+} from '@/components/digital-human'
 
 // Lazy-load the heavy 3D canvas and model components with a custom high-tech glowing loading state
 const AnatomyViewer = dynamic(
@@ -664,6 +675,21 @@ function HumanBodyPageContent() {
           ))}
         </div>
       </header>
+
+      {/* DIGITAL HUMAN ENGINE CONTROL BAR */}
+      <div className="max-w-7xl mx-auto px-4 py-2 space-y-2 z-20 relative">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex-1 min-w-[300px]">
+            <LayerSelector />
+          </div>
+          <div className="flex items-center gap-2">
+            <BookmarkPanel />
+          </div>
+        </div>
+        <div>
+          <PhysiologyOverlayControls />
+        </div>
+      </div>
 
       {/* MAIN LAYOUT */}
       <main className="anatomy-main-layout">
@@ -2534,7 +2560,12 @@ export default function HumanBodyPage() {
       animations={ANIMATIONS}
       teacherInfo={TEACHER_INFO}
     >
-      <HumanBodyPageContent />
+      <DigitalHumanEngineProvider>
+        <HumanBodyPageContent />
+        <AISidebar />
+        <ComparisonPanel />
+        <TissueCellModal />
+      </DigitalHumanEngineProvider>
     </ExperienceProvider>
   )
 }

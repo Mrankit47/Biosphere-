@@ -17,6 +17,8 @@ import {
   RenderMode
 } from './BodyModel'
 import { ExperienceCameraManager, Hotspot } from "@/components/3d"
+import { PhysiologyOverlays3D } from '@/components/digital-human/PhysiologyOverlays3D'
+import { MeasurementTool3D } from '@/components/digital-human/MeasurementTool3D'
 
 // Helper to add vectors for positioning
 const addVectors = (v1: [number, number, number], v2: [number, number, number]): [number, number, number] => {
@@ -234,6 +236,10 @@ function BodyScene({
           onSelect={setSelectedOrgan}
         />
       )}
+
+      {/* Dynamic 3D Physiology Overlays & Measurements */}
+      <PhysiologyOverlays3D />
+      <MeasurementTool3D />
 
       <ContactShadows position={[0, -5, 0]} opacity={0.35} scale={18} blur={2.5} far={10} />
       <OrbitControls enablePan={true} minDistance={2} maxDistance={22} target={[0, 2.8, 0]} />
