@@ -28,14 +28,28 @@ export const FloatingLearningToolbar: React.FC = () => {
   // Floating scratchpad note states
   const [notesOpen, setNotesOpen] = useState(false);
   const [notesText, setNotesText] = useState("");
+  const [isMinimized, setIsMinimized] = useState(false);
 
-  // Load scratchpad note per route
+  // Load scratchpad note & minimized state per route
   useEffect(() => {
     if (typeof window !== "undefined" && pathname) {
       const savedNote = localStorage.getItem(`bio_notes_${pathname}`) || "";
       setNotesText(savedNote);
+      const storedMinimized = localStorage.getItem("bio_toolbar_minimized");
+      if (storedMinimized === "true") {
+        setIsMinimized(true);
+      }
     }
   }, [pathname]);
+
+  const toggleMinimize = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const nextState = !isMinimized;
+    setIsMinimized(nextState);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("bio_toolbar_minimized", String(nextState));
+    }
+  };
 
   const handleNotesChange = (text: string) => {
     setNotesText(text);
@@ -99,104 +113,129 @@ export const FloatingLearningToolbar: React.FC = () => {
 
   return (
     <>
-      <aside className="floating-learning-toolbar-root" aria-label="Learning controls toolbar">
+      <aside
+        className={`floating-learning-toolbar-root ${isMinimized ? "minimized" : ""}`}
+        aria-label="Learning controls toolbar"
+      >
         {/* Topic metadata (Step 3) */}
         <div className="toolbar-section metadata-section">
           <div className="meta-badge-row">
-            <span className={`difficulty-indicator-badge ${difficulty.toLowerCase()}`}>
-              {difficulty.toUpperCase()}
-            </span>
-            <span className="read-time-indicator">{readTime}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span className="live-pulse-dot" />
+              <span className={`difficulty-indicator-badge ${difficulty.toLowerCase()}`}>
+                {difficulty.toUpperCase()}
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span className="read-time-indicator">{readTime}</span>
+              <button
+                onClick={toggleMinimize}
+                className="toolbar-minimize-btn"
+                title={isMinimized ? "Expand toolbar" : "Minimize toolbar"}
+                aria-label={isMinimized ? "Expand toolbar" : "Minimize toolbar"}
+              >
+                <BioIcon name={isMinimized ? "plus" : "minus"} size={13} />
+              </button>
+            </div>
           </div>
           <span className="current-topic-lbl">CURRENT TOPIC</span>
-          <h4 className="topic-header-title">{cleanPathLabel}</h4>
+          <h4
+            className="topic-header-title"
+            onClick={() => isMinimized && toggleMinimize()}
+          >
+            {cleanPathLabel}
+          </h4>
         </div>
 
-        <div className="toolbar-divider" />
+        {!isMinimized && (
+          <>
+            <div className="toolbar-divider" />
 
-        {/* Quick actions row */}
-        <div className="toolbar-section actions-section">
-          <span className="sec-lbl">STUDY UTILITIES</span>
-          <div className="actions-button-grid">
-            {/* Bookmark star */}
-            <button
-              onClick={() => toggleFavorite(pathname)}
-              className={`action-pill-btn ${isCurrentFavorite ? "active-star" : ""}`}
-              title={isCurrentFavorite ? "Remove bookmark" : "Add bookmark"}
-            >
-              <span className="btn-icon">
-                <BioIcon name="star" size={16} />
-              </span>
-              <span className="btn-lbl">Bookmark</span>
-            </button>
+            {/* Quick actions row */}
+            <div className="toolbar-section actions-section">
+              <span className="sec-lbl">STUDY UTILITIES</span>
+              <div className="actions-button-grid">
+                {/* Bookmark star */}
+                <button
+                  onClick={() => toggleFavorite(pathname)}
+                  className={`action-pill-btn ${isCurrentFavorite ? "active-star" : ""}`}
+                  title={isCurrentFavorite ? "Remove bookmark" : "Add bookmark"}
+                >
+                  <span className="btn-icon">
+                    <BioIcon name="star" size={16} />
+                  </span>
+                  <span className="btn-lbl">Bookmark</span>
+                </button>
 
-            {/* Draggable notes trigger */}
-            <button
-              onClick={() => setNotesOpen(!notesOpen)}
-              className={`action-pill-btn ${notesOpen ? "active-notes" : ""}`}
-              title="Open scratchpad notepad"
-            >
-              <span className="btn-icon">
-                <BioIcon name="notes" size={16} />
-              </span>
-              <span className="btn-lbl">Scratchpad</span>
-            </button>
+                {/* Draggable notes trigger */}
+                <button
+                  onClick={() => setNotesOpen(!notesOpen)}
+                  className={`action-pill-btn ${notesOpen ? "active-notes" : ""}`}
+                  title="Open scratchpad notepad"
+                >
+                  <span className="btn-icon">
+                    <BioIcon name="notes" size={16} />
+                  </span>
+                  <span className="btn-lbl">Scratchpad</span>
+                </button>
 
-            {/* Share URL */}
-            <button onClick={handleShare} className="action-pill-btn" title="Copy URL path link">
-              <span className="btn-icon">
-                <BioIcon name="copy" size={16} />
-              </span>
-              <span className="btn-lbl">Share URL</span>
-            </button>
+                {/* Share URL */}
+                <button onClick={handleShare} className="action-pill-btn" title="Copy URL path link">
+                  <span className="btn-icon">
+                    <BioIcon name="copy" size={16} />
+                  </span>
+                  <span className="btn-lbl">Share URL</span>
+                </button>
 
-            {/* Ask AI Tutor */}
-            <Link href={`/tutor?q=${encodeURIComponent(tutorPrompt)}`} className="action-pill-btn text-link" title="Ask AI tutor about this">
-              <span className="btn-icon">
-                <BioIcon name="tutor" size={16} />
-              </span>
-              <span className="btn-lbl">Ask Tutor</span>
-            </Link>
-          </div>
-        </div>
-
-        <div className="toolbar-divider" />
-
-        {/* Sibling timeline connections */}
-        <div className="toolbar-section timeline-section">
-          <span className="sec-lbl">LEARNING FLOW TIMELINE</span>
-          <div className="timeline-flow-links">
-            {prevItem ? (
-              <Link href={prevItem.path} className="timeline-nav-btn prev">
-                <span className="arrow-lbl">← PREVIOUS LESSON</span>
-                <span className="topic-lbl" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                  <BioIcon name={prevItem.icon} size={14} /> {prevItem.label}
-                </span>
-              </Link>
-            ) : (
-              <div className="timeline-nav-btn disabled">
-                <span className="arrow-lbl">← TIMELINE START</span>
-                <span className="topic-lbl">No previous items</span>
+                {/* Ask AI Tutor */}
+                <Link href={`/tutor?q=${encodeURIComponent(tutorPrompt)}`} className="action-pill-btn text-link" title="Ask AI tutor about this">
+                  <span className="btn-icon">
+                    <BioIcon name="tutor" size={16} />
+                  </span>
+                  <span className="btn-lbl">Ask Tutor</span>
+                </Link>
               </div>
-            )}
+            </div>
 
-            {nextItem ? (
-              <Link href={nextItem.path} className="timeline-nav-btn next">
-                <span className="arrow-lbl">NEXT TOPIC →</span>
-                <span className="topic-lbl" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                  <BioIcon name={nextItem.icon} size={14} /> {nextItem.label}
-                </span>
-              </Link>
-            ) : (
-              <Link href="/quiz" className="timeline-nav-btn next finish">
-                <span className="arrow-lbl">NEXT TOPIC →</span>
-                <span className="topic-lbl" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                  <BioIcon name="quiz" size={14} /> Final Quiz Board
-                </span>
-              </Link>
-            )}
-          </div>
-        </div>
+            <div className="toolbar-divider" />
+
+            {/* Sibling timeline connections */}
+            <div className="toolbar-section timeline-section">
+              <span className="sec-lbl">LEARNING FLOW TIMELINE</span>
+              <div className="timeline-flow-links">
+                {prevItem ? (
+                  <Link href={prevItem.path} className="timeline-nav-btn prev">
+                    <span className="arrow-lbl">← PREVIOUS LESSON</span>
+                    <span className="topic-lbl" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      <BioIcon name={prevItem.icon} size={14} /> {prevItem.label}
+                    </span>
+                  </Link>
+                ) : (
+                  <div className="timeline-nav-btn disabled">
+                    <span className="arrow-lbl">← TIMELINE START</span>
+                    <span className="topic-lbl">No previous items</span>
+                  </div>
+                )}
+
+                {nextItem ? (
+                  <Link href={nextItem.path} className="timeline-nav-btn next">
+                    <span className="arrow-lbl">NEXT TOPIC →</span>
+                    <span className="topic-lbl" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      <BioIcon name={nextItem.icon} size={14} /> {nextItem.label}
+                    </span>
+                  </Link>
+                ) : (
+                  <Link href="/quiz" className="timeline-nav-btn next finish">
+                    <span className="arrow-lbl">NEXT TOPIC →</span>
+                    <span className="topic-lbl" style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                      <BioIcon name="quiz" size={14} /> Final Quiz Board
+                    </span>
+                  </Link>
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </aside>
 
       {/* Floating Notes Scratchpad Panel */}
@@ -241,6 +280,54 @@ export const FloatingLearningToolbar: React.FC = () => {
           display: flex;
           flex-direction: column;
           gap: 12px;
+          transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .floating-learning-toolbar-root.minimized {
+          padding: 10px 14px;
+          gap: 0;
+          width: 200px;
+        }
+
+        .floating-learning-toolbar-root.minimized .topic-header-title {
+          cursor: pointer;
+          margin-top: 4px;
+        }
+
+        .toolbar-minimize-btn {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--ds-glass-border);
+          color: var(--ds-fg-muted);
+          width: 20px;
+          height: 20px;
+          border-radius: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          padding: 0;
+          flex-shrink: 0;
+        }
+
+        .toolbar-minimize-btn:hover {
+          background: var(--ds-accent-faint);
+          color: var(--ds-accent);
+          border-color: var(--ds-border-accent);
+        }
+
+        .live-pulse-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: var(--ds-accent);
+          box-shadow: 0 0 8px var(--ds-accent);
+          animation: pulse-dot-anim 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-dot-anim {
+          0%, 100% { transform: scale(1); opacity: 0.8; }
+          50% { transform: scale(1.3); opacity: 1; }
         }
 
         .toolbar-section {

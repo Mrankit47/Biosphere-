@@ -60,6 +60,12 @@ import {
   Layers,
   Sprout,
   FileQuestion,
+  ChevronDown,
+  ChevronUp,
+  Minus,
+  Plus,
+  Minimize2,
+  Maximize2,
   LucideProps
 } from "lucide-react";
 
@@ -186,6 +192,12 @@ const ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
   "❮": ChevronLeft,
   "chevron-right": ChevronRight,
   "❯": ChevronRight,
+  "chevron-down": ChevronDown,
+  "chevron-up": ChevronUp,
+  minimize: Minimize2,
+  maximize: Maximize2,
+  minus: Minus,
+  plus: Plus,
   user: User,
   link: Link,
   "🔗": Link,

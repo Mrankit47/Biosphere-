@@ -568,6 +568,12 @@ export default function DiseaseExplorer() {
                   <span className="section-header-small">Clinical Prognosis</span>
                   <p className="prognosis-text">{activeDisease.prognosis}</p>
                 </div>
+
+                <div className="specimen-section" style={{ marginTop: '12px' }}>
+                  <Link href={`/disease-explorer/${activeDisease.id}`} className="launch-clinical-engine-btn">
+                    🩺 Open Deep Clinical Learning Engine →
+                  </Link>
+                </div>
               </div>
             </motion.div>
           </AnimatePresence>
@@ -1246,6 +1252,28 @@ export default function DiseaseExplorer() {
           background: rgba(59, 130, 246, 0.05);
           border: 1px solid rgba(59, 130, 246, 0.15);
           color: #93c5fd;
+        }
+
+        .launch-clinical-engine-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          width: 100%;
+          background: var(--ds-accent);
+          color: var(--ds-bg-primary);
+          padding: 12px;
+          border-radius: 12px;
+          font-size: 0.82rem;
+          font-weight: 850;
+          text-decoration: none;
+          transition: all 0.25s ease;
+          box-shadow: var(--ds-glow-sm);
+          box-sizing: border-box;
+        }
+        .launch-clinical-engine-btn:hover {
+          transform: translateY(-2px);
+          background: #45ff24;
         }
 
         /* RESPONSIVE DESIGN */
