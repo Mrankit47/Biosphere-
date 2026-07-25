@@ -448,6 +448,18 @@ function HumanBodyPageContent() {
   const [renderMode, setRenderMode] = useState<RenderMode>('realistic')
   const [gender, setGender] = useState<'male' | 'female'>('male')
 
+  // Minimalist UI Floating Popovers & Collapsible Sidebar Toggles
+  const [showLayersModal, setShowLayersModal] = useState(false)
+  const [showPhysiologyModal, setShowPhysiologyModal] = useState(false)
+  const [showLeftSidebar, setShowLeftSidebar] = useState(false)
+  const [showRightSidebar, setShowRightSidebar] = useState(false)
+
+  useEffect(() => {
+    if (selectedOrgan) {
+      setShowRightSidebar(true)
+    }
+  }, [selectedOrgan])
+
   // Sliders
   const [explode, setExplode] = useState<number>(0)
   const [clipEnabled, setClipEnabled] = useState<boolean>(false)
@@ -601,6 +613,7 @@ function HumanBodyPageContent() {
   const selectSearchedOrgan = (key: string) => {
     setSelectedOrgan(key)
     setSearchQuery('')
+    setShowRightSidebar(true)
 
     const organToSystemMap: Record<string, string> = {
       brain: 'brain',
@@ -656,208 +669,227 @@ function HumanBodyPageContent() {
               ♀ FEMALE
             </button>
           </div>
+
+          <div className="header-mode-group">
+            {[
+              { mode: 'realistic', label: 'Clinical', icon: '🩺' },
+              { mode: 'xray', label: 'X-Ray', icon: '🩻' },
+              { mode: 'hologram', label: 'Holo', icon: '💻' },
+            ].map(item => (
+              <button
+                key={item.mode}
+                onClick={() => setRenderMode(item.mode as RenderMode)}
+                className={`mode-toggle-btn ${renderMode === item.mode ? 'active' : ''}`}
+              >
+                <span className="mode-btn-icon">{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="header-right">
-          {[
-            { mode: 'realistic', label: 'Clinical', icon: '🩺' },
-            { mode: 'xray', label: 'X-Ray', icon: '🩻' },
-            { mode: 'hologram', label: 'Holo', icon: '💻' },
-          ].map(item => (
-            <button
-              key={item.mode}
-              onClick={() => setRenderMode(item.mode as RenderMode)}
-              className={`mode-toggle-btn ${renderMode === item.mode ? 'active' : ''}`}
-            >
-              <span className="mode-btn-icon">{item.icon}</span>
-              {item.label}
-            </button>
-          ))}
+          <button
+            onClick={() => setShowLayersModal(!showLayersModal)}
+            className={`hud-toggle-btn ${showLayersModal ? 'active' : ''}`}
+            title="Toggle Exploration Layers"
+          >
+            <span>🧬</span> Layers
+          </button>
+          <button
+            onClick={() => setShowPhysiologyModal(!showPhysiologyModal)}
+            className={`hud-toggle-btn ${showPhysiologyModal ? 'active' : ''}`}
+            title="Toggle Physiology Flow Overlays"
+          >
+            <span>🩸</span> Flows
+          </button>
+          <button
+            onClick={() => setShowLeftSidebar(!showLeftSidebar)}
+            className={`hud-toggle-btn ${showLeftSidebar ? 'active' : ''}`}
+            title="Toggle System Controls Sidebar"
+          >
+            <span>🎛️</span> Controls
+          </button>
+          <button
+            onClick={() => setShowRightSidebar(!showRightSidebar)}
+            className={`hud-toggle-btn ${showRightSidebar ? 'active' : ''}`}
+            title="Toggle Diagnostic Telemetry"
+          >
+            <span>📊</span> Telemetry
+          </button>
+          <BookmarkPanel />
         </div>
       </header>
 
-      {/* DIGITAL HUMAN ENGINE CONTROL BAR */}
-      <div className="max-w-7xl mx-auto px-4 py-2 space-y-2 z-20 relative">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex-1 min-w-[300px]">
-            <LayerSelector />
-          </div>
-          <div className="flex items-center gap-2">
-            <BookmarkPanel />
-          </div>
-        </div>
-        <div>
-          <PhysiologyOverlayControls />
-        </div>
-      </div>
+      {/* MAIN LAYOUT WITH DYNAMIC MINIMALIST GRID */}
+      <main className={`anatomy-main-layout ${showLeftSidebar ? 'has-left' : ''} ${showRightSidebar ? 'has-right' : ''}`}>
+        {/* LEFT COLUMN (COLLAPSIBLE) */}
+        {showLeftSidebar && (
+          <section className="anatomy-sidebar-left">
+            <div className="panel-card glassmorphic search-panel-card">
+              <div className="search-bar-wrap">
+                <span className="search-icon">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Search organ..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="search-input"
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="clear-search-btn">
+                    ✕
+                  </button>
+                )}
+              </div>
 
-      {/* MAIN LAYOUT */}
-      <main className="anatomy-main-layout">
-        {/* LEFT COLUMN */}
-        <section className="anatomy-sidebar-left">
-          <div className="panel-card glassmorphic search-panel-card">
-            <div className="search-bar-wrap">
-              <span className="search-icon">🔍</span>
-              <input
-                type="text"
-                placeholder="Search any organ (e.g. Heart)..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
               {searchQuery && (
-                <button onClick={() => setSearchQuery('')} className="clear-search-btn">
-                  ✕
-                </button>
+                <div className="search-suggestions-dropdown">
+                  {searchResults.length > 0 ? (
+                    searchResults.map(([key, val]) => (
+                      <button
+                        key={key}
+                        onClick={() => selectSearchedOrgan(key)}
+                        className="search-suggestion-row"
+                      >
+                        <span className="suggestion-emoji">{val.emoji}</span>
+                        <div className="suggestion-details">
+                          <span className="suggestion-name">{val.name}</span>
+                          <span className="suggestion-scientific">{val.scientificName}</span>
+                        </div>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="no-suggestions">No structures match query</div>
+                  )}
+                </div>
               )}
             </div>
 
-            {searchQuery && (
-              <div className="search-suggestions-dropdown">
-                {searchResults.length > 0 ? (
-                  searchResults.map(([key, val]) => (
-                    <button
-                      key={key}
-                      onClick={() => selectSearchedOrgan(key)}
-                      className="search-suggestion-row"
-                    >
-                      <span className="suggestion-emoji">{val.emoji}</span>
-                      <div className="suggestion-details">
-                        <span className="suggestion-name">{val.name}</span>
-                        <span className="suggestion-scientific">{val.scientificName}</span>
-                      </div>
-                    </button>
-                  ))
-                ) : (
-                  <div className="no-suggestions">No structures match query</div>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="accordion-scroller">
-            <div className={`accordion-item glassmorphic ${activeAccordion === 'systems' ? 'open' : ''}`}>
-              <button
-                onClick={() => setActiveAccordion(activeAccordion === 'systems' ? null : 'systems')}
-                className="accordion-header"
-              >
-                <span>🎛️ SYSTEM CONTROLS</span>
-                <span className="accordion-arrow">{activeAccordion === 'systems' ? '▲' : '▼'}</span>
-              </button>
-
-              <div className="accordion-content">
-                <button onClick={resetAllSystems} className="reset-all-btn">
-                  🔄 RESET VIEW
+            <div className="accordion-scroller">
+              <div className={`accordion-item glassmorphic ${activeAccordion === 'systems' ? 'open' : ''}`}>
+                <button
+                  onClick={() => setActiveAccordion(activeAccordion === 'systems' ? null : 'systems')}
+                  className="accordion-header"
+                >
+                  <span>🎛️ SYSTEM CONTROLS</span>
+                  <span className="accordion-arrow">{activeAccordion === 'systems' ? '▲' : '▼'}</span>
                 </button>
 
-                <div className="systems-checklist">
-                  {[
-                    { key: 'skin', label: 'Integumentary (Skin)', icon: '👤', desc: 'Outer dermal cover' },
-                    { key: 'skeleton', label: 'Skeletal (Bones)', icon: '🦴', desc: 'Spine, ribcage, limbs' },
-                    { key: 'muscles', label: 'Muscular System', icon: '💪', desc: 'Skeletal muscles' },
-                    { key: 'brain', label: 'Cranial (Brain)', icon: '🧠', desc: 'Cortex, cerebellum, brainstem' },
-                    { key: 'eyes', label: 'Ocular Anatomy (Eyes)', icon: '👁️', desc: 'Bulbs, nerves' },
-                    { key: 'ears', label: 'Auditory Anatomy (Ears)', icon: '👂', desc: 'Ossicles canal' },
-                    { key: 'heart', label: 'Cardiovascular (Heart)', icon: '🫀', desc: 'Pump chamber' },
-                    { key: 'respiratory', label: 'Respiratory (Lungs)', icon: '🫁', desc: 'Lobes, trachea' },
-                    { key: 'digestive', label: 'Digestive System', icon: '🌀', desc: 'Stomach, liver, bowel' },
-                    { key: 'urinary', label: 'Urinary (Kidneys)', icon: '🫘', desc: 'Renal nodes, bladder' },
-                    { key: 'endocrine', label: 'Endocrine Glands', icon: '🦋', desc: 'Thyroid, adrenal' },
-                    { key: 'lymphatic', label: 'Lymphatic (Spleen)', icon: '💜', desc: 'Immune lymph nodes' },
-                    { key: 'reproductive', label: 'Reproductive System', icon: '🧬', desc: 'Gonadal tracts' },
-                    { key: 'vascular', label: 'Vascular Network', icon: '🩸', desc: 'Arteries & veins' },
-                    { key: 'nervous', label: 'Nerve Trunk Tree', icon: '⚡', desc: 'Peripheral nerves' },
-                  ].map(sys => {
-                    const active = visibleSystems[sys.key]
-                    const opacityValue = opacityOverrides[sys.key] !== undefined ? opacityOverrides[sys.key] : 1.0
+                <div className="accordion-content">
+                  <button onClick={resetAllSystems} className="reset-all-btn">
+                    🔄 RESET VIEW
+                  </button>
 
-                    return (
-                      <div key={sys.key} className="system-row-group">
-                        <div className={`system-check-row ${active ? 'active' : ''}`}>
-                          <button
-                            onClick={() => toggleSystem(sys.key)}
-                            className="checkbox-toggle"
-                          >
-                            <div className="checkbox-indicator">
-                              {active && <span className="checkbox-inner-dot" />}
-                            </div>
-                            <span className="system-row-icon">{sys.icon}</span>
-                            <div className="system-row-details">
-                              <span className="system-row-label">{sys.label}</span>
-                              <span className="system-row-desc">{sys.desc}</span>
-                            </div>
-                          </button>
+                  <div className="systems-checklist">
+                    {[
+                      { key: 'skin', label: 'Integumentary (Skin)', icon: '👤', desc: 'Outer dermal cover' },
+                      { key: 'skeleton', label: 'Skeletal (Bones)', icon: '🦴', desc: 'Spine, ribcage, limbs' },
+                      { key: 'muscles', label: 'Muscular System', icon: '💪', desc: 'Skeletal muscles' },
+                      { key: 'brain', label: 'Cranial (Brain)', icon: '🧠', desc: 'Cortex, cerebellum, brainstem' },
+                      { key: 'eyes', label: 'Ocular Anatomy (Eyes)', icon: '👁️', desc: 'Bulbs, nerves' },
+                      { key: 'ears', label: 'Auditory Anatomy (Ears)', icon: '👂', desc: 'Ossicles canal' },
+                      { key: 'heart', label: 'Cardiovascular (Heart)', icon: '🫀', desc: 'Pump chamber' },
+                      { key: 'respiratory', label: 'Respiratory (Lungs)', icon: '🫁', desc: 'Lobes, trachea' },
+                      { key: 'digestive', label: 'Digestive System', icon: '🌀', desc: 'Stomach, liver, bowel' },
+                      { key: 'urinary', label: 'Urinary (Kidneys)', icon: '🫘', desc: 'Renal nodes, bladder' },
+                      { key: 'endocrine', label: 'Endocrine Glands', icon: '🦋', desc: 'Thyroid, adrenal' },
+                      { key: 'lymphatic', label: 'Lymphatic (Spleen)', icon: '💜', desc: 'Immune lymph nodes' },
+                      { key: 'reproductive', label: 'Reproductive System', icon: '🧬', desc: 'Gonadal tracts' },
+                      { key: 'vascular', label: 'Vascular Network', icon: '🩸', desc: 'Arteries & veins' },
+                      { key: 'nervous', label: 'Nerve Trunk Tree', icon: '⚡', desc: 'Peripheral nerves' },
+                    ].map(sys => {
+                      const active = visibleSystems[sys.key]
+                      const opacityValue = opacityOverrides[sys.key] !== undefined ? opacityOverrides[sys.key] : 1.0
 
-                          <div className="system-actions">
-                            <button
-                              onClick={() => isolateSystem(sys.key)}
-                              className="isolate-small-btn"
-                              title="Isolate system"
-                            >
-                              🎯
-                            </button>
-                          </div>
-                        </div>
-
-                        {active && (
-                          <div className="opacity-slider-row">
-                            <span className="opacity-slider-label">Opacity: {Math.round(opacityValue * 100)}%</span>
-                            <input
-                              type="range"
-                              min="0"
-                              max="100"
-                              value={opacityValue * 100}
-                              onChange={e => handleOpacityChange(sys.key, parseFloat(e.target.value) / 100)}
-                              className="opacity-slider"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div className={`accordion-item glassmorphic ${activeAccordion === 'favorites' ? 'open' : ''}`}>
-              <button
-                onClick={() => setActiveAccordion(activeAccordion === 'favorites' ? null : 'favorites')}
-                className="accordion-header"
-              >
-                <span>⭐ FAVORITE STRUCTURES</span>
-                <span className="accordion-arrow">{activeAccordion === 'favorites' ? '▲' : '▼'}</span>
-              </button>
-
-              <div className="accordion-content">
-                {favorites.length > 0 ? (
-                  <div className="favorites-list">
-                    {favorites.map(id => {
-                      const organ = ORGAN_INFO[id]
-                      if (!organ) return null
                       return (
-                        <button
-                          key={id}
-                          onClick={() => setSelectedOrgan(id)}
-                          className="favorite-item-btn"
-                        >
-                          <span className="favorite-item-emoji">{organ.emoji}</span>
-                          <div className="favorite-item-details">
-                            <span className="favorite-item-name">{organ.name}</span>
-                            <span className="favorite-item-scientific">{organ.scientificName}</span>
+                        <div key={sys.key} className="system-row-group">
+                          <div className={`system-check-row ${active ? 'active' : ''}`}>
+                            <button
+                              onClick={() => toggleSystem(sys.key)}
+                              className="checkbox-toggle"
+                            >
+                              <div className="checkbox-indicator">
+                                {active && <span className="checkbox-inner-dot" />}
+                              </div>
+                              <span className="system-row-icon">{sys.icon}</span>
+                              <div className="system-row-details">
+                                <span className="system-row-label">{sys.label}</span>
+                                <span className="system-row-desc">{sys.desc}</span>
+                              </div>
+                            </button>
+
+                            <div className="system-actions">
+                              <button
+                                onClick={() => isolateSystem(sys.key)}
+                                className="isolate-small-btn"
+                                title="Isolate system"
+                              >
+                                🎯
+                              </button>
+                            </div>
                           </div>
-                        </button>
+
+                          {active && (
+                            <div className="opacity-slider-row">
+                              <span className="opacity-slider-label">Opacity: {Math.round(opacityValue * 100)}%</span>
+                              <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                value={opacityValue * 100}
+                                onChange={e => handleOpacityChange(sys.key, parseFloat(e.target.value) / 100)}
+                                className="opacity-slider"
+                              />
+                            </div>
+                          )}
+                        </div>
                       )
                     })}
                   </div>
-                ) : (
-                  <p className="no-favorites-text">Click the star button on any organ to add to favorites.</p>
-                )}
+                </div>
+              </div>
+
+              <div className={`accordion-item glassmorphic ${activeAccordion === 'favorites' ? 'open' : ''}`}>
+                <button
+                  onClick={() => setActiveAccordion(activeAccordion === 'favorites' ? null : 'favorites')}
+                  className="accordion-header"
+                >
+                  <span>⭐ FAVORITE STRUCTURES</span>
+                  <span className="accordion-arrow">{activeAccordion === 'favorites' ? '▲' : '▼'}</span>
+                </button>
+
+                <div className="accordion-content">
+                  {favorites.length > 0 ? (
+                    <div className="favorites-list">
+                      {favorites.map(id => {
+                        const organ = ORGAN_INFO[id]
+                        if (!organ) return null
+                        return (
+                          <button
+                            key={id}
+                            onClick={() => setSelectedOrgan(id)}
+                            className="favorite-item-btn"
+                          >
+                            <span className="favorite-item-emoji">{organ.emoji}</span>
+                            <div className="favorite-item-details">
+                              <span className="favorite-item-name">{organ.name}</span>
+                              <span className="favorite-item-scientific">{organ.scientificName}</span>
+                            </div>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="no-favorites-text">Click the star button on any organ to add to favorites.</p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
-        {/* MIDDLE COLUMN */}
+        {/* MIDDLE COLUMN (FULL-HERO 3D STAGE) */}
         <section className="anatomy-canvas-container" aria-label="3D Anatomical Scene">
           {mounted && (
             <AnatomyViewer
@@ -874,9 +906,49 @@ function HumanBodyPageContent() {
             />
           )}
 
+          {/* Floating Popover Modals over Canvas */}
+          <AnimatePresence>
+            {showLayersModal && (
+              <motion.div
+                initial={{ opacity: 0, y: -20, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.96 }}
+                transition={{ duration: 0.2 }}
+                className="floating-popover-card left-popover"
+              >
+                <div className="popover-header">
+                  <span>🧬 EXPLORATION LAYERS</span>
+                  <button onClick={() => setShowLayersModal(false)}>✕</button>
+                </div>
+                <div className="popover-body">
+                  <LayerSelector />
+                </div>
+              </motion.div>
+            )}
+
+            {showPhysiologyModal && (
+              <motion.div
+                initial={{ opacity: 0, y: -20, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -20, scale: 0.96 }}
+                transition={{ duration: 0.2 }}
+                className="floating-popover-card right-popover"
+              >
+                <div className="popover-header">
+                  <span>🩸 PHYSIOLOGY FLOW OVERLAYS</span>
+                  <button onClick={() => setShowPhysiologyModal(false)}>✕</button>
+                </div>
+                <div className="popover-body">
+                  <PhysiologyOverlayControls />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Interactive 3D Experience Engine Overlays */}
           <LearningOverlay />
 
+          {/* Bottom Dock Controls */}
           <div className="anatomy-bottom-controls glassmorphic">
             <div className="control-slider-group">
               <div className="control-slider-header">
@@ -940,122 +1012,127 @@ function HumanBodyPageContent() {
           {!selectedOrgan && !activeSystem && (
             <div className="canvas-overlay-hint">
               <span className="mouse-icon">🖱️</span>
-              <p>DRAG MOUSE TO ROTATE · SCROLL TO ZOOM · SHIFT+DRAG TO PAN · CLICK TO INSPECT</p>
+              <p>DRAG TO ROTATE · SCROLL TO ZOOM · SHIFT+DRAG TO PAN · CLICK ORGAN TO INSPECT</p>
             </div>
           )}
         </section>
 
-        {/* RIGHT COLUMN */}
-        <section className="anatomy-sidebar-right">
-          <AnimatePresence mode="wait">
-            {info ? (
-              <motion.div
-                key={selectedOrgan}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 50 }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
-                className="panel-card glassmorphic diagnostic-info-panel active"
-                style={{ '--organ-color': info.color } as React.CSSProperties}
-              >
-                <button onClick={() => setSelectedOrgan(null)} className="panel-close-btn" aria-label="Close panel">
-                  ✕
-                </button>
+        {/* RIGHT COLUMN (COLLAPSIBLE TELEMETRY PANEL) */}
+        {showRightSidebar && (
+          <section className="anatomy-sidebar-right">
+            <AnimatePresence mode="wait">
+              {info ? (
+                <motion.div
+                  key={selectedOrgan}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 50 }}
+                  transition={{ duration: 0.35, ease: 'easeOut' }}
+                  className="panel-card glassmorphic diagnostic-info-panel active"
+                  style={{ '--organ-color': info.color } as React.CSSProperties}
+                >
+                  <button onClick={() => { setSelectedOrgan(null); setShowRightSidebar(false); }} className="panel-close-btn" aria-label="Close panel">
+                    ✕
+                  </button>
 
-                <div className="diagnostic-header">
-                  <div className="header-meta-row">
-                    <span className="diagnostic-badge">SPECIMEN DIAGNOSTIC SCAN</span>
-                    <button
-                      onClick={() => toggleFavorite(selectedOrgan!)}
-                      className={`favorite-toggle-btn ${favorites.includes(selectedOrgan!) ? 'active' : ''}`}
-                    >
-                      ★
-                    </button>
-                  </div>
-                  <div className="title-row">
-                    <div className="organ-avatar">
-                      <span className="organ-avatar-emoji">{info.emoji}</span>
+                  <div className="diagnostic-header">
+                    <div className="header-meta-row">
+                      <span className="diagnostic-badge">SPECIMEN DIAGNOSTIC SCAN</span>
+                      <button
+                        onClick={() => toggleFavorite(selectedOrgan!)}
+                        className={`favorite-toggle-btn ${favorites.includes(selectedOrgan!) ? 'active' : ''}`}
+                      >
+                        ★
+                      </button>
                     </div>
-                    <div>
-                      <h2 className="organ-name">{info.name}</h2>
-                      <span className="organ-coord">SCIENTIFIC: <i>{info.scientificName}</i></span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="diagnostic-section">
-                  <h4 className="section-title">FUNCTIONAL ANATOMY</h4>
-                  <p className="organ-desc-text">{info.description}</p>
-                </div>
-
-                <div className="diagnostic-section">
-                  <div className="detail-meta-grid">
-                    <div className="meta-cell">
-                      <span className="meta-cell-label">LOCATION</span>
-                      <span className="meta-cell-value">{info.location}</span>
-                    </div>
-                    <div className="meta-cell">
-                      <span className="meta-cell-label">PRIMARY FUNCTION</span>
-                      <span className="meta-cell-value">{info.function}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="diagnostic-section">
-                  <h4 className="section-title">CLINICAL TELEMETRY</h4>
-                  <div className="telemetry-grid">
-                    {info.stats.map(s => (
-                      <div key={s.label} className="telemetry-bar-row">
-                        <div className="telemetry-label-row">
-                          <span className="telemetry-stat-label">{s.label}</span>
-                          <span className="telemetry-stat-value">{s.value}</span>
-                        </div>
-                        <div className="telemetry-track">
-                          <div className="telemetry-fill" style={{ width: `${s.pct}%` }} />
-                        </div>
+                    <div className="title-row">
+                      <div className="organ-avatar">
+                        <span className="organ-avatar-emoji">{info.emoji}</span>
                       </div>
-                    ))}
+                      <div>
+                        <h2 className="organ-name">{info.name}</h2>
+                        <span className="organ-coord">SCIENTIFIC: <i>{info.scientificName}</i></span>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="diagnostic-section">
-                  <h4 className="section-title">CLINICAL MEDICINE NOTES</h4>
-                  <p className="notes-text">{info.medicalNotes}</p>
-                </div>
-
-                <div className="diagnostic-section">
-                  <h4 className="section-title">COMMON RELATED PATHOLOGIES</h4>
-                  <div className="pathology-tags-wrap">
-                    {info.diseases.map(d => (
-                      <span key={d} className="pathology-tag">
-                        ⚠️ {d}
-                      </span>
-                    ))}
+                  <div className="diagnostic-section">
+                    <h4 className="section-title">FUNCTIONAL ANATOMY</h4>
+                    <p className="organ-desc-text">{info.description}</p>
                   </div>
-                </div>
 
-                <button onClick={() => setDetailModal(true)} className="isolate-btn">
-                  🔬 ISOLATE SPECIMEN IN 3D
-                </button>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="idle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="panel-card glassmorphic diagnostic-info-panel idle"
-              >
-                <div className="idle-indicator">
-                  <span className="pulse-radar" />
-                  <span className="idle-icon">🫁</span>
-                  <h4>DIAGNOSTIC STANDBY</h4>
-                  <p>Click on any anatomical organ structure in the 3D viewer or search to fetch medical diagnostics.</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </section>
+                  <div className="diagnostic-section">
+                    <div className="detail-meta-grid">
+                      <div className="meta-cell">
+                        <span className="meta-cell-label">LOCATION</span>
+                        <span className="meta-cell-value">{info.location}</span>
+                      </div>
+                      <div className="meta-cell">
+                        <span className="meta-cell-label">PRIMARY FUNCTION</span>
+                        <span className="meta-cell-value">{info.function}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="diagnostic-section">
+                    <h4 className="section-title">CLINICAL TELEMETRY</h4>
+                    <div className="telemetry-grid">
+                      {info.stats.map(s => (
+                        <div key={s.label} className="telemetry-bar-row">
+                          <div className="telemetry-label-row">
+                            <span className="telemetry-stat-label">{s.label}</span>
+                            <span className="telemetry-stat-value">{s.value}</span>
+                          </div>
+                          <div className="telemetry-track">
+                            <div className="telemetry-fill" style={{ width: `${s.pct}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="diagnostic-section">
+                    <h4 className="section-title">CLINICAL MEDICINE NOTES</h4>
+                    <p className="notes-text">{info.medicalNotes}</p>
+                  </div>
+
+                  <div className="diagnostic-section">
+                    <h4 className="section-title">COMMON RELATED PATHOLOGIES</h4>
+                    <div className="pathology-tags-wrap">
+                      {info.diseases.map(d => (
+                        <span key={d} className="pathology-tag">
+                          ⚠️ {d}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button onClick={() => setDetailModal(true)} className="isolate-btn">
+                    🔬 ISOLATE SPECIMEN IN 3D
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="idle"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="panel-card glassmorphic diagnostic-info-panel idle"
+                >
+                  <button onClick={() => setShowRightSidebar(false)} className="panel-close-btn" aria-label="Close panel">
+                    ✕
+                  </button>
+                  <div className="idle-indicator">
+                    <span className="pulse-radar" />
+                    <span className="idle-icon">🫁</span>
+                    <h4>DIAGNOSTIC STANDBY</h4>
+                    <p>Click on any anatomical organ structure in the 3D viewer or search to fetch medical diagnostics.</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </section>
+        )}
       </main>
 
       {/* ISOLATED DETAILED 3D SPECIMEN MODAL */}
@@ -1251,15 +1328,112 @@ function HumanBodyPageContent() {
           box-shadow: var(--ds-glow-sm);
         }
 
+        .header-mode-group {
+          display: inline-flex;
+          margin-left: 12px;
+        }
+
+        .hud-toggle-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 14px;
+          border-radius: 100px;
+          border: 1px solid var(--ds-border-muted);
+          background: var(--ds-surface-subtle);
+          color: var(--ds-fg-muted);
+          font-size: 0.72rem;
+          font-weight: 700;
+          cursor: pointer;
+          backdrop-filter: blur(8px);
+          transition: all 0.25s;
+        }
+        .hud-toggle-btn:hover {
+          color: #fff;
+          border-color: rgba(255, 255, 255, 0.25);
+          background: rgba(255, 255, 255, 0.08);
+        }
+        .hud-toggle-btn.active {
+          border-color: var(--ds-accent);
+          background: var(--ds-accent-faint);
+          color: var(--ds-accent);
+          box-shadow: var(--ds-glow-sm);
+        }
+
         .anatomy-main-layout {
           flex: 1;
           display: grid;
-          grid-template-columns: 320px 1fr 350px;
+          grid-template-columns: 1fr;
           position: relative;
           z-index: 10;
           padding: 1rem 1.5rem 1.5rem 1.5rem;
           gap: 1.25rem;
           overflow: hidden;
+          transition: grid-template-columns 0.3s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .anatomy-main-layout.has-left {
+          grid-template-columns: 310px 1fr;
+        }
+
+        .anatomy-main-layout.has-right {
+          grid-template-columns: 1fr 350px;
+        }
+
+        .anatomy-main-layout.has-left.has-right {
+          grid-template-columns: 310px 1fr 350px;
+        }
+
+        .floating-popover-card {
+          position: absolute;
+          top: 1rem;
+          z-index: 150;
+          width: calc(100% - 2rem);
+          max-width: 580px;
+          border-radius: 20px;
+          background: rgba(10, 18, 25, 0.94);
+          backdrop-filter: blur(24px) saturate(140%);
+          border: 1px solid var(--ds-border-accent);
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), var(--ds-glow-sm);
+          overflow: hidden;
+        }
+
+        .floating-popover-card.left-popover {
+          left: 1rem;
+        }
+
+        .floating-popover-card.right-popover {
+          right: 1rem;
+        }
+
+        .popover-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 18px;
+          background: rgba(15, 25, 35, 0.95);
+          border-bottom: 1px solid var(--ds-border-muted);
+          font-size: 0.68rem;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          color: var(--ds-accent);
+        }
+
+        .popover-header button {
+          background: none;
+          border: none;
+          color: rgba(255, 255, 255, 0.5);
+          font-size: 0.88rem;
+          cursor: pointer;
+          transition: color 0.2s;
+        }
+        .popover-header button:hover {
+          color: #fff;
+        }
+
+        .popover-body {
+          max-height: 480px;
+          overflow-y: auto;
         }
 
         .glassmorphic {
