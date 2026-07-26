@@ -72,6 +72,7 @@ export const ROUTE_META: Record<string, { label: string; icon: string }> = {
   "/learning-paths": { label: "Learning Paths", icon: "learning-paths" },
   "/gamification": { label: "Profile Hub", icon: "gamification" },
   "/virtual-lab": { label: "Virtual Lab", icon: "virtual-lab" },
+  "/virtual-microscope": { label: "Virtual Microscope", icon: "virtual-microscope" },
   "/process-simulations": { label: "Process Sims", icon: "process-simulations" },
   "/research-hub": { label: "Research Hub", icon: "research-hub" },
   "/tutor": { label: "AI Tutor", icon: "tutor" },

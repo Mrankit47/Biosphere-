@@ -31,6 +31,7 @@ const SEARCH_ITEMS: SearchItem[] = [
   { path: "/tree-of-life", name: "Tree of Life (Carl Woese)", category: "3D Module", icon: "tree-of-life", desc: "Trace evolutionary path lines and cells between Bacteria, Archaea, and Eukarya." },
 
   // Labs & Sims
+  { path: "/virtual-microscope", name: "Intelligent Virtual Microscope", category: "Labs & Sims", icon: "virtual-microscope", desc: "Digital histology, optical objective lenses, slide library, and healthy vs diseased comparison." },
   { path: "/virtual-lab", name: "Virtual Biology Lab", category: "Labs & Sims", icon: "virtual-lab", desc: "Run simulated titration and chromatography chemistry labs." },
   { path: "/ecosystem-simulator", name: "Lotka-Volterra Ecosystem Sim", category: "Labs & Sims", icon: "ecosystem-simulator", desc: "Balance abiotic variables and study specimen populations." },
   { path: "/process-simulations", name: "Interactive Process Simulators", category: "Labs & Sims", icon: "process-simulations", desc: "Watch animations for transcription, translation, and mitosis." },

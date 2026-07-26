@@ -104,6 +104,8 @@ const ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
   "🦅": Workflow,
 
   // Labs & Sims
+  "virtual-microscope": Microscope,
+  microscope: Microscope,
   "virtual-lab": FlaskConical,
   "🧪": FlaskConical,
   "ecosystem-simulator": Globe,
