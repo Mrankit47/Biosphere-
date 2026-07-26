@@ -42,6 +42,7 @@ const CATEGORIES: NavCategory[] = [
   {
     title: "Labs & Sims",
     items: [
+      { href: "/virtual-microscope", label: "Virtual Microscope", icon: "virtual-microscope" },
       { href: "/virtual-lab", label: "Virtual Lab", icon: "virtual-lab" },
       { href: "/ecosystem-simulator", label: "Ecosystem Sim", icon: "ecosystem-simulator" },
       { href: "/process-simulations", label: "Process Sims", icon: "process-simulations" },
