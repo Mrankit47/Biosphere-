@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   OrbitControls,
@@ -744,6 +745,50 @@ export default function DnaGeneticsPage() {
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        {/* Molecular Biology Objects Registry */}
+        <div style={{ maxWidth: 1000, margin: "40px auto 0", padding: "24px", borderRadius: 16, background: "rgba(12, 22, 32, 0.85)", border: "1px solid var(--ds-border-muted)" }}>
+          <h3 style={{ color: "var(--ds-accent)", fontSize: "1.1rem", fontWeight: 700, margin: "0 0 16px" }}>🧬 Molecular Biology Objects Registry</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 12 }}>
+            {[
+              { id: "dna", name: "DNA", icon: "🧬" },
+              { id: "rna", name: "RNA", icon: "🧪" },
+              { id: "mrna", name: "mRNA", icon: "📜" },
+              { id: "trna", name: "tRNA", icon: "🧩" },
+              { id: "rrna", name: "rRNA", icon: "⚙️" },
+              { id: "gene", name: "Gene (HBB)", icon: "🧬" },
+              { id: "chromosome", name: "Chromosome 11", icon: "📍" },
+              { id: "protein", name: "Protein (HbB)", icon: "🩸" },
+              { id: "enzyme", name: "DNA Polymerase III", icon: "⚙️" },
+              { id: "nucleotide", name: "dATP Nucleotide", icon: "🔹" },
+              { id: "codon", name: "Codons & Code", icon: "🔢" },
+              { id: "genome", name: "Human Genome", icon: "🌐" },
+              { id: "mutation", name: "Point Mutation (HbS)", icon: "⚡" }
+            ].map((obj) => (
+              <Link
+                key={obj.id}
+                href={`/dna-genetics/${obj.id}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "10px 14px",
+                  borderRadius: 12,
+                  background: "rgba(255, 255, 255, 0.04)",
+                  border: "1px solid var(--ds-border-muted)",
+                  color: "#fff",
+                  textDecoration: "none",
+                  fontWeight: 700,
+                  fontSize: "0.85rem",
+                  transition: "all 0.2s ease"
+                }}
+              >
+                <span style={{ fontSize: "1.2rem" }}>{obj.icon}</span>
+                <span>{obj.name} →</span>
+              </Link>
+            ))}
           </div>
         </div>
 
