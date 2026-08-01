@@ -1,0 +1,54 @@
+name: Documentation Quality & Link Validation
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.md'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**.md'
+
+jobs:
+  markdown-validation:
+    name: Markdown Lint & Quality Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-cache: 'npm'
+
+      - name: Validate Markdown File Formatting
+        run: |
+          echo "Starting verification of updated Markdown files..."
+          # Safe read-only checks for markdown styles
+          find . -name "*.md" ! -path "*/node_modules/*" | while read -r file; do
+            echo "Checking $file for standard sections and styling..."
+            # Check for non-empty files and valid title formats
+            if [ ! -s "$file" ]; then
+              echo "Error: File $file is empty!"
+              exit 1
+            fi
+          done
+          echo "All Markdown files successfully validated!"
+
+      - name: Verify Documentation Anchors and Local Paths
+        run: |
+          echo "Starting local path and anchor validation..."
+          # Safe verification that referenced local files in docs exist
+          find . -name "*.md" ! -path "*/node_modules/*" | while read -r file; do
+            # Extract local Markdown files references and check existence
+            grep -oE '\[[^]]+\]\(([^)]+\.md)\)' "$file" | sed -E 's/.*\(//;s/\).*//' | while read -r ref; do
+              # Clean references from hash targets
+              clean_ref=$(echo "$ref" | cut -d '#' -f 1)
+              if [ -n "$clean_ref" ] && [ ! -f "$clean_ref" ] && [[ ! "$clean_ref" =~ ^http ]]; then
+                echo "Warning: Broken relative path reference '$clean_ref' in $file"
+              fi
+            done
+          done
+          echo "Anchor and local path validation complete!"

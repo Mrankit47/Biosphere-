@@ -1,0 +1,39 @@
+name: 💡 Feature Request
+description: Propose an idea or request a new feature for BioSphere.
+title: "[FEAT]: "
+labels: ["enhancement", "proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We are always excited to hear about new ideas for interactive biology visualizers, virtual labs, or gamified tools!
+  - type: textarea
+    id: concept
+    attributes:
+      label: Feature Concept
+      description: Is your feature request related to a problem? Please describe.
+      placeholder: e.g., I would like to have an interactive diagram for the Carbon Cycle...
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Detailed Description
+      description: Explain how this feature would work, what components would be involved, and how users would interact with it.
+      placeholder: Describe the UI layout, 3D elements, and learning outcomes.
+    validations:
+      required: true
+  - type: textarea
+    id: value
+    attributes:
+      label: Educational Value
+      description: Why would this feature be beneficial for BioSphere learners or teachers?
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Feature Checklist
+      options:
+        - label: I have checked existing issues and roadmap suggestions to ensure this is a unique proposal.
+          required: true
