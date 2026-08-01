@@ -1,0 +1,27 @@
+name: 📝 Documentation Proposal
+description: Suggest improvements, fixes, or additions to BioSphere's documentation.
+title: "[DOCS]: "
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: current_doc
+    attributes:
+      label: Current Documentation Status
+      description: What is the current state of the documentation you want to improve? (Please provide links or file paths if possible).
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Changes
+      description: What specific updates or new content are you proposing to add?
+      placeholder: Describe the paragraphs, tutorials, or guides you want to introduce.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this documentation update necessary? How does it improve developer or user experience?
+    validations:
+      required: true
