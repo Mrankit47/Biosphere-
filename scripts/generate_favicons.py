@@ -1,8 +1,9 @@
 import os
 import sys
+import numpy as np
 from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
 
-SOURCE_IMAGE = r"C:\Users\Ankit\.gemini\antigravity-ide\brain\7d50976b-5857-428e-9163-4c7fbf779c8b\biosphere_favicon_1787540724141.jpg"
+SOURCE_IMAGE = r"C:\Users\Ankit\.gemini\antigravity-ide\brain\84c4a6c5-42bf-4909-8882-5359da61957f\biosphere_favicon_1787636952792.jpg"
 WORKSPACE_DIR = r"c:\Users\Ankit\OneDrive\Desktop\All Projects\Biosphere\biosphere"
 
 def main():
@@ -13,14 +14,16 @@ def main():
     img = Image.open(SOURCE_IMAGE).convert("RGBA")
     w, h = img.size
 
-    # Subtle contrast and color enhancement for crisp visibility at small icon sizes
-    enhancer = ImageEnhance.Sharpness(img)
-    img_sharp = enhancer.enhance(1.3)
+    # Enhance contrast and sharpness for maximum pop at 16px/32px
+    enhancer_contrast = ImageEnhance.Contrast(img)
+    img_contrast = enhancer_contrast.enhance(1.1)
+
+    enhancer_sharpness = ImageEnhance.Sharpness(img_contrast)
+    img_sharp = enhancer_sharpness.enhance(1.3)
 
     enhancer_color = ImageEnhance.Color(img_sharp)
     img_vibrant = enhancer_color.enhance(1.15)
 
-    # Let's create high quality resized versions
     # Target directories
     app_dir = os.path.join(WORKSPACE_DIR, "src", "app")
     public_dir = os.path.join(WORKSPACE_DIR, "public")
@@ -48,6 +51,7 @@ def main():
     img_32 = img_vibrant.resize((32, 32), Image.Resampling.LANCZOS)
     img_16 = img_vibrant.resize((16, 16), Image.Resampling.LANCZOS)
 
+    img_48.save(os.path.join(public_dir, "favicon-48x48.png"), format="PNG", optimize=True)
     img_32.save(os.path.join(public_dir, "favicon-32x32.png"), format="PNG", optimize=True)
     img_16.save(os.path.join(public_dir, "favicon-16x16.png"), format="PNG", optimize=True)
 
